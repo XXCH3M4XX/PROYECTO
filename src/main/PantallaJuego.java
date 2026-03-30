@@ -9,7 +9,7 @@ public class PantallaJuego extends JFrame {
     //es como un lienzo en el que puedes poner lo que quieras
     public PantallaJuego(PanelJuego panelJuego) {
         //tamaño de la pantalla
-        this.setSize(400, 500);
+        this.setSize(400, 400);
 
 
         //esto hace que cuando cierres la ventana se acabe la ejecucion

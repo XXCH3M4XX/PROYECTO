@@ -11,6 +11,7 @@ public class MouseInputs implements MouseListener, MouseMotionListener {
 
     private PanelJuego panelJuego;
     public MouseInputs(PanelJuego panelJuego){
+
         this.panelJuego = panelJuego;
     }
 
@@ -47,7 +48,7 @@ public class MouseInputs implements MouseListener, MouseMotionListener {
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        panelJuego.setRectPos(e.getX(), e.getY());
+
     }
     //nigger
 }
