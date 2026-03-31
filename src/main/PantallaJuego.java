@@ -9,7 +9,7 @@ public class PantallaJuego extends JFrame {
     //es como un lienzo en el que puedes poner lo que quieras
     public PantallaJuego(PanelJuego panelJuego) {
         //tamaño de la pantalla
-        this.setSize(400, 400);
+
 
 
         //esto hace que cuando cierres la ventana se acabe la ejecucion
@@ -20,6 +20,11 @@ public class PantallaJuego extends JFrame {
 
         //esto hace que el recuadro aparezca en el centro de la pantalla
         this.setLocationRelativeTo(null);
+
+        //si no hacemos esto se ve muy feo
+        this.setResizable(false);
+
+        this.pack();
 
         //tiene que estar al fondo porque si no se buggea con el tamaño y no se nada
         this.setVisible(true);

@@ -23,6 +23,7 @@ public class MouseInputs implements MouseListener, MouseMotionListener {
 
     @Override
     public void mousePressed(MouseEvent e) {
+        panelJuego.requestFocusInWindow();
 
     }
 
@@ -48,7 +49,7 @@ public class MouseInputs implements MouseListener, MouseMotionListener {
 
     @Override
     public void mouseMoved(MouseEvent e) {
-
+        panelJuego.setRectPos(e.getX(), e.getY());
     }
     //nigger
 }
