@@ -16,6 +16,7 @@ public class Juego implements Runnable {
 
 
     }
+    //metodo que empieza el bucle infinito del juego
     private void empezarBucle() {
         hiloJuego = new Thread(this);
         hiloJuego.start();

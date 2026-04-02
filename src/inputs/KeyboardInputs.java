@@ -4,6 +4,7 @@ import main.PanelJuego;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import static utils.Constantes.Direcciones.*;
 
 public class KeyboardInputs implements KeyListener {
 
@@ -19,25 +20,48 @@ public class KeyboardInputs implements KeyListener {
 
     }
 
+    /**
+     * Detecta cuando una tecla es pulsada. Si coincide con las teclas de dirección (WASD),
+     * actualiza la dirección en el panel de juego y activa el estado de movimiento.
+     */
     @Override
     public void keyPressed(KeyEvent e) {
+        switch(e.getKeyCode()){
 
+            case KeyEvent.VK_W:
+                panelJuego.setDireccion(ARRIBA);
+                panelJuego.setMovimiento(true);
+                break;
+
+            case KeyEvent.VK_A:
+                panelJuego.setDireccion(IZQUIERDA);
+                panelJuego.setMovimiento(true);
+                break;
+
+            case KeyEvent.VK_S:
+                panelJuego.setDireccion(ABAJO);
+                panelJuego.setMovimiento(true);
+                break;
+
+            case KeyEvent.VK_D:
+                panelJuego.setDireccion(DERECHA);
+                panelJuego.setMovimiento(true);
+                break;
+        }
     }
 
+    /**
+     * Detecta cuando se deja de presionar una tecla. Si se suelta cualquiera de las
+     * teclas de movimiento, se detiene el desplazamiento del jugador.
+     */
     @Override
     public void keyReleased(KeyEvent e) {
         switch(e.getKeyCode()){
             case KeyEvent.VK_W:
-                panelJuego.changeYDelta(-5);
-                break;
             case KeyEvent.VK_A:
-                panelJuego.changeXDelta(-5);
-                break;
             case KeyEvent.VK_S:
-                panelJuego.changeYDelta(5);
-                break;
             case KeyEvent.VK_D:
-                panelJuego.changeXDelta(5);
+                panelJuego.setMovimiento(false);
                 break;
 
         }
