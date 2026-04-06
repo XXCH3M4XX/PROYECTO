@@ -1,6 +1,7 @@
 package entidades;
 
 import utils.Constantes;
+import utils.LoadSave;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -8,8 +9,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static utils.Constantes.ConstantesJugador.CORRIENDO;
-import static utils.Constantes.ConstantesJugador.PREDETERMINADO;
+import static utils.Constantes.ConstantesJugador.*;
 import static utils.Constantes.Direcciones.*;
 import static utils.Constantes.Direcciones.ABAJO;
 
@@ -21,6 +21,8 @@ public class Jugador extends entidad {
     private boolean izquierda, derecha, arriba, abajo;
     private boolean movimiento = false;
     private float velocidadJugador = 2.0f;
+    private boolean ataque = false;
+
 
     public Jugador(float x, float y) {
         super(x, y);
@@ -44,12 +46,25 @@ public class Jugador extends entidad {
      * basándose en si está en movimiento o quieto.
      */
     private void setAnimacion() {
+        int startAni = accionJugador;
+
         if(movimiento) {
             accionJugador = CORRIENDO;
 
         } else {
             accionJugador = PREDETERMINADO;
         }
+        if(ataque){
+            accionJugador = PATADA;
+        }
+        if(startAni != accionJugador){
+            resetAniTick();
+        }
+    }
+
+    private void resetAniTick(){
+        tickAnim=0;
+        indiceAnim=0;
     }
 
     /*
@@ -87,33 +102,36 @@ public class Jugador extends entidad {
 
             if(indiceAnim >= Constantes.ConstantesJugador.GetCantidadSprite(accionJugador)) {
                 indiceAnim = 0;
+                ataque = false;
             }
         }
     }
 
     private void cargarAnimaciones() {
-        InputStream entrada = getClass().getResourceAsStream("/Ordenado2.png");
-        try {
-            BufferedImage imagen = ImageIO.read(entrada);
+
+            BufferedImage imagen = LoadSave.GetSpriteAtlas(LoadSave.PLAYER_ATLAS);
             animaciones = new BufferedImage[5][8];
-            for(int j = 0; j < animaciones.length; j++) {
+            for (int j = 0; j < animaciones.length; j++) {
                 int cantidad = Constantes.ConstantesJugador.GetCantidadSprite(j);
 
-                for(int i = 0; i < cantidad; i++) {
+                for (int i = 0; i < cantidad; i++) {
                     animaciones[j][i] = imagen.getSubimage(i * 64, j * 40, 64, 40);
                 }
             }
             System.out.println("Imagen cargada correctamente");
-        }catch(IOException e){
-            System.out.println("Error encontrando las imagenes.");
-        } finally {
-            //libera recursos y evita problemas
-            try {
-                entrada.close();
-            }catch(IOException e){
-                e.printStackTrace();
-            }
-        }
+
+
+    }
+
+    public void resetDirBooleans(){
+        izquierda = false;
+        derecha = false;
+        arriba = false;
+        abajo = false;
+    }
+
+    public void setAtaque(boolean ataque){
+        this.ataque = ataque;
     }
 
     public boolean isAbajo() {

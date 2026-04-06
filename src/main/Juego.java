@@ -1,6 +1,7 @@
 package main;
 
 import entidades.Jugador;
+import niveles.AjusteNivel;
 
 import java.awt.*;
 
@@ -13,6 +14,15 @@ public class Juego implements Runnable {
     private final int UPS_ESTABLECER = 200;
 
     private Jugador jugador;
+    private AjusteNivel ajusteNivel;
+
+    public final static int TILES_DEFAULT_SIZE = 32;
+    public final static float ESCALA = 1.5f;
+    public final static int TILES_IN_WIDTH = 26;
+    public final static int TILES_IN_HEIGHT = 14;
+    public final static int TILES_SIZE = (int) (TILES_DEFAULT_SIZE * ESCALA);
+    public final static int GAME_WIDTH = TILES_SIZE * TILES_IN_WIDTH;
+    public final static int GAME_HEIGHT = TILES_SIZE * TILES_IN_HEIGHT;
 
     public Juego() {
         initClasses();
@@ -25,6 +35,7 @@ public class Juego implements Runnable {
 
     private void initClasses(){
         jugador = new Jugador(200, 200);
+        ajusteNivel = new AjusteNivel(this);
     }
 
     //metodo que empieza el bucle infinito del juego
@@ -36,10 +47,12 @@ public class Juego implements Runnable {
     //con este metodo, podemos actualizar lo que nosotros queramos(jugador, escenario, etc...)
     public void update(){
         jugador.update();
+        ajusteNivel.update();
     }
 
     public void render(Graphics g){
         jugador.render(g);
+        ajusteNivel.draw(g);
     }
 
     @Override
@@ -106,6 +119,10 @@ public class Juego implements Runnable {
     //lo nuevo que he añadido, del tutorial 6, son variables, que utilizamos para controlar la perdida de frames y recargas que tiene la aplicacion
     public Jugador getJugador(){
         return jugador;
+    }
+
+    public void windowFocusLost(){
+        jugador.resetDirBooleans();
     }
 
 }

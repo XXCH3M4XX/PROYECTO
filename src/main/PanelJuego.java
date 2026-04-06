@@ -10,6 +10,9 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+
+import static main.Juego.GAME_HEIGHT;
+import static main.Juego.GAME_WIDTH;
 import static utils.Constantes.ConstantesJugador.*;
 import static utils.Constantes.Direcciones.*;
 
@@ -34,9 +37,10 @@ public class PanelJuego extends JPanel {
 
     //metodo para ajustar el tamaño de la pantalla, 800p es ideal por el pixelart
     private void tamañoPantalla() {
-        Dimension tamaño = new Dimension(1280, 800);
+        Dimension tamaño = new Dimension(GAME_WIDTH, GAME_HEIGHT);
         setPreferredSize(tamaño);
         setMaximumSize(tamaño);
+        System.out.println("size: " + GAME_WIDTH + " height: " + GAME_HEIGHT);
     }
 
     public void updateGame(){
@@ -58,6 +62,8 @@ public class PanelJuego extends JPanel {
         juego.render(g);
 
     }
+
+
 
     public Juego getJuego(){
         return juego;
