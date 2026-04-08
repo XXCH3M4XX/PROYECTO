@@ -3,17 +3,12 @@ package entidades;
 import utils.Constantes;
 import utils.LoadSave;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStream;
 
 import static utils.Constantes.ConstantesJugador.*;
-import static utils.Constantes.Direcciones.*;
-import static utils.Constantes.Direcciones.ABAJO;
 
-public class Jugador extends entidad {
+public class Jugador extends Entidad {
 
     private BufferedImage[][] animaciones;
     private int tickAnim, indiceAnim, velocidadAnim = 20;

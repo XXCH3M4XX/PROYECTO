@@ -1,10 +1,10 @@
 package entidades;
 
-public abstract class entidad {
+public abstract class Entidad {
     protected float x;
     protected float y;
 
-    public entidad(float x, float y){
+    public Entidad(float x, float y){
         this.x = x;
         this.y = y;
     }

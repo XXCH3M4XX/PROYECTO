@@ -10,7 +10,7 @@ public class Juego implements Runnable {
     private PantallaJuego pantallaJuego;
     private PanelJuego panelJuego;
     private Thread hiloJuego;
-    private final int FPS_OBJETIVO = 120;
+    private final static int FPS_OBJETIVO = 120;
     private final int UPS_ESTABLECER = 200;
 
     private Jugador jugador;
@@ -51,8 +51,8 @@ public class Juego implements Runnable {
     }
 
     public void render(Graphics g){
-        jugador.render(g);
         ajusteNivel.draw(g);
+        jugador.render(g);
     }
 
     @Override
@@ -82,8 +82,7 @@ public class Juego implements Runnable {
             long currentTime = System.nanoTime();
 
             deltaU += (currentTime - tiempoAnterior) / tiempoRecarga;
-            deltaU += (currentTime - tiempoAnterior) / tiempoFrame;
-
+            deltaF += (currentTime - tiempoAnterior) / tiempoFrame;
             tiempoAnterior = currentTime;
 
             if (deltaU >= 1){
