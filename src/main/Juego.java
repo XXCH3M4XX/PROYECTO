@@ -18,6 +18,7 @@ public class Juego implements Runnable {
 
     public final static int TILES_DEFAULT_SIZE = 32;
     public final static float ESCALA = 1.5f;
+    public final static float ESCALA_JUGADOR = 2.0f;
     public final static int TILES_IN_WIDTH = 26;
     public final static int TILES_IN_HEIGHT = 14;
     public final static int TILES_SIZE = (int) (TILES_DEFAULT_SIZE * ESCALA);
@@ -34,8 +35,9 @@ public class Juego implements Runnable {
     }
 
     private void initClasses(){
-        jugador = new Jugador(200, 200);
         ajusteNivel = new AjusteNivel(this);
+        jugador = new Jugador(200, 200, (int)(64 * ESCALA_JUGADOR), (int)(40 * ESCALA_JUGADOR));
+        jugador.cargarDatosNivel(ajusteNivel.getNivelActual().getDatosNivel());
     }
 
     //metodo que empieza el bucle infinito del juego
@@ -115,6 +117,7 @@ public class Juego implements Runnable {
             }
         }
     }
+
     //lo nuevo que he añadido, del tutorial 6, son variables, que utilizamos para controlar la perdida de frames y recargas que tiene la aplicacion
     public Jugador getJugador(){
         return jugador;
