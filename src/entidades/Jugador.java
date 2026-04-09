@@ -14,7 +14,7 @@ import static utils.Miscelaneos.puedeMoverse;
 public class Jugador extends Entidad {
 
     private BufferedImage[][] animaciones;
-    private int tickAnim, indiceAnim, velocidadAnim = 20;
+    private int tickAnim, indiceAnim, velocidadAnim = 45;
 
     private int accionJugador = PREDETERMINADO;
 
@@ -161,7 +161,7 @@ public class Jugador extends Entidad {
     private void cargarAnimaciones() {
 
         BufferedImage imagen = LoadSave.GetSpriteAtlas(LoadSave.PLAYER_ATLAS);
-        animaciones = new BufferedImage[5][8];
+        animaciones = new BufferedImage[7][4];
 
         for (int j = 0; j < animaciones.length; j++) {
             int cantidad = Constantes.ConstantesJugador.GetCantidadSprite(j);

@@ -17,11 +17,9 @@ public class Constantes {
         public static final int CORRIENDO = 0;
         public static final int PATADA = 1;
         public static final int SALTANDO = 2;
-        public static final int PREDETERMINADO = 3;
+        public static final int CAYENDO = 3;
+        public static final int PREDETERMINADO = 5;
 
-
-        //falta hacerlo bien
-        // public static final int CAYENDO = 3;
 
         //no esta hecho todavia
         //public static final int GOLPE = 5;
@@ -32,23 +30,23 @@ public class Constantes {
             switch (accionJugador) {
 
                 case CORRIENDO:
-                    return 6;
-
-                case PREDETERMINADO:
-                    return 2;
-
-                case SALTANDO:
-//                case CAYENDO:
-                    return 2;
+                    return 4;
 
                 case PATADA:
+                    return 3;
+
+                case SALTANDO:
+                    return 2;
+
+                case CAYENDO:
+                    return 3;
+
+                case PREDETERMINADO:
                     return 3;
 
                 default:
                     return 1;
             }
-
-
         }
     }
 }
