@@ -2,6 +2,8 @@ package utils;
 
 import main.Juego;
 
+import java.awt.geom.Rectangle2D;
+
 //clase con funciones auxiliares para el control de colisiones y fisicas
 public class Miscelaneos {
 
@@ -51,4 +53,27 @@ public class Miscelaneos {
         //se considera solido cualquier tile que no sea el indice 11
         return valor != 11;
     }
+    public static float GetXPosPared(Rectangle2D.Float hitbox, float xVelocidad) {
+        int tileActual = (int)(hitbox.x / Juego.TILES_SIZE);
+        //se esta moviendo a la derecha
+        if(xVelocidad > 0) {
+            int tileXPos = tileActual * Juego.TILES_SIZE;
+            int xOffset = (int)(Juego.TILES_SIZE - hitbox.width);
+            //el -1 es para que no sobrepase un pixel al tile
+            return tileXPos + xOffset -1;
+        } else {
+            return tileActual + Juego.TILES_SIZE;
+
+        }
+    }
+    public static float GetYPosTechoOSuelo(Rectangle2D.Float hitbox, float velY) {
+        if(velY > 0) {
+            // tocamos suelo
+            return (float)(Math.floor((hitbox.y + hitbox.height) / Juego.TILES_SIZE) * Juego.TILES_SIZE - hitbox.height);
+        } else {
+            // tocamos techo
+            return (float)(Math.floor(hitbox.y / Juego.TILES_SIZE + 1) * Juego.TILES_SIZE);
+        }
+    }
+
 }

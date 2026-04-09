@@ -5,10 +5,11 @@ import utils.Constantes;
 import utils.LoadSave;
 
 import java.awt.*;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
 import static utils.Constantes.ConstantesJugador.*;
-import static utils.Miscelaneos.puedeMoverse;
+import static utils.Miscelaneos.*;
 
 //clase que controla la logica, animaciones y colisiones del personaje principal
 public class Jugador extends Entidad {
@@ -18,13 +19,20 @@ public class Jugador extends Entidad {
 
     private int accionJugador = PREDETERMINADO;
 
-    private boolean izquierda, derecha, arriba, abajo;
+    private boolean izquierda, derecha, arriba, abajo, jump;
     private boolean movimiento = false;
 
     private float velocidadJugador = 2.0f;
     private boolean ataque = false;
 
     private int[][] datosNivel;
+
+    private float velocidadAire = 0f;
+    //ver ayuda de gravedad en programas de java
+    private float gravedad = 0.04f * Juego.ESCALA;
+    private float velocidadSalto = -2.25f * Juego.ESCALA;
+    private float velocidadCaida = 0.5f * Juego.ESCALA;
+    private boolean aire = false;
 
     //ajustes para el tamaño de la caja de colision escalada
     public static final int HITBOX_W = (int)(19 * Juego.ESCALA);
@@ -99,46 +107,71 @@ public class Jugador extends Entidad {
 
     //calcula el desplazamiento y verifica colisiones antes de mover al jugador
     private void actualizarPosicion() {
-
         movimiento = false;
 
-        if(!izquierda && !derecha && !arriba && !abajo) {
-            return;
+        if(jump) saltar();
+
+        float xVelocidad = 0;
+
+        if(izquierda) xVelocidad -= velocidadJugador;
+        if(derecha) xVelocidad += velocidadJugador;
+
+        if(aire) {
+            // mover Y paso a paso para evitar atravesar tiles
+            float step = Math.signum(velocidadAire);
+            for(float i = 0; i < Math.abs(velocidadAire); i += 1) {
+                if(puedeMoverse(hitbox.x, hitbox.y + step, hitbox.width, hitbox.height, datosNivel)) {
+                    hitbox.y += step;
+                } else {
+                    // tocamos techo o suelo
+                    hitbox.y = GetYPosTechoOSuelo(hitbox, step);
+                    if(velocidadAire > 0) resetearAltura(); // tocamos suelo
+                    velocidadAire = 0; // detener movimiento vertical
+                    break;
+                }
+            }
+
+            velocidadAire += gravedad; // aplicar gravedad
         }
 
-        float xVelocidad = 0, yVelocidad = 0;
+        actualizarXPos(xVelocidad);
 
-        //calculo de direccion en el eje x
-        if(izquierda && !derecha){
-            xVelocidad = -velocidadJugador;
-        } else if(derecha && !izquierda){
-            xVelocidad = velocidadJugador;
-        }
+        if(izquierda || derecha || aire) movimiento = true;
+    }
 
-        //calculo de direccion en el eje y
-        if(arriba && !abajo){
-            yVelocidad = -velocidadJugador;
-        } else if(abajo && !arriba){
-            yVelocidad = velocidadJugador;
-        }
+    private void saltar() {
+        if(aire) return;
+        aire = true;
+        velocidadAire = velocidadSalto; // velocidad hacia arriba negativa
+    }
 
+    private void resetearAltura() {
+        aire = false;
+        velocidadAire = 0;
+    }
+
+
+    private void actualizarXPos(float xVelocidad) {
         //comprobacion de colision en la nueva posicion tentativa
         if(puedeMoverse(
                 hitbox.x + xVelocidad,
-                hitbox.y + yVelocidad,
+                hitbox.y,
                 hitbox.width,
                 hitbox.height,
                 datosNivel
         )) {
             hitbox.x += xVelocidad;
-            hitbox.y += yVelocidad;
 
             x = hitbox.x;
-            y = hitbox.y;
+
 
             movimiento = true;
+        } else {
+            hitbox.x = GetXPosPared(hitbox, xVelocidad);
         }
     }
+
+
 
     //gestiona el tiempo entre frames de la animacion actual
     private void actualizarAnimacion() {
@@ -182,6 +215,9 @@ public class Jugador extends Entidad {
     //metodos de acceso y modificacion para el estado de movimiento y ataque
     public void setAtaque(boolean ataque){
         this.ataque = ataque;
+    }
+    public void setSalto(boolean salto) {
+        this.jump = salto;
     }
 
     public boolean isAbajo() { return abajo; }

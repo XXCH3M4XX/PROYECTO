@@ -34,10 +34,24 @@ public class Juego implements Runnable {
         empezarBucle();
     }
 
-    private void initClasses(){
+    private void initClasses() {
         ajusteNivel = new AjusteNivel(this);
-        jugador = new Jugador(200, 200, (int)(64 * ESCALA_JUGADOR), (int)(40 * ESCALA_JUGADOR));
-        jugador.cargarDatosNivel(ajusteNivel.getNivelActual().getDatosNivel());
+
+        // obtenemos la matriz de datos del nivel
+        int[][] datosNivel = ajusteNivel.getNivelActual().getDatosNivel();
+
+        // Suponiendo que quieres colocar al jugador sobre un tile específico
+        int filaSuelo = 10; // número de fila de suelo, empieza en 0 arriba
+        int colInicial = 6; // columna horizontal donde aparecerá
+
+        // Posición X en píxeles
+        int xInicial = colInicial * TILES_SIZE;
+
+        // Posición Y: la parte superior de la hitbox debe coincidir con el suelo
+        int yInicial = filaSuelo * TILES_SIZE - Jugador.HITBOX_H;
+
+        jugador = new Jugador(xInicial, yInicial, (int)(64 * ESCALA_JUGADOR), (int)(40 * ESCALA_JUGADOR));
+        jugador.cargarDatosNivel(datosNivel);
     }
 
     //metodo que empieza el bucle infinito del juego
