@@ -4,7 +4,7 @@ import main.Juego;
 
 import java.awt.geom.Rectangle2D;
 
-//clase con funciones auxiliares para el control de colisiones y fisicas
+//funciones auxiliares para el control de colisiones y fisicas
 public class Miscelaneos {
 
     //comprueba si los cuatro puntos de la caja de colision estan libres de obstaculos
@@ -53,27 +53,30 @@ public class Miscelaneos {
         //se considera solido cualquier tile que no sea el indice 11
         return valor != 11;
     }
-    public static float GetXPosPared(Rectangle2D.Float hitbox, float xVelocidad) {
-        int tileActual = (int)(hitbox.x / Juego.TILES_SIZE);
-        //se esta moviendo a la derecha
-        if(xVelocidad > 0) {
-            int tileXPos = tileActual * Juego.TILES_SIZE;
-            int xOffset = (int)(Juego.TILES_SIZE - hitbox.width);
-            //el -1 es para que no sobrepase un pixel al tile
-            return tileXPos + xOffset -1;
-        } else {
-            return tileActual + Juego.TILES_SIZE;
 
-        }
-    }
-    public static float GetYPosTechoOSuelo(Rectangle2D.Float hitbox, float velY) {
-        if(velY > 0) {
-            // tocamos suelo
-            return (float)(Math.floor((hitbox.y + hitbox.height) / Juego.TILES_SIZE) * Juego.TILES_SIZE - hitbox.height);
+    //calcula la x donde debe quedar la hitbox pegada a la pared usando la posicion tentativa newx
+    public static float GetXPosPared(Rectangle2D.Float hitbox, float xVelocidad, float newX) {
+        if (xVelocidad > 0) {
+            //yendo a la derecha alineamos el borde derecho con el tile de impacto
+            int tileActual = (int)((newX + hitbox.width) / Juego.TILES_SIZE);
+            return tileActual * Juego.TILES_SIZE - hitbox.width - 1;
         } else {
-            // tocamos techo
-            return (float)(Math.floor(hitbox.y / Juego.TILES_SIZE + 1) * Juego.TILES_SIZE);
+            //yendo a la izquierda alineamos el borde izquierdo con el tile de impacto
+            int tileActual = (int)(newX / Juego.TILES_SIZE);
+            return (tileActual + 1) * Juego.TILES_SIZE + 1;
         }
     }
 
+    //calcula la y donde debe quedar la hitbox al tocar suelo o techo usando la posicion tentativa newy
+    public static float GetYPosTechoOSuelo(Rectangle2D.Float hitbox, float velY, float newY) {
+        if (velY > 0) {
+            //cayendo: alineamos el borde inferior con la parte superior del tile de suelo
+            int tileY = (int)((newY + hitbox.height) / Juego.TILES_SIZE);
+            return tileY * Juego.TILES_SIZE - hitbox.height - 1;
+        } else {
+            //subiendo: alineamos el borde superior con la parte inferior del tile de techo
+            int tileY = (int)(newY / Juego.TILES_SIZE);
+            return (tileY + 1) * Juego.TILES_SIZE + 1;
+        }
+    }
 }
