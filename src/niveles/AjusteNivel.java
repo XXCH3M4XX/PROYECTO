@@ -51,7 +51,7 @@ public class AjusteNivel {
     }
 
     //metodo para actualizar logica del nivel si fuera necesario
-    public void update(){
+    public  void update(){
 
     }
 

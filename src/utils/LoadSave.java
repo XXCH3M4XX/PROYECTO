@@ -15,6 +15,8 @@ public class LoadSave {
     public static final String PLAYER_ATLAS = "Ordenado2.png";
     public static final String LEVEL_ATLAS = "suelosSprites.png";
     public static final String NIVEL1DATOS = "level_one_data.png";
+    public static final String BOTONES_MENU = "button_atlas.png";
+    public static final String FONDO_MENU = "menu_background.png";
 
     //metodo para cargar una imagen desde la carpeta de recursos
     public static BufferedImage GetSpriteAtlas(String fileName){

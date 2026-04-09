@@ -1,5 +1,6 @@
 package inputs;
 
+import gamestates.Gamestate;
 import main.PanelJuego;
 
 import java.awt.*;
@@ -11,27 +12,48 @@ public class MouseInputs implements MouseListener, MouseMotionListener {
 
     private PanelJuego panelJuego;
     public MouseInputs(PanelJuego panelJuego){
-
         this.panelJuego = panelJuego;
     }
 
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        if(e.getButton() == MouseEvent.BUTTON1){
-            panelJuego.getJuego().getJugador().setAtaque(true);
+        switch(Gamestate.state){
+            case PLAYING:
+                panelJuego.getJuego().getPlaying().mouseClicked(e);
+                break;
+            default:
+                break;
         }
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
-        panelJuego.requestFocusInWindow();
+        switch(Gamestate.state){
+            case MENU:
+                panelJuego.getJuego().getMenu().mousePressed(e);
+                break;
+            case PLAYING:
+                panelJuego.getJuego().getPlaying().mousePressed(e);
+                break;
+            default:
+                break;
+        }
 
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-
+        switch(Gamestate.state){
+            case MENU:
+                panelJuego.getJuego().getMenu().mouseReleased(e);
+                break;
+            case PLAYING:
+                panelJuego.getJuego().getPlaying().mouseReleased(e);
+                break;
+            default:
+                break;
+        }
     }
 
     @Override
@@ -51,8 +73,16 @@ public class MouseInputs implements MouseListener, MouseMotionListener {
 
     @Override
     public void mouseMoved(MouseEvent e) {
-
-
+        switch(Gamestate.state){
+            case MENU:
+                panelJuego.getJuego().getMenu().mouseMoved(e);
+                break;
+            case PLAYING:
+                panelJuego.getJuego().getPlaying().mouseMoved(e);
+                break;
+            default:
+                break;
+        }
     }
-    //nigger
+
 }

@@ -1,8 +1,10 @@
 package main;
 
 import entidades.Jugador;
+import gamestates.Gamestate;
+import gamestates.Playing;
 import niveles.AjusteNivel;
-
+import gamestates.Menu;
 import java.awt.*;
 
 //nucleo del juego, gestiona el bucle principal y coordina todos los sistemas
@@ -17,6 +19,9 @@ public class Juego implements Runnable {
 
     //limite de actualizaciones de logica por segundo, mayor que fps para mayor precision fisica
     private final int UPS_ESTABLECER = 200;
+
+    private Playing playing;
+    private Menu menu;
 
     private Jugador jugador;
     private AjusteNivel ajusteNivel;
@@ -44,6 +49,7 @@ public class Juego implements Runnable {
     //inicializa todos los sistemas y arranca el bucle
     public Juego() {
         initClasses();
+        playing = new Playing(this);
         panelJuego = new PanelJuego(this);
         pantallaJuego = new PantallaJuego(panelJuego);
         //esto va a leer el input del teclado; es decir, lee las teclas que pulsamos
@@ -51,25 +57,11 @@ public class Juego implements Runnable {
         empezarBucle();
     }
 
-    //crea el nivel y coloca al jugador encima del tile de suelo correspondiente
-    private void initClasses() {
-        ajusteNivel = new AjusteNivel(this);
-
-        int[][] datosNivel = ajusteNivel.getNivelActual().getDatosNivel();
-
-        //fila y columna del tile sobre el que aparecera el jugador al iniciar
-        int filaSuelo = 8;
-        int colInicial = 3;
-
-        //convertimos la posicion en tiles a posicion en pixeles
-        int xInicial = colInicial * TILES_SIZE;
-
-        //restamos la altura de la hitbox para que los pies queden sobre el tile y no dentro
-        int yInicial = filaSuelo * TILES_SIZE - Jugador.HITBOX_H;
-
-        jugador = new Jugador(xInicial, yInicial, (int)(64 * ESCALA_JUGADOR), (int)(40 * ESCALA_JUGADOR));
-        jugador.cargarDatosNivel(datosNivel);
-    }
+//    //crea el nivel y coloca al jugador encima del tile de suelo correspondiente
+       private void initClasses() {
+           menu = new Menu(this);
+           playing = new Playing(this);
+       }
 
     //metodo que empieza el bucle infinito del juego
     private void empezarBucle() {
@@ -79,14 +71,35 @@ public class Juego implements Runnable {
 
     //con este metodo, podemos actualizar lo que nosotros queramos(jugador, escenario, etc...)
     public void update(){
-        jugador.update();
-        ajusteNivel.update();
+        switch(Gamestate.state){
+            case MENU:
+                menu.update();
+                break;
+            case PLAYING:
+                playing.update();
+                break;
+            case OPTIONS:
+            case QUIT:
+            default:
+                System.exit(0);
+                break;
+        }
+
     }
 
     //dibuja el nivel primero y el jugador encima para que quede en primer plano
     public void render(Graphics g){
-        ajusteNivel.draw(g);
-        jugador.render(g);
+        switch(Gamestate.state){
+            case MENU:
+                menu.draw(g);
+                break;
+            case PLAYING:
+                playing.draw(g);
+                break;
+            default:
+                break;
+        }
+
     }
 
     @Override
@@ -146,13 +159,24 @@ public class Juego implements Runnable {
         }
     }
 
-    //devuelve el jugador para que otros sistemas puedan acceder a el
-    public Jugador getJugador(){
-        return jugador;
+//    //devuelve el jugador para que otros sistemas puedan acceder a el
+//    public Jugador getJugador(){
+//        return jugador;
+//    }
+//
+   //cuando la ventana pierde el foco detiene el movimiento para evitar que se quede andando solo
+   public void windowFocusLost(){
+       if(Gamestate.state == Gamestate.PLAYING){
+           playing.getJugador().resetDirBooleans();
+       }
+   }
+
+    //metodo que usaremos para llamarlo en otras clases
+    public Menu getMenu() {
+        return menu;
     }
 
-    //cuando la ventana pierde el foco detiene el movimiento para evitar que se quede andando solo
-    public void windowFocusLost(){
-        jugador.resetDirBooleans();
+    public Playing getPlaying(){
+        return playing;
     }
 }

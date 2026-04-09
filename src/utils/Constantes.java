@@ -1,6 +1,19 @@
 package utils;
 
+import main.Juego;
+
 public class Constantes {
+
+    //con esto definimos el tamaño de los botones del menu
+    public static class UI{
+        public static class botones{
+            public static final int B_WIDTH_DEFAULT = 140;
+            public static final int B_HEIGHT_DEFAULT = 56;
+            public static final int B_WIDTH = (int) (B_WIDTH_DEFAULT * Juego.ESCALA);
+            public static final int B_HEIGHT = (int) (B_HEIGHT_DEFAULT * Juego.ESCALA);
+
+        }
+    }
 
     //para saber en que direccion te estas moviendo y que animaciones reproducir
     public static class Direcciones{

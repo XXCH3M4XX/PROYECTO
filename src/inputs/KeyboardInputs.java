@@ -1,5 +1,6 @@
 package inputs;
 
+import gamestates.Gamestate;
 import main.PanelJuego;
 
 import java.awt.event.KeyEvent;
@@ -28,18 +29,14 @@ public class KeyboardInputs implements KeyListener {
     //activa el movimiento o el salto cuando se pulsa la tecla correspondiente
     @Override
     public void keyPressed(KeyEvent e) {
-        switch(e.getKeyCode()){
-            case KeyEvent.VK_A:
-                panelJuego.getJuego().getJugador().setIzquierda(true);
+        switch(Gamestate.state){
+            case MENU:
+                panelJuego.getJuego().getMenu().keyPressed(e);
                 break;
-            case KeyEvent.VK_D:
-                panelJuego.getJuego().getJugador().setDerecha(true);
+            case PLAYING:
+                panelJuego.getJuego().getPlaying().keyPressed(e);
                 break;
-            case KeyEvent.VK_SPACE:
-                if (!espacioAnterior) {
-                    panelJuego.getJuego().getJugador().setSalto(true);
-                    espacioAnterior = true;
-                }
+            default:
                 break;
         }
     }
@@ -47,16 +44,14 @@ public class KeyboardInputs implements KeyListener {
     //detiene el movimiento o libera el flag de salto cuando se suelta la tecla
     @Override
     public void keyReleased(KeyEvent e) {
-        switch(e.getKeyCode()){
-            case KeyEvent.VK_A:
-                panelJuego.getJuego().getJugador().setIzquierda(false);
+        switch(Gamestate.state){
+            case MENU:
+                panelJuego.getJuego().getMenu().keyReleased(e);
                 break;
-            case KeyEvent.VK_D:
-                panelJuego.getJuego().getJugador().setDerecha(false);
+            case PLAYING:
+                panelJuego.getJuego().getPlaying().keyReleased(e);
                 break;
-            case KeyEvent.VK_SPACE:
-                espacioAnterior = false;
-                panelJuego.getJuego().getJugador().setSalto(false);
+            default:
                 break;
         }
     }

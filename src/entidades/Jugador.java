@@ -30,7 +30,7 @@ public class Jugador extends Entidad {
     private boolean movimiento = false;
 
     //pixeles por update que avanza el jugador horizontalmente
-    private float velocidadJugador = 2.0f;
+    private float velocidadJugador = Juego.ESCALA;
 
     //flag que indica si el jugador esta ejecutando un ataque
     private boolean ataque = false;
