@@ -14,6 +14,8 @@ public class Menu extends State implements Statemethods{
     private BufferedImage fondo;
     private int menuX, menuY, menuWidth, menuHeight;
     private BotonMenu[] botones = new BotonMenu[3];
+    private BufferedImage fondoPantalla;
+
 
     public Menu(Juego juego) {
         super(juego);
@@ -21,13 +23,17 @@ public class Menu extends State implements Statemethods{
         loadFondo();
     }
 
+
     private void loadFondo() {
+        //carga el panel central del menu
         fondo = LoadSave.GetSpriteAtlas(LoadSave.FONDO_MENU);
         menuWidth = (int)(fondo.getWidth() * Juego.ESCALA);
         menuHeight = (int)(fondo.getHeight() * Juego.ESCALA);
         menuX = Juego.GAME_WIDTH / 2 - menuWidth / 2;
         menuY = (int)(45 * Juego.ESCALA);
 
+        //carga el fondo de pantalla completa
+        fondoPantalla = LoadSave.GetSpriteAtlas(LoadSave.FONDO_PANTALLA);
     }
 
     private void loadButtons() {
@@ -45,8 +51,13 @@ public class Menu extends State implements Statemethods{
 
     @Override
     public void draw(Graphics g) {
+        //primero el fondo de pantalla completa
+        g.drawImage(fondoPantalla, 0, 0, Juego.GAME_WIDTH, Juego.GAME_HEIGHT, null);
+
+        //encima el panel del menu
         g.drawImage(fondo, menuX, menuY, menuWidth, menuHeight, null);
 
+        //encima los botones
         for (BotonMenu mb : botones){
             mb.draw(g);
         }

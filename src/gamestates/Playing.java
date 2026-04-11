@@ -15,6 +15,7 @@ public class Playing extends State implements Statemethods{
     private Jugador jugador;
     private AjusteNivel ajusteNivel;
     private boolean espacioAnterior = false;
+    private boolean pausado;
 
     public Playing(Juego juego) {
         super(juego);
