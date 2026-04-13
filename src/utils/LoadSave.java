@@ -18,6 +18,8 @@ public class LoadSave {
     public static final String BOTONES_MENU = "botones.png";
     public static final String FONDO_MENU = "menuFondo.png";
     public static final String FONDO_PANTALLA = "fondoPantallaMenu.png";
+    public static final String FONDO_PAUSA = "pause_menu.png";
+    public static final String BOTONES_VOLUMEN = "sound_button.png";
 
 
     //metodo para cargar una imagen desde la carpeta de recursos

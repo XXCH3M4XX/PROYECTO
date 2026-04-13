@@ -3,6 +3,7 @@ package gamestates;
 import entidades.Jugador;
 import main.Juego;
 import niveles.AjusteNivel;
+import ui.PausaOverlay;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -15,7 +16,8 @@ public class Playing extends State implements Statemethods{
     private Jugador jugador;
     private AjusteNivel ajusteNivel;
     private boolean espacioAnterior = false;
-    private boolean pausado;
+    private boolean pausado = true;
+    private PausaOverlay pausaOverlay;
 
     public Playing(Juego juego) {
         super(juego);
@@ -40,6 +42,8 @@ public class Playing extends State implements Statemethods{
 
         jugador = new Jugador(xInicial, yInicial, (int)(64 * ESCALA_JUGADOR), (int)(40 * ESCALA_JUGADOR));
         jugador.cargarDatosNivel(datosNivel);
+
+        pausaOverlay = new PausaOverlay();
     }
 
     //devuelve el jugador para que otros sistemas puedan acceder a el
@@ -56,12 +60,14 @@ public class Playing extends State implements Statemethods{
     public void update() {
         ajusteNivel.update();
         jugador.update();
+        pausaOverlay.actualizar();
     }
 
     @Override
     public void draw(Graphics g) {
         ajusteNivel.draw(g);
         jugador.render(g);
+        pausaOverlay.draw(g);
     }
 
     @Override
@@ -73,17 +79,23 @@ public class Playing extends State implements Statemethods{
 
     @Override
     public void mousePressed(MouseEvent e) {
-
+        if(pausado){
+            pausaOverlay.mousePressed(e);
+        }
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-
+        if(pausado){
+            pausaOverlay.mouseReleased(e);
+        }
     }
 
     @Override
     public void mouseMoved(MouseEvent e) {
-
+        if(pausado){
+            pausaOverlay.mouseMoved(e);
+        }
     }
 
     @Override

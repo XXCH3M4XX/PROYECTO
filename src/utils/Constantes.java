@@ -13,6 +13,10 @@ public class Constantes {
             public static final int B_HEIGHT = (int) (B_HEIGHT_DEFAULT * Juego.ESCALA);
 
         }
+        public static class BotonesPausa{
+            public static final int TAMAÑO_SONIDO_PORDEFECTO = 42;
+            public static final int TAMAÑO_SONIDO = (int) (TAMAÑO_SONIDO_PORDEFECTO * Juego.ESCALA);
+        }
     }
 
     //para saber en que direccion te estas moviendo y que animaciones reproducir
