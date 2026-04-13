@@ -16,7 +16,7 @@ public class Playing extends State implements Statemethods{
     private Jugador jugador;
     private AjusteNivel ajusteNivel;
     private boolean espacioAnterior = false;
-    private boolean pausado = true;
+    private boolean pausado = false;
     private PausaOverlay pausaOverlay;
 
     public Playing(Juego juego) {
@@ -43,7 +43,7 @@ public class Playing extends State implements Statemethods{
         jugador = new Jugador(xInicial, yInicial, (int)(64 * ESCALA_JUGADOR), (int)(40 * ESCALA_JUGADOR));
         jugador.cargarDatosNivel(datosNivel);
 
-        pausaOverlay = new PausaOverlay();
+        pausaOverlay = new PausaOverlay(this);
     }
 
     //devuelve el jugador para que otros sistemas puedan acceder a el
@@ -56,18 +56,30 @@ public class Playing extends State implements Statemethods{
         jugador.resetDirBooleans();
     }
 
+
+    public void mouseDragged(MouseEvent e){
+        if(pausado){
+            pausaOverlay.mouseDragged(e);
+        }
+    }
+
     @Override
     public void update() {
-        ajusteNivel.update();
-        jugador.update();
-        pausaOverlay.actualizar();
+        if(!pausado){
+            ajusteNivel.update();
+            jugador.update();
+        }else {
+            pausaOverlay.actualizar();
+        }
     }
 
     @Override
     public void draw(Graphics g) {
         ajusteNivel.draw(g);
         jugador.render(g);
-        pausaOverlay.draw(g);
+        if (pausado){
+            pausaOverlay.draw(g);
+        }
     }
 
     @Override
@@ -113,8 +125,8 @@ public class Playing extends State implements Statemethods{
                     espacioAnterior = true;
                 }
                 break;
-            case KeyEvent.VK_BACK_SPACE:
-                Gamestate.state = Gamestate.MENU;
+            case KeyEvent.VK_ESCAPE:
+                pausado = !pausado;
         }
     }
 
@@ -133,4 +145,9 @@ public class Playing extends State implements Statemethods{
                 break;
         }
     }
+
+    public void unpauseJuego(){
+        pausado = false;
+    }
+
 }

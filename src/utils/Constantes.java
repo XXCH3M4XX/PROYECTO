@@ -17,6 +17,20 @@ public class Constantes {
             public static final int TAMAÑO_SONIDO_PORDEFECTO = 42;
             public static final int TAMAÑO_SONIDO = (int) (TAMAÑO_SONIDO_PORDEFECTO * Juego.ESCALA);
         }
+        public static class URMBotones{
+            public static final int URM_DEFAULT_SIZE = 56;
+            public static final int URM_SIZE = (int) (URM_DEFAULT_SIZE * Juego.ESCALA);
+        }
+
+        public static class BotonesVolumen{
+            public static final int VOLUME_DEFAULT_WIDTH = 28;
+            public static final int VOLUME_DEFAULT_HEIGHT = 44;
+            public static final int SLIDER_DEFAULT_WIDTH = 215;
+            public static final int VOLUME_WIDTH = (int)(VOLUME_DEFAULT_WIDTH * Juego.ESCALA);
+            public static final int VOLUME_HEIGHT = (int)(VOLUME_DEFAULT_HEIGHT * Juego.ESCALA);
+            public static final int SLIDER_WIDTH = (int)(SLIDER_DEFAULT_WIDTH * Juego.ESCALA);
+
+        }
     }
 
     //para saber en que direccion te estas moviendo y que animaciones reproducir
