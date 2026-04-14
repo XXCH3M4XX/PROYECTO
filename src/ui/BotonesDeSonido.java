@@ -35,13 +35,16 @@ public class BotonesDeSonido extends BotonesPausa{
     public void update(){
         if (muted){
             rowIndex = 0;
-        }else {
+        } else {
             rowIndex = 1;
         }
-        if(mouseOver){
+
+        if (mousePressed){
+            columnIndex = 2;
+        } else if (mouseOver){
             columnIndex = 1;
-        }if (mousePressed){
-            columnIndex =2;
+        } else {
+            columnIndex = 0;
         }
     }
     public void draw(Graphics g){

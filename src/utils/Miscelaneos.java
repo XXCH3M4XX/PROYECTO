@@ -32,9 +32,9 @@ public class Miscelaneos {
 
     //metodo privado para determinar si una coordenada especifica es solida
     private static boolean solido(float x, float y, int[][] datosNivel) {
-
+        int widthMax = datosNivel[0].length * Juego.TILES_SIZE;
         //comprobacion de los limites de la ventana del juego
-        if (x < 0 || x >= Juego.GAME_WIDTH || y < 0 || y >= Juego.GAME_HEIGHT) {
+        if (x < 0 || x >= widthMax || y < 0 || y >= Juego.GAME_HEIGHT) {
             return true;
         }
 

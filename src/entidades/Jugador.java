@@ -61,9 +61,12 @@ public class Jugador extends Entidad {
     public static final int SPRITE_W = (int)(64 * Juego.ESCALA);
     public static final int SPRITE_H = (int)(40 * Juego.ESCALA);
 
+    //variable booleana que nos permite saber si esta mirando a la derecha o a la izquierda
+    boolean mirandoDerecha = true;
+
     //desplazamiento del sprite respecto a la hitbox para que coincidan visualmente
-    private int offsetX = 15;
-    private int offsetY = 55;
+    private int offsetX = 50;
+    private int offsetY = 25;
 
     //inicializa animaciones y coloca la hitbox en la posicion de spawn
     public Jugador(float x, float y, int width, int height) {
@@ -85,16 +88,29 @@ public class Jugador extends Entidad {
     }
 
     //pinta el sprite usando los offsets para alinear visualmente con la hitbox
-    public void render(Graphics g){
-        g.drawImage(
-                animaciones[accionJugador][indiceAnim],
-                (int)(hitbox.x + offsetX - width / 2),
-                (int)(hitbox.y + offsetY - height),
-                width,
-                height,
-                null
-        );
-        pintarHitbox(g);
+    public void render(Graphics g, int nivelOffset){
+        int drawX = (int)(hitbox.x - offsetX) - nivelOffset;  // punto fijo, no depende de width
+        int drawY = (int)(hitbox.y - offsetY);
+
+        if (mirandoDerecha) {
+            g.drawImage(
+                    animaciones[accionJugador][indiceAnim],
+                    drawX, drawY,
+                    width, height,
+                    null
+            );
+        } else {
+            g.drawImage(
+                    animaciones[accionJugador][indiceAnim],
+                    drawX + width, drawY,  // desplazamos el origen al borde derecho
+                    -width, height,        // y dibujamos hacia la izquierda
+                    null
+            );
+        }
+
+
+
+
     }
 
     //decide que animacion reproducir segun el estado del jugador, el aire tiene prioridad sobre el movimiento
@@ -153,8 +169,14 @@ public class Jugador extends Entidad {
         }
 
         float xVelocidad = 0;
-        if (izquierda) xVelocidad -= velocidadJugador;
-        if (derecha)   xVelocidad += velocidadJugador;
+        if (izquierda) {
+            xVelocidad -= velocidadJugador;
+            mirandoDerecha = false;
+        }
+        if (derecha) {
+            xVelocidad += velocidadJugador;
+            mirandoDerecha =  true;
+        }
 
         if (aire) {
             float newY = hitbox.y + velocidadAire;
@@ -174,12 +196,17 @@ public class Jugador extends Entidad {
             }
 
             //solo acumulamos gravedad si seguimos en el aire despues de resolver el impacto
-            if (aire) velocidadAire += gravedad;
+            if (aire) {
+                velocidadAire += gravedad;
+            }
         }
 
         actualizarXPos(xVelocidad);
 
-        if (izquierda || derecha || aire) movimiento = true;
+        if (xVelocidad != 0 || aire) {
+            movimiento = true;
+        }
+
     }
 
     //inicia el salto solo si el jugador esta en el suelo

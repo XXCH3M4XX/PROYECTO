@@ -4,6 +4,7 @@ import entidades.Jugador;
 import main.Juego;
 import niveles.AjusteNivel;
 import ui.PausaOverlay;
+import utils.LoadSave;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -18,6 +19,14 @@ public class Playing extends State implements Statemethods{
     private boolean espacioAnterior = false;
     private boolean pausado = false;
     private PausaOverlay pausaOverlay;
+
+    //un offset es la diferencia de distancia entre un punto de referencia y lo que tu quieras
+    private int OffsetXNivel;
+    private int bordeIzquierdo = (int)(0.2 * Juego.GAME_WIDTH);
+    private int bordeDerecho = (int) (0.8 * Juego.GAME_WIDTH);
+    private int tilesAnchoNivel = LoadSave.conseguirDatosNivel()[0].length;
+    private int tilesMaximoOffset = tilesAnchoNivel - Juego.TILES_IN_WIDTH;
+    private int tilesMaximosOffsetX= tilesMaximoOffset * TILES_SIZE;
 
     public Playing(Juego juego) {
         super(juego);
@@ -68,16 +77,35 @@ public class Playing extends State implements Statemethods{
         if(!pausado){
             ajusteNivel.update();
             jugador.update();
+            comprobarBorde();
         }else {
             pausaOverlay.actualizar();
         }
     }
 
+    private void comprobarBorde() {
+        int posicionX = (int) jugador.getHitbox().x;
+        int diferencia = posicionX - OffsetXNivel;
+
+        if(diferencia > bordeDerecho) {
+            OffsetXNivel += diferencia - bordeDerecho;
+        } else if(diferencia < bordeIzquierdo) {
+            OffsetXNivel += diferencia - bordeIzquierdo;
+        }
+        if(OffsetXNivel > tilesMaximosOffsetX) {
+            OffsetXNivel = tilesMaximosOffsetX;
+        } else if(OffsetXNivel < 0) {
+            OffsetXNivel = 0;
+        }
+    }
+
     @Override
     public void draw(Graphics g) {
-        ajusteNivel.draw(g);
-        jugador.render(g);
+        ajusteNivel.draw(g, OffsetXNivel);
+        jugador.render(g, OffsetXNivel);
         if (pausado){
+            g.setColor(new Color(0,0,0,100));
+            g.fillRect(0,0, Juego.GAME_WIDTH, Juego.GAME_HEIGHT);
             pausaOverlay.draw(g);
         }
     }

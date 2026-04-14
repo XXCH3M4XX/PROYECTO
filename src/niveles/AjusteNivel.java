@@ -37,14 +37,14 @@ public class AjusteNivel {
     }
 
     //metodo para renderizar el nivel en pantalla usando los tiles correspondientes
-    public void draw(Graphics g){
+    public void draw(Graphics g, int offsetXNivel){
         //recorrido de la matriz de tiles segun el alto y ancho definidos
         for(int i = 0; i< Juego.TILES_IN_HEIGHT; i++) {
-            for(int j = 0; j < Juego.TILES_IN_WIDTH; j++) {
+            for(int j = 0; j < nivel1.getDatosNivel()[0].length; j++) {
                 //obtenemos el tipo de tile que toca dibujar en esta posicion
                 int indice = nivel1.getIndiceSprite(j, i);
                 //dibujamos el sprite escalado al tamaño de tile del juego
-                g.drawImage(spriteNivel[indice], Juego.TILES_SIZE*j, Juego.TILES_SIZE*i, Juego.TILES_SIZE, Juego.TILES_SIZE, null);
+                g.drawImage(spriteNivel[indice], Juego.TILES_SIZE*j - offsetXNivel, Juego.TILES_SIZE*i, Juego.TILES_SIZE, Juego.TILES_SIZE, null);
 
             }
         }

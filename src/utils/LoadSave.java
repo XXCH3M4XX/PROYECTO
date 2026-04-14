@@ -14,7 +14,8 @@ public class LoadSave {
     //nombres de los archivos de imagen para los sprites y niveles
     public static final String PLAYER_ATLAS = "Ordenado2.png";
     public static final String LEVEL_ATLAS = "suelosSprites.png";
-    public static final String NIVEL1DATOS = "level_one_data.png";
+    //public static final String NIVEL1DATOS = "level_one_data.png";
+    public static final String NIVEL1DATOS = "level_one_data_long.png";
     public static final String BOTONES_MENU = "botones.png";
     public static final String FONDO_MENU = "menuFondo.png";
     public static final String FONDO_PANTALLA = "fondoPantallaMenu.png";
@@ -49,9 +50,11 @@ public class LoadSave {
 
     //genera la matriz del nivel leyendo los valores de color de una imagen
     public static int[][] conseguirDatosNivel() {
-        //inicializacion de la matriz con las dimensiones de tiles del juego
-        int[][] datosNivel = new int[Juego.TILES_IN_HEIGHT][Juego.TILES_IN_WIDTH];
+
+
         BufferedImage imagen = GetSpriteAtlas(NIVEL1DATOS);
+        //inicializacion de la matriz con las dimensiones de tiles del juego
+        int[][] datosNivel = new int[imagen.getHeight()][imagen.getWidth()];
         //recorrido de cada pixel de la imagen de datos
         for(int i = 0; i < imagen.getHeight(); i++){
             for(int j = 0; j < imagen.getWidth(); j++){
