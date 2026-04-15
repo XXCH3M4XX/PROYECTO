@@ -68,11 +68,14 @@ public class Jugador extends Entidad {
     private int offsetX = 50;
     private int offsetY = 25;
 
+    private BufferedImage imagenFondo;
+
     //inicializa animaciones y coloca la hitbox en la posicion de spawn
     public Jugador(float x, float y, int width, int height) {
         super(x, y, width, height);
         cargarAnimaciones();
         iniciarHitbox(x, y, HITBOX_W, HITBOX_H);
+
     }
 
     //punto de entrada del bucle del juego, llama a los tres sistemas en orden

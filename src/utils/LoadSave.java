@@ -1,7 +1,5 @@
 package utils;
 
-import main.Juego;
-
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -23,6 +21,9 @@ public class LoadSave {
     public static final String BOTONES_VOLUMEN = "sound_button.png";
     public static final String BOTONES_URM = "urm_buttons.png";
     public static final String BOTON_NIVEL_VOLUMEN = "volume_buttons.png";
+    public static final String FONDO_JUGANDO = "fondoJugando.png";
+    public static final String MONTAÑAS_YBOSQUES = "montañasYBosques.png";
+    public static final String nubes = "nubesPequeñas.png";
 
     //metodo para cargar una imagen desde la carpeta de recursos
     public static BufferedImage GetSpriteAtlas(String fileName){
