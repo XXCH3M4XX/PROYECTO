@@ -58,6 +58,7 @@ public class Jugador extends Entidad {
     public static final int HITBOX_H = (int)(28 * Juego.ESCALA);
 
     //tamaño del sprite completo en pixeles escalados, solo para el renderizado
+    //Comentado porque no se usa
     public static final int SPRITE_W = (int)(64 * Juego.ESCALA);
     public static final int SPRITE_H = (int)(40 * Juego.ESCALA);
 
@@ -68,7 +69,7 @@ public class Jugador extends Entidad {
     private int offsetX = 50;
     private int offsetY = 25;
 
-    private BufferedImage imagenFondo;
+//    private BufferedImage imagenFondo;
 
     //inicializa animaciones y coloca la hitbox en la posicion de spawn
     public Jugador(float x, float y, int width, int height) {

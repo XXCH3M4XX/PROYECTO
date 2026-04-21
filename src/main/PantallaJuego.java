@@ -21,12 +21,13 @@ public class PantallaJuego extends JFrame {
         this.add(panelJuego);
 
         //esto hace que el recuadro aparezca en el centro de la pantalla
-        this.setLocationRelativeTo(null);
+
 
         //si no hacemos esto se ve muy feo
         this.setResizable(false);
 
         this.pack();
+        this.setLocationRelativeTo(null);
 
         //tiene que estar al fondo porque si no se buggea con el tamaño y no se nada
         this.setVisible(true);

@@ -31,7 +31,7 @@ public class Miscelaneos {
     }
 
     //metodo privado para determinar si una coordenada especifica es solida
-    private static boolean solido(float x, float y, int[][] datosNivel) {
+    public static boolean solido(float x, float y, int[][] datosNivel) {
         int widthMax = datosNivel[0].length * Juego.TILES_SIZE;
         //comprobacion de los limites de la ventana del juego
         if (x < 0 || x >= widthMax || y < 0 || y >= Juego.GAME_HEIGHT) {
@@ -79,4 +79,11 @@ public class Miscelaneos {
             return (tileY + 1) * Juego.TILES_SIZE + 1;
         }
     }
+
+    public static boolean esSuelo(Rectangle2D.Float hitbox, float xVelocidad, int[][] datosNivel) {
+        float checkY = hitbox.y + hitbox.height + 1;
+        return solido(hitbox.x + xVelocidad, checkY, datosNivel)
+                || solido(hitbox.x + hitbox.width + xVelocidad, checkY, datosNivel);
+    }
+
 }

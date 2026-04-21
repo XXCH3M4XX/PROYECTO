@@ -4,6 +4,45 @@ import main.Juego;
 
 public class Constantes {
 
+    public static class constantesDelEnemigo{
+        public static final int ENEMIGO1 = 0;
+        public static final int IDLE = 0;
+        public static final int CORRER = 1;
+        public static final int ATAQUE = 2;
+        public static final int GOLPE = 3;
+        public static final int MUERTE = 4;
+
+
+        public static final int ENEMIGO1_WIDTH_DEFAULT = 72;
+        public static final int ENEMIGO1_HEIGHT_DEFAULT = 32;
+
+        public static final int ENEMIGO1_WIDTH = (int)(ENEMIGO1_WIDTH_DEFAULT * Juego.ESCALA);
+        public static final int ENEMIGO_HEIGHT = (int)(ENEMIGO1_HEIGHT_DEFAULT * Juego.ESCALA);
+
+        public static final int ENEMIGO1_DRAWOFFSET_X = (int)(36 * Juego.ESCALA); // sube desde 36
+        public static final int ENEMIGO1_DRAWOFFSET_Y = (int)(14 * Juego.ESCALA); // baja desde 35
+
+        //metodo para obtener
+        public static int getSpriteAmount(int tipoEnemigo, int estadoEnemigo){
+            switch(tipoEnemigo){
+                case ENEMIGO1:
+                    switch (estadoEnemigo){
+                        case IDLE:
+                            return 1;
+                        case CORRER:
+                            return 4;
+                        case ATAQUE:
+                            return 12;
+                        case GOLPE:
+                            return 6;
+                        case MUERTE:
+                            return 5;
+                    }
+            }
+            return 0;
+        }
+    }
+
     //constantes relacionadas con los elementos visuales del entorno del nivel
     public static class entorno {
 

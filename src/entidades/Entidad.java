@@ -19,10 +19,10 @@ public class Entidad {
     }
 
     //dibuja el rectangulo de colision para facilitar pruebas y depuracion
-    protected void pintarHitbox(Graphics g) {
+    protected void pintarHitbox(Graphics g, int OffsetXNivel) {
         //para depurar la caja de colision
         g.setColor(Color.RED);
-        g.drawRect((int)hitbox.x, (int)hitbox.y, (int)hitbox.width, (int)hitbox.height);
+        g.drawRect((int)hitbox.x - OffsetXNivel, (int)hitbox.y, (int)hitbox.width, (int)hitbox.height);
     }
 
     //crea el objeto de rectangulo que servira para detectar impactos
@@ -31,10 +31,10 @@ public class Entidad {
     }
 
     //metodo comentado para actualizar la posicion de la hitbox segun la entidad
-//    protected void updateHitbox() {
-//        hitbox.x = (int)x;
-//        hitbox.y = (int)y;
-//    }
+    protected void updateHitbox() {
+        hitbox.x = (int)x;
+        hitbox.y = (int)y;
+    }
 
     //permite que otros objetos consulten el area de colision de esta entidad
     public Rectangle2D.Float getHitbox() {

@@ -1,5 +1,6 @@
 package gamestates;
 
+import entidades.AjusteEnemigo;
 import entidades.Jugador;
 import main.Juego;
 import niveles.AjusteNivel;
@@ -19,6 +20,7 @@ import static utils.Constantes.entorno.*;
 public class Playing extends State implements Statemethods {
     private Jugador jugador;
     private AjusteNivel ajusteNivel;
+    private AjusteEnemigo ajusteEnemigo;
 
     //evita que el salto se repita si se mantiene pulsada la tecla
     private boolean espacioAnterior = false;
@@ -67,6 +69,7 @@ public class Playing extends State implements Statemethods {
     //crea el nivel y coloca al jugador encima del tile de suelo correspondiente
     private void initClasses() {
         ajusteNivel = new AjusteNivel(juego);
+        ajusteEnemigo = new AjusteEnemigo(this);
 
         int[][] datosNivel = ajusteNivel.getNivelActual().getDatosNivel();
 
@@ -107,6 +110,7 @@ public class Playing extends State implements Statemethods {
         if (!pausado) {
             ajusteNivel.update();
             jugador.update();
+            ajusteEnemigo.update(ajusteNivel.getNivelActual().getDatosNivel());
             comprobarBorde();
         } else {
             pausaOverlay.actualizar();
@@ -139,6 +143,7 @@ public class Playing extends State implements Statemethods {
         pintarMontañasYNubes(g);
         ajusteNivel.draw(g, OffsetXNivel);
         jugador.render(g, OffsetXNivel);
+        ajusteEnemigo.draw(g, OffsetXNivel);
 
         //overlay semitransparente de pausa encima de todo lo demas
         if (pausado) {
