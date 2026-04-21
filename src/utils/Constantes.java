@@ -19,7 +19,7 @@ public class Constantes {
         public static final int ENEMIGO1_WIDTH = (int)(ENEMIGO1_WIDTH_DEFAULT * Juego.ESCALA);
         public static final int ENEMIGO_HEIGHT = (int)(ENEMIGO1_HEIGHT_DEFAULT * Juego.ESCALA);
 
-        public static final int ENEMIGO1_DRAWOFFSET_X = (int)(36 * Juego.ESCALA); // sube desde 36
+        public static final int ENEMIGO1_DRAWOFFSET_X = (int)(42 * Juego.ESCALA); // sube desde 36
         public static final int ENEMIGO1_DRAWOFFSET_Y = (int)(14 * Juego.ESCALA); // baja desde 35
 
         //metodo para obtener

@@ -50,7 +50,7 @@ public class AjusteEnemigo {
             e.drawImage(frame,
                     (int)(p.getHitbox().x - ENEMIGO1_DRAWOFFSET_X - OffsetXNivel),
                     (int)(p.getHitbox().y - ENEMIGO1_DRAWOFFSET_Y),
-                    (int)(Jugador.SPRITE_W * 1.5f),
+                    (int)(Jugador.SPRITE_W * 1.6f),
                     (int)(Jugador.SPRITE_H * 1.3f),  // mismo tamaño visual que el jugador
                     null);
                     p.pintarHitbox(e, OffsetXNivel);
