@@ -7,10 +7,10 @@ public class Constantes {
     public static class constantesDelEnemigo{
         public static final int ENEMIGO1 = 0;
         public static final int IDLE = 0;
-        public static final int CORRER = 1;
-        public static final int ATAQUE = 2;
-        public static final int GOLPE = 3;
-        public static final int MUERTE = 4;
+        public static final int CORRER = 2;
+        public static final int ATAQUE = 3;
+        public static final int GOLPE = 4;
+        public static final int MUERTE = 5;
 
 
         public static final int ENEMIGO1_WIDTH_DEFAULT = 72;
@@ -28,15 +28,15 @@ public class Constantes {
                 case ENEMIGO1:
                     switch (estadoEnemigo){
                         case IDLE:
-                            return 1;
-                        case CORRER:
-                            return 4;
-                        case ATAQUE:
-                            return 12;
-                        case GOLPE:
                             return 6;
+                        case CORRER:
+                            return 3;
+                        case ATAQUE:
+                            return 7;
+                        case GOLPE:
+                            return 3;
                         case MUERTE:
-                            return 5;
+                            return 10;
                     }
             }
             return 0;

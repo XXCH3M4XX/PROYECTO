@@ -110,7 +110,7 @@ public class Playing extends State implements Statemethods {
         if (!pausado) {
             ajusteNivel.update();
             jugador.update();
-            ajusteEnemigo.update(ajusteNivel.getNivelActual().getDatosNivel());
+            ajusteEnemigo.update(ajusteNivel.getNivelActual().getDatosNivel(), jugador);
             comprobarBorde();
         } else {
             pausaOverlay.actualizar();

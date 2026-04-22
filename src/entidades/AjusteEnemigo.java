@@ -24,9 +24,9 @@ public class AjusteEnemigo {
         System.out.println("tamaño del enemigo: " + enemigos.size());
     }
 
-    public void update(int [][] datosNivel){
+    public void update(int [][] datosNivel, Jugador jugador){
         for (PersonajeEnemigo1 p : enemigos) {
-            p.update(datosNivel);
+            p.update(datosNivel, jugador);
         }
     }
     public void draw(Graphics e, int OffsetXNivel){
@@ -47,13 +47,19 @@ public class AjusteEnemigo {
                 continue;
             }
 
-            e.drawImage(frame,
-                    (int)(p.getHitbox().x - ENEMIGO1_DRAWOFFSET_X - OffsetXNivel),
-                    (int)(p.getHitbox().y - ENEMIGO1_DRAWOFFSET_Y),
-                    (int)(Jugador.SPRITE_W * 1.6f),
-                    (int)(Jugador.SPRITE_H * 1.3f),  // mismo tamaño visual que el jugador
-                    null);
-                    p.pintarHitbox(e, OffsetXNivel);
+            int drawX = (int)(p.getHitbox().x - ENEMIGO1_DRAWOFFSET_X - OffsetXNivel);
+            int drawY = (int)(p.getHitbox().y - ENEMIGO1_DRAWOFFSET_Y);
+            int w = (int)(Jugador.SPRITE_W * 1.6f);
+            int h = (int)(Jugador.SPRITE_H * 1.3f);
+
+
+            if (p.mirandoDerecha) {
+                //sprite normal mirando a la derecha
+                e.drawImage(frame, drawX, drawY, w, h, null);
+            } else {
+                //voltear horizontalmente dibujando desde el borde derecho con ancho negativo
+                e.drawImage(frame, drawX + w, drawY, -w, h, null);
+            }
 
         }
     }

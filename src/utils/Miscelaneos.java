@@ -51,6 +51,18 @@ public class Miscelaneos {
         int valor = datosNivel[yTile][xTile];
 
         //se considera solido cualquier tile que no sea el indice 11
+        return tileSolido((int) xTile, yTile, datosNivel);
+    }
+    public static boolean tileSolido(int xTile, int yTile, int[][] datosNivel) {
+        //evita errores de desbordamiento fuera de los limites del array del nivel
+        if (xTile < 0 || yTile < 0 || yTile >= datosNivel.length || xTile >= datosNivel[0].length) {
+            return true;
+        }
+
+        //obtenemos el identificador del sprite en esa posicion
+        int valor = datosNivel[yTile][xTile];
+
+        //se considera solido cua
         return valor != 11;
     }
 
@@ -65,6 +77,36 @@ public class Miscelaneos {
             int tileActual = (int)(newX / Juego.TILES_SIZE);
             return (tileActual + 1) * Juego.TILES_SIZE + 1;
         }
+    }
+    //limpieza de codigo
+    public static boolean sePuedeAndar(int xInicio, int xFinal, int y, int[][] datosNivel) {
+        for (int i = xInicio; i <= xFinal; i++) {
+            //comprobamos el centro vertical del tile en coordenadas pixel
+            float pixelX = i * Juego.TILES_SIZE + Juego.TILES_SIZE / 2f;
+            float pixelY = y * Juego.TILES_SIZE + Juego.TILES_SIZE / 2f;
+            if (solido(pixelX, pixelY, datosNivel)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    //este metodo esta aqui porque se puede usar tambien para proyectiles
+    //podemos reutilizar el codigo
+    public static boolean vistaDespejada(int[][] datosNivel,
+                                         Rectangle2D.Float hitbox1,
+                                         Rectangle2D.Float hitbox2,
+                                         int tileY) {
+        int xTile1 = (int)(hitbox1.x / Juego.TILES_SIZE);
+        int xTile2 = (int)(hitbox2.x / Juego.TILES_SIZE);
+
+        //¿Hay algun obstaculo?
+        if(xTile1 > xTile2) {
+            return sePuedeAndar(xTile2, xTile1, tileY, datosNivel);
+        } else {
+            return sePuedeAndar(xTile1, xTile2, tileY, datosNivel);
+
+        }
+
     }
 
     //calcula la y donde debe quedar la hitbox al tocar suelo o techo usando la posicion tentativa newy

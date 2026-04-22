@@ -29,7 +29,7 @@ public class LoadSave {
     public static final String FONDO_JUGANDO = "fondoJugando.png";
     public static final String MONTAÑAS_YBOSQUES = "montañasYBosques.png";
     public static final String nubes = "nubesPequeñas.png";
-    public static final String ENEMIGO1 = "ZombieSpriteSheet.png";
+    public static final String ENEMIGO1 = "SpriteSheetLanza.png";
 
     //metodo para cargar una imagen desde la carpeta de recursos
     public static BufferedImage GetSpriteAtlas(String fileName){
