@@ -4,12 +4,14 @@ import entidades.AjusteEnemigo;
 import entidades.Jugador;
 import main.Juego;
 import niveles.AjusteNivel;
+import ui.OverOverlayJuego;
 import ui.PausaOverlay;
 import utils.LoadSave;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.Random;
 
@@ -28,7 +30,7 @@ public class Playing extends State implements Statemethods {
     //indica si el juego esta en pausa
     private boolean pausado = false;
     private PausaOverlay pausaOverlay;
-
+    private OverOverlayJuego overlay;
     //desplazamiento horizontal actual del nivel en pixeles
     private int OffsetXNivel;
 
@@ -49,6 +51,7 @@ public class Playing extends State implements Statemethods {
     //posiciones Y aleatorias de cada nube para distribuirlas verticalmente
     private int[] nubesPosicion;
     private Random random = new Random();
+    private boolean gameOver = false;
 
     public Playing(Juego juego) {
         super(juego);
@@ -83,10 +86,11 @@ public class Playing extends State implements Statemethods {
         //restamos la altura de la hitbox para que los pies queden sobre el tile y no dentro
         int yInicial = filaSuelo * TILES_SIZE - Jugador.HITBOX_H;
 
-        jugador = new Jugador(xInicial, yInicial, (int)(64 * ESCALA_JUGADOR), (int)(40 * ESCALA_JUGADOR));
+        jugador = new Jugador(xInicial, yInicial, (int)(64 * ESCALA_JUGADOR), (int)(40 * ESCALA_JUGADOR), this);
         jugador.cargarDatosNivel(datosNivel);
 
         pausaOverlay = new PausaOverlay(this);
+        overlay = new OverOverlayJuego(this);
     }
 
     //devuelve el jugador para que otros sistemas puedan acceder a el
@@ -100,14 +104,16 @@ public class Playing extends State implements Statemethods {
     }
 
     public void mouseDragged(MouseEvent e) {
-        if (pausado) {
-            pausaOverlay.mouseDragged(e);
+        if(!gameOver) {
+            if (pausado) {
+                pausaOverlay.mouseDragged(e);
+            }
         }
     }
 
     @Override
     public void update() {
-        if (!pausado) {
+        if (!pausado && !gameOver) {
             ajusteNivel.update();
             jugador.update();
             ajusteEnemigo.update(ajusteNivel.getNivelActual().getDatosNivel(), jugador);
@@ -150,6 +156,8 @@ public class Playing extends State implements Statemethods {
             g.setColor(new Color(0, 0, 0, 100));
             g.fillRect(0, 0, Juego.GAME_WIDTH, Juego.GAME_HEIGHT);
             pausaOverlay.draw(g);
+        } else if (gameOver) {
+            overlay.draw(g);
         }
     }
 
@@ -176,72 +184,102 @@ public class Playing extends State implements Statemethods {
         }
     }
 
+    public void resetAll(){
+        gameOver = false;
+        pausado = false;
+        jugador.resetearTodo();
+
+    }
+
+    public void setGameOver(boolean gameOver){
+        this.gameOver = gameOver;
+    }
+
+    public void revisarGolpeEnemigo(Rectangle2D.Float boxAtaque){
+        ajusteEnemigo.golpeEnemigo(boxAtaque);
+    }
+
     @Override
     public void mouseClicked(MouseEvent e) {
-        //el click izquierdo activa el ataque del jugador
-        if (e.getButton() == MouseEvent.BUTTON1) {
-            jugador.setAtaque(true);
+        if (!gameOver) {
+            //el click izquierdo activa el ataque del jugador
+            if (e.getButton() == MouseEvent.BUTTON1) {
+                jugador.setAtaque(true);
+            }
         }
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
-        if (pausado) {
-            pausaOverlay.mousePressed(e);
+        if(!gameOver) {
+            if (pausado) {
+                pausaOverlay.mousePressed(e);
+            }
         }
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        if (pausado) {
-            pausaOverlay.mouseReleased(e);
+        if(!gameOver) {
+            if (pausado) {
+                pausaOverlay.mouseReleased(e);
+            }
         }
     }
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        if (pausado) {
-            pausaOverlay.mouseMoved(e);
+        if(!gameOver) {
+            if (pausado) {
+                pausaOverlay.mouseMoved(e);
+            }
         }
     }
 
     @Override
     public void keyPressed(KeyEvent e) {
-        switch (e.getKeyCode()) {
-            case KeyEvent.VK_A:
-                jugador.setIzquierda(true);
-                break;
-            case KeyEvent.VK_D:
-                jugador.setDerecha(true);
-                break;
-            case KeyEvent.VK_SPACE:
-                //solo permite saltar si la tecla se ha soltado previamente
-                if (!espacioAnterior) {
-                    jugador.setSalto(true);
-                    espacioAnterior = true;
-                }
-                break;
-            case KeyEvent.VK_ESCAPE:
-                pausado = !pausado;
-                break;
+        if (gameOver){
+            overlay.teclaPresionada(e);
+        }else {
+            switch (e.getKeyCode()) {
+                case KeyEvent.VK_A:
+                    jugador.setIzquierda(true);
+                    break;
+                case KeyEvent.VK_D:
+                    jugador.setDerecha(true);
+                    break;
+                case KeyEvent.VK_SPACE:
+                    //solo permite saltar si la tecla se ha soltado previamente
+                    if (!espacioAnterior) {
+                        jugador.setSalto(true);
+                        espacioAnterior = true;
+                    }
+                    break;
+                case KeyEvent.VK_ESCAPE:
+                    pausado = !pausado;
+                    break;
+            }
         }
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-        switch (e.getKeyCode()) {
-            case KeyEvent.VK_A:
-                jugador.setIzquierda(false);
-                break;
-            case KeyEvent.VK_D:
-                jugador.setDerecha(false);
-                break;
-            case KeyEvent.VK_SPACE:
-                //al soltar el espacio se permite volver a saltar
-                espacioAnterior = false;
-                jugador.setSalto(false);
-                break;
+        if(!gameOver){
+            switch (e.getKeyCode()) {
+                case KeyEvent.VK_A:
+                    jugador.setIzquierda(false);
+                    break;
+                case KeyEvent.VK_D:
+                    jugador.setDerecha(false);
+                    break;
+                case KeyEvent.VK_SPACE:
+                    //al soltar el espacio se permite volver a saltar
+                    espacioAnterior = false;
+                    jugador.setSalto(false);
+                    break;
+            }
         }
+
     }
 
     //reactiva el estado de juego desde la pantalla de pausa

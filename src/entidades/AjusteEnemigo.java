@@ -6,6 +6,7 @@ import utils.LoadSave;
 import static utils.Constantes.constantesDelEnemigo.*;
 
 import java.awt.*;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
@@ -26,7 +27,9 @@ public class AjusteEnemigo {
 
     public void update(int [][] datosNivel, Jugador jugador){
         for (PersonajeEnemigo1 p : enemigos) {
-            p.update(datosNivel, jugador);
+            if (p.isActivo()){
+                p.update(datosNivel, jugador);
+            }
         }
     }
     public void draw(Graphics e, int OffsetXNivel){
@@ -35,35 +38,47 @@ public class AjusteEnemigo {
 
     private void drawEnemigos(Graphics e, int OffsetXNivel) {
         for (PersonajeEnemigo1 p : enemigos) {
-            int estado = p.getEstadoEnemigo();
-            int indice = p.getAniIndice();
+            if (p.isActivo()) {
+                int estado = p.getEstadoEnemigo();
+                int indice = p.getAniIndice();
 
-            // Evita dibujar si el indice está fuera del array
-            if (indice >= ArrayEnemigo1[estado].length) continue;
+                // Evita dibujar si el indice está fuera del array
+                if (indice >= ArrayEnemigo1[estado].length) continue;
 
-            BufferedImage frame = ArrayEnemigo1[estado][indice];
-            if (frame == null){
-                System.out.println("FRAME NULL → estado=" + estado + " indice=" + indice);
-                continue;
+                BufferedImage frame = ArrayEnemigo1[estado][indice];
+                if (frame == null){
+                    System.out.println("FRAME NULL → estado=" + estado + " indice=" + indice);
+                    continue;
+                }
+
+                int drawX = (int)(p.getHitbox().x - ENEMIGO1_DRAWOFFSET_X - OffsetXNivel);
+                int drawY = (int)(p.getHitbox().y - ENEMIGO1_DRAWOFFSET_Y);
+                int w = (int)(Jugador.SPRITE_W * 1.6f);
+                int h = (int)(Jugador.SPRITE_H * 1.3f);
+
+
+                if (p.mirandoDerecha) {
+                    //sprite normal mirando a la derecha
+                    e.drawImage(frame, drawX, drawY, w, h, null);
+                } else {
+                    //voltear horizontalmente dibujando desde el borde derecho con ancho negativo
+                    e.drawImage(frame, drawX + w, drawY, -w, h, null);
+                }
+                p.drawBoxAtaque(e,OffsetXNivel);
             }
-
-            int drawX = (int)(p.getHitbox().x - ENEMIGO1_DRAWOFFSET_X - OffsetXNivel);
-            int drawY = (int)(p.getHitbox().y - ENEMIGO1_DRAWOFFSET_Y);
-            int w = (int)(Jugador.SPRITE_W * 1.6f);
-            int h = (int)(Jugador.SPRITE_H * 1.3f);
-
-
-            if (p.mirandoDerecha) {
-                //sprite normal mirando a la derecha
-                e.drawImage(frame, drawX, drawY, w, h, null);
-            } else {
-                //voltear horizontalmente dibujando desde el borde derecho con ancho negativo
-                e.drawImage(frame, drawX + w, drawY, -w, h, null);
-            }
-
         }
     }
 
+    public void golpeEnemigo(Rectangle2D.Float boxAtaque){
+        for(Enemigo e : enemigos){
+            if (e.isActivo()){
+                if(boxAtaque.intersects(e.getHitbox())){
+                    e.daño(10);
+                    return;
+                }
+            }
+        }
+    }
 
 
     //cada fila tiene su propio número de frames
@@ -81,6 +96,12 @@ public class AjusteEnemigo {
                 ArrayEnemigo1[i][j] = temp.getSubimage(px, py,
                         ENEMIGO1_WIDTH_DEFAULT, ENEMIGO1_HEIGHT_DEFAULT);
             }
+        }
+    }
+
+    public void resetearTodosEnemigos(){
+        for(PersonajeEnemigo1 p : enemigos){
+            p.resetearEnemigo();
         }
     }
 

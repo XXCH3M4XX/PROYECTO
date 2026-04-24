@@ -27,11 +27,17 @@ public abstract class Enemigo extends Entidad {
     protected float distanciAtaque = Juego.TILES_SIZE;
     //true si el enemigo mira hacia la derecha, se usa para voltear el sprite
     protected boolean mirandoDerecha = (direccionAndar == DERECHA);
+    protected int vidaMax;
+    protected int vidaActual;
+    protected boolean activo = true;
+    protected boolean ataqueRealizado;
 
     //constructor que va usar el enemigo, extrendido de la clase entidad
     public Enemigo(float x, float y, int width, int height, int tipoEnemigo) {
         super(x, y, width, height);
         this.tipoEnemigo = tipoEnemigo;
+        vidaMax = getVidaMax(tipoEnemigo);
+        vidaActual = vidaMax;
 //        iniciarHitbox(x, y, (int)(20 * Juego.ESCALA), (int)(23 * Juego.ESCALA));
     }
 
@@ -101,7 +107,9 @@ public abstract class Enemigo extends Entidad {
         }
     }
 
-
+    public boolean isActivo(){
+        return activo;
+    }
 
     protected boolean estaEnRango(Jugador jugador) {
         //tendremos un rango visual y otro para el ataque
@@ -114,6 +122,7 @@ public abstract class Enemigo extends Entidad {
         int valorAbsoluto = (int)Math.abs(jugador.hitbox.x - hitbox.x);
         return valorAbsoluto <= distanciAtaque;
     }
+
     //metodo para poder estblecer la animacion y su velocidad
 //    private void actualizarAnimacionTick(){
 //        aniTick++;
@@ -133,17 +142,19 @@ public abstract class Enemigo extends Entidad {
             aniIndice++;
             if (aniIndice >= getSpriteAmount(tipoEnemigo, estadoEnemigo)){
                 aniIndice = 0;
-                if(estadoEnemigo == ATAQUE){
-                    estadoEnemigo = IDLE;
+
+                switch(estadoEnemigo){
+                    case ATAQUE, GOLPE:
+                        nuevoEstado(IDLE);
+                        break;
+                    case MUERTE:
+                        activo = false;
+                        break;
                 }
             }
         }
 
     }
-
-
-
-
 
     protected void cambiarDireccionAndar() {
         if (direccionAndar == IZQUIERDA){
@@ -168,5 +179,23 @@ public abstract class Enemigo extends Entidad {
         this.estadoEnemigo = nuevoEstado;
         this.aniIndice = 0;
         this.aniTick = 0;
+    }
+
+    public void daño(int daño){
+        vidaActual -= daño;
+        if(vidaActual <= 0){
+            nuevoEstado(MUERTE);
+        }else {
+            if(estadoEnemigo != MUERTE){
+                nuevoEstado(GOLPE);
+            }
+        }
+    }
+
+    public void revisarGolpeEnemigo(Rectangle2D.Float boxAtaque, Jugador jugador) {
+        if(boxAtaque.intersects(jugador.hitbox)){
+            jugador.cambiarSalud(-getDañoEnemigo(tipoEnemigo));
+        }
+        ataqueRealizado = true;
     }
 }

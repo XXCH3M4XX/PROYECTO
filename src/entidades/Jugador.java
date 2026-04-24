@@ -1,5 +1,6 @@
 package entidades;
 
+import gamestates.Playing;
 import main.Juego;
 import utils.Constantes;
 import utils.LoadSave;
@@ -9,6 +10,7 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
 import static utils.Constantes.ConstantesJugador.*;
+import static utils.Constantes.constantesDelEnemigo.IDLE;
 import static utils.Miscelaneos.*;
 
 //controla la logica, animaciones y colisiones del personaje principal
@@ -69,21 +71,80 @@ public class Jugador extends Entidad {
     private int offsetX = 50;
     private int offsetY = 25;
 
+    //StatusBarUI
+    private BufferedImage imagenBarraEstado;
+
+    private int anchoBarraEstado = (int) (230 * Juego.ESCALA);
+    private int altoBarraEstado = (int) (58 * Juego.ESCALA);
+    private int xBarraEstado = (int) (10 * Juego.ESCALA);
+    private int yBarraEstado = (int) (10 * Juego.ESCALA);
+
+    private int anchoBarraVida    = (int) (120 * Juego.ESCALA);
+    private int altoBarraVida     = (int) (4   * Juego.ESCALA);
+    private int xInicioBarraVida  = (int) (41  * Juego.ESCALA);
+    private int yInicioBarraVida  = (int) (14  * Juego.ESCALA);
+
+    private int saludMaxima = 120;
+    private int saludActual = 120;
+    private int anchoSalud = anchoBarraVida;
+
+    private Rectangle2D.Float boxAtaque;
+
+    private boolean ataqueRevisado;
+    private Playing playing;
+
 //    private BufferedImage imagenFondo;
 
     //inicializa animaciones y coloca la hitbox en la posicion de spawn
-    public Jugador(float x, float y, int width, int height) {
+    public Jugador(float x, float y, int width, int height, Playing playing) {
         super(x, y, width, height);
+        this.playing = playing;
         cargarAnimaciones();
         iniciarHitbox(x, y, HITBOX_W, HITBOX_H);
+        iniciarHitboxAtaque();
 
+    }
+
+    private void iniciarHitboxAtaque() {
+        boxAtaque = new Rectangle2D.Float(x, y, (int)(20* Juego.ESCALA), (int)(20*Juego.ESCALA));
     }
 
     //punto de entrada del bucle del juego, llama a los tres sistemas en orden
     public void update(){
+        actualizarBarraDeVida();
+        if(saludActual <= 0){
+            playing.setGameOver(true);
+            return;
+        }
+
+        actualizarHitboxAtaque();
         actualizarPosicion();
+        if (ataque){
+            revisarAtaque();
+        }
         actualizarAnimacion();
         setAnimacion();
+    }
+
+    private void revisarAtaque() {
+        if(ataqueRevisado || indiceAnim != 1){
+            return;
+        }
+        ataqueRevisado = true;
+        playing.revisarGolpeEnemigo(boxAtaque);
+    }
+
+    private void actualizarHitboxAtaque() {
+        if(derecha){
+            boxAtaque.x = hitbox.x + hitbox.width + (int)(Juego.ESCALA * 1);
+        } else if (izquierda) {
+            boxAtaque.x = hitbox.x - hitbox.width - (int)(Juego.ESCALA * 1);
+        }
+        boxAtaque.y = hitbox.y + (Juego.ESCALA * 10);
+    }
+
+    private void actualizarBarraDeVida() {
+        anchoSalud = (int)((saludActual / (float)saludMaxima) * anchoBarraVida);
     }
 
     //inyecta los datos del nivel para que el jugador pueda comprobar colisiones
@@ -111,10 +172,19 @@ public class Jugador extends Entidad {
                     null
             );
         }
+        dibujarHitboxDeAtaque(g, nivelOffset);
+        dibujarUI(g);
+    }
 
+    private void dibujarHitboxDeAtaque(Graphics g, int nivelOffsetX) {
+        g.setColor(Color.red);
+        g.drawRect((int)boxAtaque.x - nivelOffsetX, (int)boxAtaque.y, (int)boxAtaque.width, (int)boxAtaque.height);
+    }
 
-
-
+    private void dibujarUI(Graphics g) {
+        g.drawImage(imagenBarraEstado, xBarraEstado, yBarraEstado, anchoBarraEstado, altoBarraEstado, null);
+        g.setColor(Color.red);
+        g.fillRect(xInicioBarraVida + xBarraEstado, yInicioBarraVida + yBarraEstado, anchoSalud, altoBarraVida);
     }
 
     //decide que animacion reproducir segun el estado del jugador, el aire tiene prioridad sobre el movimiento
@@ -140,6 +210,11 @@ public class Jugador extends Entidad {
         //el ataque sobreescribe todo lo demas
         if(ataque){
             accionJugador = PATADA;
+            if (startAni != PATADA){
+                indiceAnim = 1;
+                tickAnim = 0;
+                return;
+            }
         }
 
         //si la accion cambio reiniciamos el contador para no empezar por la mitad
@@ -247,6 +322,15 @@ public class Jugador extends Entidad {
         }
     }
 
+    public void cambiarSalud(int valor){
+        saludActual += valor;
+        if (saludActual <= 0){
+            saludActual = 0;
+        } else if (saludActual >= saludMaxima) {
+            saludActual = saludMaxima;
+        }
+    }
+
     //avanza el contador de animacion y cambia de frame cuando toca
     private void actualizarAnimacion() {
         tickAnim++;
@@ -259,8 +343,10 @@ public class Jugador extends Entidad {
             if(indiceAnim >= Constantes.ConstantesJugador.GetCantidadSprite(accionJugador)) {
                 indiceAnim = 0;
                 ataque = false;
+                ataqueRevisado = false;
             }
         }
+        imagenBarraEstado = LoadSave.GetSpriteAtlas(LoadSave.BARRA_SALUD);
     }
 
     //carga el atlas y recorta cada frame de cada animacion en su posicion correspondiente
@@ -285,6 +371,18 @@ public class Jugador extends Entidad {
     //para el movimiento del jugador, se llama cuando la ventana pierde el foco
     public void resetDirBooleans(){
         izquierda = derecha = arriba = abajo = false;
+    }
+
+    public void resetearTodo(){
+        resetDirBooleans();
+        aire = false;
+        ataque = false;
+        movimiento = false;
+        accionJugador = IDLE;
+        saludActual = saludMaxima;
+        hitbox.x = x;
+        hitbox.y = y;
+
     }
 
     public void setAtaque(boolean ataque){ this.ataque = ataque; }

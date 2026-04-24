@@ -41,6 +41,24 @@ public class Constantes {
             }
             return 0;
         }
+
+        public static int getVidaMax(int tipo_enemigo){
+            switch(tipo_enemigo){
+                case ENEMIGO1:
+                    return 10;
+                default:
+                    return 1;
+            }
+        }
+
+        public static int getDañoEnemigo(int tipo_enemigo){
+            switch(tipo_enemigo){
+                case ENEMIGO1:
+                    return 15;
+                default:
+                    return 0;
+            }
+        }
     }
 
     //constantes relacionadas con los elementos visuales del entorno del nivel
