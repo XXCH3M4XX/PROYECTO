@@ -3,10 +3,8 @@ package ui;
 import gamestates.Gamestate;
 import gamestates.Playing;
 import main.Juego;
-import utils.Constantes;
 import utils.LoadSave;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -122,23 +120,24 @@ public class PausaOverlay {
         }else if (isIn(e, menuB)) {
             if (menuB.isMousePressed()){
                 Gamestate.state = Gamestate.MENU;
-                playing.unpauseJuego();
+                playing.depausarJuego();
             }
         }else if (isIn(e, replayB)) {
             if (replayB.isMousePressed()){
-                System.out.println("replay lvl!");
+                playing.resetAll();
+                playing.depausarJuego();
             }
         }else if (isIn(e, unpauseB)) {
             if (unpauseB.isMousePressed()){
-                playing.unpauseJuego();
+                playing.depausarJuego();
             }
         }
 
         botonMusica.resetBools();
         sfxBoton.resetBools();
-        menuB.resetBools();
-        unpauseB.resetBools();
-        replayB.resetBools();
+        menuB.reiniciarBooleanos();
+        unpauseB.reiniciarBooleanos();
+        replayB.reiniciarBooleanos();
         volumeButton.resetBools();
     }
 

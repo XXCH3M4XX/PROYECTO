@@ -39,7 +39,7 @@ public class UrmBoton extends BotonesPausa{
         g.drawImage(imgs[indice], x, y, URM_SIZE, URM_SIZE, null);
     }
 
-    public void resetBools(){
+    public void reiniciarBooleanos(){
         mouseOver = false;
         mousePressed = false;
     }

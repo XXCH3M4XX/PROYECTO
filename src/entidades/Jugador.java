@@ -74,16 +74,16 @@ public class Jugador extends Entidad {
     //StatusBarUI
     private BufferedImage imagenBarraEstado;
 
-    private int anchoBarraEstado = (int) (230 * Juego.ESCALA);
-    private int altoBarraEstado = (int) (58 * Juego.ESCALA);
     private int xBarraEstado = (int) (10 * Juego.ESCALA);
     private int yBarraEstado = (int) (10 * Juego.ESCALA);
 
-    private int anchoBarraVida    = (int) (120 * Juego.ESCALA);
-    private int altoBarraVida     = (int) (4   * Juego.ESCALA);
-    private int xInicioBarraVida  = (int) (41  * Juego.ESCALA);
-    private int yInicioBarraVida  = (int) (14  * Juego.ESCALA);
+    private int anchoBarraEstado = (int) (345 * Juego.ESCALA); // 230 * 1.5
+    private int altoBarraEstado  = (int) (87  * Juego.ESCALA); // 58  * 1.5
 
+    private int anchoBarraVida   = (int) (180 * Juego.ESCALA); // 120 * 1.5
+    private int altoBarraVida    = (int) (4   * Juego.ESCALA); // era 2, ahora 6 px
+    private int xInicioBarraVida = (int) (61  * Juego.ESCALA); // 41  * 1.5
+    private int yInicioBarraVida = (int) (22  * Juego.ESCALA); // 15  * 1.5
     private int saludMaxima = 120;
     private int saludActual = 120;
     private int anchoSalud = anchoBarraVida;
@@ -102,6 +102,7 @@ public class Jugador extends Entidad {
         cargarAnimaciones();
         iniciarHitbox(x, y, HITBOX_W, HITBOX_H);
         iniciarHitboxAtaque();
+        imagenBarraEstado = LoadSave.GetSpriteAtlas(LoadSave.BARRA_SALUD);
 
     }
 
@@ -116,16 +117,12 @@ public class Jugador extends Entidad {
             playing.setGameOver(true);
             return;
         }
-
         actualizarHitboxAtaque();
         actualizarPosicion();
-        if (ataque){
-            revisarAtaque();
-        }
-        actualizarAnimacion();
-        setAnimacion();
+        if (ataque) revisarAtaque();
+        setAnimacion();        // ← primero decide la animacion
+        actualizarAnimacion(); // ← luego avanza el contador
     }
-
     private void revisarAtaque() {
         if(ataqueRevisado || indiceAnim != 1){
             return;
@@ -172,7 +169,6 @@ public class Jugador extends Entidad {
                     null
             );
         }
-        dibujarHitboxDeAtaque(g, nivelOffset);
         dibujarUI(g);
     }
 
@@ -182,8 +178,9 @@ public class Jugador extends Entidad {
     }
 
     private void dibujarUI(Graphics g) {
+        Color verdeVida = new Color(0x5daf03);
         g.drawImage(imagenBarraEstado, xBarraEstado, yBarraEstado, anchoBarraEstado, altoBarraEstado, null);
-        g.setColor(Color.red);
+        g.setColor(verdeVida);
         g.fillRect(xInicioBarraVida + xBarraEstado, yInicioBarraVida + yBarraEstado, anchoSalud, altoBarraVida);
     }
 
@@ -335,18 +332,19 @@ public class Jugador extends Entidad {
     private void actualizarAnimacion() {
         tickAnim++;
 
-        if(tickAnim >= velocidadAnim) {
+        // velocidad segun la accion actual
+        int velocidadActual = (accionJugador == PATADA) ? 30 : velocidadAnim;
+        if(tickAnim >= velocidadActual) { // ← cambia velocidadAnim por velocidadActual
             tickAnim = 0;
             indiceAnim++;
 
-            //si llegamos al ultimo frame volvemos al principio y desactivamos el ataque
             if(indiceAnim >= Constantes.ConstantesJugador.GetCantidadSprite(accionJugador)) {
                 indiceAnim = 0;
                 ataque = false;
                 ataqueRevisado = false;
             }
         }
-        imagenBarraEstado = LoadSave.GetSpriteAtlas(LoadSave.BARRA_SALUD);
+
     }
 
     //carga el atlas y recorta cada frame de cada animacion en su posicion correspondiente

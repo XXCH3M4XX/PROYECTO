@@ -124,8 +124,16 @@ public class Miscelaneos {
 
     public static boolean esSuelo(Rectangle2D.Float hitbox, float xVelocidad, int[][] datosNivel) {
         float checkY = hitbox.y + hitbox.height + 1;
-        return solido(hitbox.x + xVelocidad, checkY, datosNivel)
-                || solido(hitbox.x + hitbox.width + xVelocidad, checkY, datosNivel);
+        //asi evitamos que los enemigos se salgan de las esquinas
+        if(xVelocidad > 0) {
+            return solido(hitbox.x + xVelocidad, checkY, datosNivel)
+                    || solido(hitbox.x + hitbox.width + xVelocidad, checkY, datosNivel);
+        } else {
+
+            return solido(hitbox.x + xVelocidad, checkY, datosNivel)
+                    || solido(hitbox.x + xVelocidad, checkY, datosNivel);
+        }
+
     }
 
 }

@@ -4,6 +4,7 @@ import entidades.AjusteEnemigo;
 import entidades.Jugador;
 import main.Juego;
 import niveles.AjusteNivel;
+import ui.NivelCompletadoOverlay;
 import ui.OverOverlayJuego;
 import ui.PausaOverlay;
 import utils.LoadSave;
@@ -31,6 +32,7 @@ public class Playing extends State implements Statemethods {
     private boolean pausado = false;
     private PausaOverlay pausaOverlay;
     private OverOverlayJuego overlay;
+    private NivelCompletadoOverlay nivelCompletadoMenu;
     //desplazamiento horizontal actual del nivel en pixeles
     private int OffsetXNivel;
 
@@ -43,6 +45,7 @@ public class Playing extends State implements Statemethods {
     private int tilesMaximoOffset = tilesAnchoNivel - Juego.TILES_IN_WIDTH;
     private int tilesMaximosOffsetX = tilesMaximoOffset * TILES_SIZE;
 
+
     //imagenes del fondo, montañas y nubes
     private BufferedImage imagenFondo;
     private BufferedImage imagenMontañas;
@@ -52,6 +55,7 @@ public class Playing extends State implements Statemethods {
     private int[] nubesPosicion;
     private Random random = new Random();
     private boolean gameOver = false;
+    private boolean nivelCompletado = true;
 
     public Playing(Juego juego) {
         super(juego);
@@ -91,6 +95,7 @@ public class Playing extends State implements Statemethods {
 
         pausaOverlay = new PausaOverlay(this);
         overlay = new OverOverlayJuego(this);
+        nivelCompletadoMenu = new NivelCompletadoOverlay(this);
     }
 
     //devuelve el jugador para que otros sistemas puedan acceder a el
@@ -113,14 +118,17 @@ public class Playing extends State implements Statemethods {
 
     @Override
     public void update() {
-        if (!pausado && !gameOver) {
+        if(pausado) {
+            pausaOverlay.actualizar();
+        } else if(nivelCompletado) {
+            nivelCompletadoMenu.update();
+        } else if (!gameOver) {
             ajusteNivel.update();
             jugador.update();
             ajusteEnemigo.update(ajusteNivel.getNivelActual().getDatosNivel(), jugador);
             comprobarBorde();
-        } else {
-            pausaOverlay.actualizar();
         }
+
     }
 
     //desplaza la camara cuando el jugador se acerca a los bordes de la pantalla
@@ -158,6 +166,9 @@ public class Playing extends State implements Statemethods {
             pausaOverlay.draw(g);
         } else if (gameOver) {
             overlay.draw(g);
+
+        } else if(nivelCompletado) {
+            nivelCompletadoMenu.draw(g);
         }
     }
 
@@ -189,6 +200,10 @@ public class Playing extends State implements Statemethods {
         pausado = false;
         jugador.resetearTodo();
 
+        //fundamental para que funcione el boton de reiniciar, si no no se reinicia la posicion
+        ajusteEnemigo.resetearTodosEnemigos();
+        OffsetXNivel = 0;
+
     }
 
     public void setGameOver(boolean gameOver){
@@ -214,6 +229,8 @@ public class Playing extends State implements Statemethods {
         if(!gameOver) {
             if (pausado) {
                 pausaOverlay.mousePressed(e);
+            } else if(nivelCompletado) {
+                nivelCompletadoMenu.mousePressed(e);
             }
         }
     }
@@ -223,6 +240,8 @@ public class Playing extends State implements Statemethods {
         if(!gameOver) {
             if (pausado) {
                 pausaOverlay.mouseReleased(e);
+            } else if(nivelCompletado) {
+                nivelCompletadoMenu.mouseReleased(e);
             }
         }
     }
@@ -232,6 +251,8 @@ public class Playing extends State implements Statemethods {
         if(!gameOver) {
             if (pausado) {
                 pausaOverlay.mouseMoved(e);
+            } else if(nivelCompletado) {
+                nivelCompletadoMenu.mouseMoved(e);
             }
         }
     }
@@ -283,7 +304,7 @@ public class Playing extends State implements Statemethods {
     }
 
     //reactiva el estado de juego desde la pantalla de pausa
-    public void unpauseJuego() {
+    public void depausarJuego() {
         pausado = false;
     }
 }

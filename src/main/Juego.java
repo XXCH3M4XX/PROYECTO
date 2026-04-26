@@ -52,6 +52,9 @@ public class Juego implements Runnable {
         playing = new Playing(this);
         panelJuego = new PanelJuego(this);
         pantallaJuego = new PantallaJuego(panelJuego);
+
+        //ahora nos aseguramos de que los imputs funcionan correctamente
+        panelJuego.setFocusable(true);
         //esto va a leer el input del teclado; es decir, lee las teclas que pulsamos
         panelJuego.requestFocusInWindow();
         empezarBucle();
