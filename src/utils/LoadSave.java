@@ -6,10 +6,11 @@ import main.Juego;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
-import static utils.Constantes.constantesDelEnemigo.ENEMIGO1;
 
 //clase de utilidad para la carga de recursos y datos externos
 public class LoadSave {
@@ -17,8 +18,6 @@ public class LoadSave {
     //nombres de los archivos de imagen para los sprites y niveles
     public static final String PLAYER_ATLAS = "Ordenado2.png";
     public static final String LEVEL_ATLAS = "sueloCampo.png";
-    //public static final String NIVEL1DATOS = "level_one_data.png";
-    public static final String NIVEL1DATOS = "level_one_data_long.png";
     public static final String BOTONES_MENU = "botones.png";
     public static final String FONDO_MENU = "menuFondo.png";
     public static final String FONDO_PANTALLA = "fondoPantallaMenu.png";
@@ -56,45 +55,49 @@ public class LoadSave {
         }
         return imagen;
     }
+    public static BufferedImage[] getNiveles() {
+        URL url = LoadSave.class.getResource("/Levels");
+        File archivo = null;
 
-    public static ArrayList<PersonajeEnemigo1>getPersonajeEnemigo1() {
-        BufferedImage imagen = GetSpriteAtlas(NIVEL1DATOS);
-        ArrayList<PersonajeEnemigo1> lista = new ArrayList<>();
-        for (int i = 0; i < imagen.getHeight(); i++) {
-            for (int j = 0; j < imagen.getWidth(); j++) {
-                Color color = new Color(imagen.getRGB(j, i));
-                //usamos el valor del canal rojo para determinar el tipo de tile
-                int valor = color.getGreen();
-                //limite de seguridad para no exceder los indices del atlas
-                if (valor == Constantes.constantesDelEnemigo.ENEMIGO1) {
-                    lista.add(new PersonajeEnemigo1(j * Juego.TILES_SIZE, i * Juego.TILES_SIZE));
+        //abrimos el archivo y extraemos los niveles
+        //hay un error con el tipo de excepcion
+        try {
+            archivo = new File(url.toURI());
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        File[] listaNiveles = archivo.listFiles();
+        File[] nivelesOrdenados = new File[listaNiveles.length];
 
+        //algoritmo sencillo pero poquito eficiente para ordenar los 3 niveles que
+        //vamos a tener
+        for(int i = 0; i< nivelesOrdenados.length; i++){
+            for(int j = 0; j < listaNiveles.length; j++){
+                if(listaNiveles[j].getName().equals("" + (i + 1) + ".png")){
+                    nivelesOrdenados[i] = listaNiveles[j];
                 }
-
             }
         }
-        return lista;
+
+        //recorremos los archivos para sacar los niveles
+        for(File f : listaNiveles) {
+            System.out.println("Archivo: " + archivo.getName());
+        }
+        BufferedImage[] imagenes = new BufferedImage[nivelesOrdenados.length];
+        try {
+            for(int i = 0; i < imagenes.length; i++){
+                //el metodo read es muy importante
+                imagenes[i] = ImageIO.read(nivelesOrdenados[i]);
+            }
+        }catch(Exception e){
+            System.out.println("Error generando las imagenes.");
+        }
+
+        return imagenes;
     }
 
-    //genera la matriz del nivel leyendo los valores de color de una imagen
-    public static int[][] conseguirDatosNivel() {
-        BufferedImage imagen = GetSpriteAtlas(NIVEL1DATOS);
-        //inicializacion de la matriz con las dimensiones de tiles del juego
-        int[][] datosNivel = new int[imagen.getHeight()][imagen.getWidth()];
-        //recorrido de cada pixel de la imagen de datos
-        for(int i = 0; i < imagen.getHeight(); i++){
-            for(int j = 0; j < imagen.getWidth(); j++){
-                Color color = new Color(imagen.getRGB(j, i));
-                //usamos el valor del canal rojo para determinar el tipo de tile
-                int valor = color.getRed();
-                //limite de seguridad para no exceder los indices del atlas
-                if(valor >= 48) {
-                    valor = 0;
-                }
-                datosNivel[i][j] = valor;
-            }
-        }
-        return datosNivel;
-    }
+
+
+
 
 }

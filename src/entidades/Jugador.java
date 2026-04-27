@@ -105,6 +105,12 @@ public class Jugador extends Entidad {
         imagenBarraEstado = LoadSave.GetSpriteAtlas(LoadSave.BARRA_SALUD);
 
     }
+    public void setSpawn(Point spawn) {
+        this.x = spawn.x;
+        this.y = spawn.y;
+        hitbox.x = x;
+        hitbox.y = y;
+    }
 
     private void iniciarHitboxAtaque() {
         boxAtaque = new Rectangle2D.Float(x, y, (int)(20* Juego.ESCALA), (int)(20*Juego.ESCALA));

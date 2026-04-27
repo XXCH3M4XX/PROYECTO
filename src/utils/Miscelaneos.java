@@ -1,8 +1,12 @@
 package utils;
 
+import entidades.PersonajeEnemigo1;
 import main.Juego;
 
+import java.awt.*;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 //funciones auxiliares para el control de colisiones y fisicas
 public class Miscelaneos {
@@ -134,6 +138,62 @@ public class Miscelaneos {
                     || solido(hitbox.x + xVelocidad, checkY, datosNivel);
         }
 
+    }
+    //genera la matriz del nivel leyendo los valores de color de una imagen
+    public static int[][] conseguirDatosNivel(BufferedImage imagen) {
+
+        //inicializacion de la matriz con las dimensiones de tiles del juego
+        int[][] datosNivel = new int[imagen.getHeight()][imagen.getWidth()];
+        //recorrido de cada pixel de la imagen de datos
+        for(int i = 0; i < imagen.getHeight(); i++){
+            for(int j = 0; j < imagen.getWidth(); j++){
+                Color color = new Color(imagen.getRGB(j, i));
+                //usamos el valor del canal rojo para determinar el tipo de tile
+                int valor = color.getRed();
+                //limite de seguridad para no exceder los indices del atlas
+                if(valor >= 48) {
+                    valor = 0;
+                }
+                datosNivel[i][j] = valor;
+            }
+        }
+        return datosNivel;
+    }
+    public static Point getSpawnJugador(BufferedImage imagen) {
+        for (int i = 0; i < imagen.getHeight(); i++) {
+            for (int j = 0; j < imagen.getWidth(); j++) {
+                Color color = new Color(imagen.getRGB(j, i));
+                //usamos el valor del canal rojo para determinar el tipo de tile
+                int valor = color.getGreen();
+                //limite de seguridad para no exceder los indices del atlas
+                if (valor == 100) {
+                    return new Point(j * Juego.TILES_SIZE, i * Juego.TILES_SIZE);
+
+                }
+
+            }
+        }
+        return new Point(1 * Juego.TILES_SIZE, 1 * Juego.TILES_SIZE);
+
+    }
+
+    public static ArrayList<PersonajeEnemigo1> getPersonajeEnemigo1(BufferedImage imagen) {
+
+        ArrayList<PersonajeEnemigo1> lista = new ArrayList<>();
+        for (int i = 0; i < imagen.getHeight(); i++) {
+            for (int j = 0; j < imagen.getWidth(); j++) {
+                Color color = new Color(imagen.getRGB(j, i));
+                //usamos el valor del canal rojo para determinar el tipo de tile
+                int valor = color.getGreen();
+                //limite de seguridad para no exceder los indices del atlas
+                if (valor == Constantes.constantesDelEnemigo.ENEMIGO1) {
+                    lista.add(new PersonajeEnemigo1(j * Juego.TILES_SIZE, i * Juego.TILES_SIZE));
+
+                }
+
+            }
+        }
+        return lista;
     }
 
 }

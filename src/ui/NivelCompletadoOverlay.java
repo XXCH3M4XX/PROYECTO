@@ -1,5 +1,6 @@
 package ui;
 
+import gamestates.Gamestate;
 import gamestates.Playing;
 import main.Juego;
 import utils.LoadSave;
@@ -67,11 +68,12 @@ public class NivelCompletadoOverlay {
     public void mouseReleased(MouseEvent e) {
         if(comprobarBoton(menu, e)) {
             if(menu.isMousePressed()) {
-                System.out.println("menu");
+                jugando.resetAll();
+                Gamestate.state = Gamestate.MENU;
             }
         } else if(comprobarBoton(siguiente, e)) {
             if(siguiente.isMousePressed()) {
-                System.out.println("siguiente");
+                jugando.cargarSiguienteNivel();
             }
         }
         menu.reiniciarBooleanos();

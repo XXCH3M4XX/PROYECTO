@@ -5,6 +5,8 @@ import gamestates.Gamestate;
 import gamestates.Playing;
 import niveles.AjusteNivel;
 import gamestates.Menu;
+import utils.LoadSave;
+
 import java.awt.*;
 
 //nucleo del juego, gestiona el bucle principal y coordina todos los sistemas

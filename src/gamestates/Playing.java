@@ -41,9 +41,7 @@ public class Playing extends State implements Statemethods {
     private int bordeDerecho = (int)(0.8 * Juego.GAME_WIDTH);
 
     //ancho total del nivel en tiles y offset maximo que puede alcanzar la camara
-    private int tilesAnchoNivel = LoadSave.conseguirDatosNivel()[0].length;
-    private int tilesMaximoOffset = tilesAnchoNivel - Juego.TILES_IN_WIDTH;
-    private int tilesMaximosOffsetX = tilesMaximoOffset * TILES_SIZE;
+    private int tilesMaximosOffsetX;
 
 
     //imagenes del fondo, montañas y nubes
@@ -55,7 +53,7 @@ public class Playing extends State implements Statemethods {
     private int[] nubesPosicion;
     private Random random = new Random();
     private boolean gameOver = false;
-    private boolean nivelCompletado = true;
+    private boolean nivelCompletado = false;
 
     public Playing(Juego juego) {
         super(juego);
@@ -71,6 +69,23 @@ public class Playing extends State implements Statemethods {
         for (int i = 0; i < nubesPosicion.length; i++) {
             nubesPosicion[i] = (int)(90 * Juego.ESCALA) + random.nextInt((int)(100 * Juego.ESCALA));
         }
+        calcularOffsetNivel();
+        cargarNivel();
+    }
+    public void cargarSiguienteNivel() {
+        resetAll();
+        ajusteNivel.cargarSiguienteNivel();
+        jugador.setSpawn(ajusteNivel.getNivelActual().getSpawnJugador());
+    }
+
+    private void cargarNivel() {
+        ajusteEnemigo.cargarEnemigos(ajusteNivel.getNivelActual());
+    }
+
+    private void calcularOffsetNivel() {
+        // TODO Auto-generated method
+        tilesMaximosOffsetX = ajusteNivel.getNivelActual().getOffsetNivel();
+
     }
 
     //crea el nivel y coloca al jugador encima del tile de suelo correspondiente
@@ -92,6 +107,7 @@ public class Playing extends State implements Statemethods {
 
         jugador = new Jugador(xInicial, yInicial, (int)(64 * ESCALA_JUGADOR), (int)(40 * ESCALA_JUGADOR), this);
         jugador.cargarDatosNivel(datosNivel);
+        jugador.setSpawn(ajusteNivel.getNivelActual().getSpawnJugador());
 
         pausaOverlay = new PausaOverlay(this);
         overlay = new OverOverlayJuego(this);
@@ -114,6 +130,9 @@ public class Playing extends State implements Statemethods {
                 pausaOverlay.mouseDragged(e);
             }
         }
+    }
+    public void setNivelCompletado(boolean nivelCompletado) {
+        this.nivelCompletado = nivelCompletado;
     }
 
     @Override
@@ -198,6 +217,7 @@ public class Playing extends State implements Statemethods {
     public void resetAll(){
         gameOver = false;
         pausado = false;
+        nivelCompletado = false;
         jugador.resetearTodo();
 
         //fundamental para que funcione el boton de reiniciar, si no no se reinicia la posicion
@@ -301,6 +321,12 @@ public class Playing extends State implements Statemethods {
             }
         }
 
+    }
+    public void setOffsetNivelMaximo(int offsetNivel){
+        this.tilesMaximosOffsetX = offsetNivel;
+    }
+    public AjusteEnemigo getAjusteEnemigo() {
+        return ajusteEnemigo;
     }
 
     //reactiva el estado de juego desde la pantalla de pausa
