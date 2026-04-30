@@ -88,5 +88,6 @@ public class AjusteNivel {
         juego.getPlaying().getAjusteEnemigo().cargarEnemigos(nuevoNivel);
         juego.getPlaying().getJugador().cargarDatosNivel(nuevoNivel.getDatosNivel());
         juego.getPlaying().setOffsetNivelMaximo(nuevoNivel.getOffsetNivel());
+        juego.getPlaying().getAjusteDeObjetos().cargarObjetos(nuevoNivel);
     }
 }

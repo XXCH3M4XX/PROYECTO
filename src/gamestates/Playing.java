@@ -4,6 +4,7 @@ import entidades.AjusteEnemigo;
 import entidades.Jugador;
 import main.Juego;
 import niveles.AjusteNivel;
+import objetos.AjusteDeObjetos;
 import ui.NivelCompletadoOverlay;
 import ui.OverOverlayJuego;
 import ui.PausaOverlay;
@@ -24,6 +25,7 @@ public class Playing extends State implements Statemethods {
     private Jugador jugador;
     private AjusteNivel ajusteNivel;
     private AjusteEnemigo ajusteEnemigo;
+    private AjusteDeObjetos ajusteDeObjetos;
 
     //evita que el salto se repita si se mantiene pulsada la tecla
     private boolean espacioAnterior = false;
@@ -80,6 +82,7 @@ public class Playing extends State implements Statemethods {
 
     private void cargarNivel() {
         ajusteEnemigo.cargarEnemigos(ajusteNivel.getNivelActual());
+        ajusteDeObjetos.cargarObjetos(ajusteNivel.getNivelActual());
     }
 
     private void calcularOffsetNivel() {
@@ -92,6 +95,7 @@ public class Playing extends State implements Statemethods {
     private void initClasses() {
         ajusteNivel = new AjusteNivel(juego);
         ajusteEnemigo = new AjusteEnemigo(this);
+        ajusteDeObjetos = new AjusteDeObjetos(this);
 
         int[][] datosNivel = ajusteNivel.getNivelActual().getDatosNivel();
 
@@ -143,6 +147,7 @@ public class Playing extends State implements Statemethods {
             nivelCompletadoMenu.update();
         } else if (!gameOver) {
             ajusteNivel.update();
+            ajusteDeObjetos.update();
             jugador.update();
             ajusteEnemigo.update(ajusteNivel.getNivelActual().getDatosNivel(), jugador);
             comprobarBorde();
@@ -177,6 +182,7 @@ public class Playing extends State implements Statemethods {
         ajusteNivel.draw(g, OffsetXNivel);
         jugador.render(g, OffsetXNivel);
         ajusteEnemigo.draw(g, OffsetXNivel);
+        ajusteDeObjetos.draw(g, OffsetXNivel);
 
         //overlay semitransparente de pausa encima de todo lo demas
         if (pausado) {
@@ -223,6 +229,7 @@ public class Playing extends State implements Statemethods {
         //fundamental para que funcione el boton de reiniciar, si no no se reinicia la posicion
         ajusteEnemigo.resetearTodosEnemigos();
         OffsetXNivel = 0;
+        ajusteDeObjetos.resetearTodosLosObjetos();
 
     }
 
@@ -232,6 +239,10 @@ public class Playing extends State implements Statemethods {
 
     public void revisarGolpeEnemigo(Rectangle2D.Float boxAtaque){
         ajusteEnemigo.golpeEnemigo(boxAtaque);
+    }
+
+    public void checkPocionTocada(Rectangle2D.Float hitbox) {
+        ajusteDeObjetos.checkObjetoTocado(hitbox);
     }
 
     @Override
@@ -332,5 +343,13 @@ public class Playing extends State implements Statemethods {
     //reactiva el estado de juego desde la pantalla de pausa
     public void depausarJuego() {
         pausado = false;
+    }
+
+    public AjusteDeObjetos getAjusteDeObjetos(){
+        return ajusteDeObjetos;
+    }
+
+    public void checkObjetoGolpeado(Rectangle2D.Float boxAtaque) {
+        ajusteDeObjetos.chekGolpeoAlObjeto(boxAtaque);
     }
 }

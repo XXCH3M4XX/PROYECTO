@@ -2,6 +2,8 @@ package niveles;
 
 import entidades.PersonajeEnemigo1;
 import main.Juego;
+import objetos.ContenedorJuego;
+import objetos.Pocion;
 import utils.Miscelaneos;
 
 import java.awt.*;
@@ -15,6 +17,8 @@ public class Nivel {
     private int[][] datosNivel;
     private BufferedImage imagen;
     private ArrayList<PersonajeEnemigo1> zombie;
+    private ArrayList<Pocion> pocion;
+    private ArrayList<ContenedorJuego> contenedor;
     private int tilesAnchoNivel;
     private int tilesMaximoOffset;
     private int tilesMaximosOffsetX;
@@ -26,9 +30,19 @@ public class Nivel {
         this.imagen = imagen;
         cargarDatosNivel();
         cargarEnemigos();
+        crearPociones();
+        crearContenedores();
         calcularOffsetsNivel();
         calcularSpawnJugador();
 
+    }
+
+    private void crearContenedores() {
+        contenedor = Miscelaneos.getContenedor(imagen);
+    }
+
+    private void crearPociones() {
+        pocion = Miscelaneos.getPociones(imagen);
     }
 
     private void calcularSpawnJugador() {
@@ -67,4 +81,13 @@ public class Nivel {
     public int[][]  getDatosNivel() {
         return datosNivel;
     }
+
+    public ArrayList<Pocion> getPocion(){
+        return pocion;
+    }
+
+    public ArrayList<ContenedorJuego> getContenedor(){
+        return contenedor;
+    }
+
 }

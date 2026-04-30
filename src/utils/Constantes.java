@@ -4,6 +4,39 @@ import main.Juego;
 
 public class Constantes {
 
+    public static final int VELOCIDAD_ANIMACION = 25;
+
+    public static class constantesObjetos {
+
+        public static final int POCION_ROJA = 0;
+        public static final int POCION_AZUL = 1;
+        public static final int BARRIL = 2;
+        public static final int CAJA = 3;
+
+        public static final int VALOR_POCION_ROJA = 15;
+        public static final int VALOR_POCION_AZUL = 10;
+
+        public static final int ANCHO_CONTENEDOR_DEFAULT = 40;
+        public static final int ALTO_CONTENEDOR_DEFAULT = 30;
+        public static final int ANCHO_CONTENEDOR = (int) (Juego.ESCALA * ANCHO_CONTENEDOR_DEFAULT);
+        public static final int ALTO_CONTENEDOR = (int) (Juego.ESCALA * ALTO_CONTENEDOR_DEFAULT);
+
+        public static final int ANCHO_POCION_DEFAULT = 12;
+        public static final int ALTO_POCION_DEFAULT = 16;
+        public static final int ANCHO_POCION = (int) (Juego.ESCALA * ANCHO_POCION_DEFAULT);
+        public static final int ALTO_POCION = (int) (Juego.ESCALA * ALTO_POCION_DEFAULT);
+
+        public static int obtenerCantidadSprites(int tipoObjeto) {
+            switch (tipoObjeto) {
+                case POCION_ROJA, POCION_AZUL:
+                    return 7;
+                case BARRIL, CAJA:
+                    return 8;
+            }
+            return 1;
+        }
+    }
+
     public static class constantesDelEnemigo{
         public static final int ENEMIGO1 = 0;
         public static final int IDLE = 0;

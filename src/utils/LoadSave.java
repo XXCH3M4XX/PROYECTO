@@ -31,6 +31,8 @@ public class LoadSave {
     public static final String ENEMIGO1 = "SpriteSheetLanza.png";
     public static final String BARRA_SALUD = "SALUD_ENERGIA.png";
     public static final String NIVELCOMPLETADO_MENU = "completed_sprite.png";
+    public static final String OBJETOS = "objects_sprites.png";
+    public static final String POCIONES = "potions_sprites.png";
 
     //metodo para cargar una imagen desde la carpeta de recursos
     public static BufferedImage GetSpriteAtlas(String fileName){

@@ -85,7 +85,7 @@ public class Jugador extends Entidad {
     private int xInicioBarraVida = (int) (61  * Juego.ESCALA); // 41  * 1.5
     private int yInicioBarraVida = (int) (22  * Juego.ESCALA); // 15  * 1.5
     private int saludMaxima = 120;
-    private int saludActual = 120;
+    private int saludActual = 40;
     private int anchoSalud = anchoBarraVida;
 
     private Rectangle2D.Float boxAtaque;
@@ -125,16 +125,25 @@ public class Jugador extends Entidad {
         }
         actualizarHitboxAtaque();
         actualizarPosicion();
+        if (movimiento){
+            checkPocionTocada();
+        }
         if (ataque) revisarAtaque();
         setAnimacion();        // ← primero decide la animacion
         actualizarAnimacion(); // ← luego avanza el contador
     }
+
+    private void checkPocionTocada() {
+        playing.checkPocionTocada(hitbox);
+    }
+
     private void revisarAtaque() {
         if(ataqueRevisado || indiceAnim != 1){
             return;
         }
         ataqueRevisado = true;
         playing.revisarGolpeEnemigo(boxAtaque);
+        playing.checkObjetoGolpeado(boxAtaque);
     }
 
     private void actualizarHitboxAtaque() {
@@ -401,4 +410,8 @@ public class Jugador extends Entidad {
     public void setArriba(boolean arriba) { this.arriba = arriba; }
     public void setDerecha(boolean derecha) { this.derecha = derecha; }
     public void setIzquierda(boolean izquierda) { this.izquierda = izquierda; }
+
+    public void cambiarPoder(int valorPocionAzul) {
+        System.out.println("poder añadido");
+    }
 }
