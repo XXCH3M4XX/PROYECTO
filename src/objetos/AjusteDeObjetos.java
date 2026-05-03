@@ -15,6 +15,8 @@ public class AjusteDeObjetos {
     private Playing playing;
     private BufferedImage[][] imagenesPociones, contenedorDeImagenes;
     private ArrayList<Pocion> pociones;
+    private ArrayList<Pocion> porcionesOriginales;
+
     private ArrayList<ContenedorJuego> contenedores;
 
     public AjusteDeObjetos(Playing playing){
@@ -60,10 +62,9 @@ public class AjusteDeObjetos {
     }
 
     public void cargarObjetos(Nivel nuevoNivel) {
-        pociones = nuevoNivel.getPocion();
-        contenedores = nuevoNivel.getContenedor();
-        System.out.println("Pociones: " + pociones.size());
-        System.out.println("Contenedores: " + contenedores.size());
+        pociones = new ArrayList<>(nuevoNivel.getPocion());
+        porcionesOriginales = new ArrayList<>(nuevoNivel.getPocion());
+        contenedores = new ArrayList<>(nuevoNivel.getContenedor());
     }
 
 
@@ -142,6 +143,9 @@ public class AjusteDeObjetos {
     }
 
     public void resetearTodosLosObjetos() {
+
+        //esto hace que no se dupliquen las pociones al morir y reiniciar el nivel
+        pociones = new ArrayList<>(porcionesOriginales);
         for(Pocion p : pociones){
             p.reset();
         }

@@ -200,6 +200,9 @@ public abstract class Enemigo extends Entidad {
 
     //aplica daño al enemigo y decide si muere o entra en estado de golpe
     public void daño(int daño) {
+        //si ya esta muriendo ignoramos cualquier golpe mas que le puedas dar
+        if(estadoEnemigo == MUERTE) return;
+
         vidaActual -= daño;
         if (vidaActual <= 0) {
             nuevoEstado(MUERTE);

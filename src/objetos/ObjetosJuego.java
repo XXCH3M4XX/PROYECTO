@@ -85,6 +85,8 @@ public class ObjetosJuego {
     public int getAniIndice(){
         return aniIndice;
     }
+    public int getX() { return x; }
+    public int getY() { return y; }
 
     public void setAnimacion(boolean animacion){
         this.animacion = animacion;

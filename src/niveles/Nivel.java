@@ -82,12 +82,20 @@ public class Nivel {
         return datosNivel;
     }
 
-    public ArrayList<Pocion> getPocion(){
-        return pocion;
+    public ArrayList<Pocion> getPocion() {
+        ArrayList<Pocion> copia = new ArrayList<>();
+        for (Pocion p : pocion) {
+            copia.add(new Pocion(p.getX(), p.getY(), p.getTipoObjeto()));
+        }
+        return copia;
     }
 
-    public ArrayList<ContenedorJuego> getContenedor(){
-        return contenedor;
+    public ArrayList<ContenedorJuego> getContenedor() {
+        ArrayList<ContenedorJuego> copia = new ArrayList<>();
+        for (ContenedorJuego c : contenedor) {
+            copia.add(new ContenedorJuego(c.getX(), c.getY(), c.getTipoObjeto()));
+        }
+        return copia;
     }
 
 }

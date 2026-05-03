@@ -73,6 +73,10 @@ public class AjusteNivel {
 
         return niveles.get(indiceNivel);
     }
+    //vuelve al primer nivel, se usa al morir y reiniciar
+    public void resetNivel() {
+        indiceNivel = 0;
+    }
     public int getCantidadNiveles() {
         return niveles.size();
     }

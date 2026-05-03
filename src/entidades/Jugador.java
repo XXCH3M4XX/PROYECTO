@@ -90,6 +90,8 @@ public class Jugador extends Entidad {
 
     private Rectangle2D.Float boxAtaque;
 
+    private float spawnX, spawnY;
+
     private boolean ataqueRevisado;
     private Playing playing;
 
@@ -108,6 +110,8 @@ public class Jugador extends Entidad {
     public void setSpawn(Point spawn) {
         this.x = spawn.x;
         this.y = spawn.y;
+        this.spawnX = spawn.x; // ← añade esto
+        this.spawnY = spawn.y; // ← y esto
         hitbox.x = x;
         hitbox.y = y;
     }
@@ -393,9 +397,10 @@ public class Jugador extends Entidad {
         movimiento = false;
         accionJugador = IDLE;
         saludActual = saludMaxima;
-        hitbox.x = x;
-        hitbox.y = y;
-
+        hitbox.x = spawnX; // ← antes era x
+        hitbox.y = spawnY; // ← antes era y
+        x = spawnX;        // ← añade esto
+        y = spawnY;        // ← y esto
     }
 
     public void setAtaque(boolean ataque){ this.ataque = ataque; }

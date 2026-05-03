@@ -2,6 +2,7 @@ package main;
 
 import entidades.Jugador;
 import gamestates.Gamestate;
+import gamestates.IntroScreen;
 import gamestates.Playing;
 import niveles.AjusteNivel;
 import gamestates.Menu;
@@ -47,6 +48,7 @@ public class Juego implements Runnable {
     //resolucion total de la ventana en pixeles
     public final static int GAME_WIDTH = TILES_SIZE * TILES_IN_WIDTH;
     public final static int GAME_HEIGHT = TILES_SIZE * TILES_IN_HEIGHT;
+    private IntroScreen introScreen;
 
     //inicializa todos los sistemas y arranca el bucle
     public Juego() {
@@ -64,6 +66,7 @@ public class Juego implements Runnable {
 
 //    //crea el nivel y coloca al jugador encima del tile de suelo correspondiente
        private void initClasses() {
+           introScreen = new IntroScreen(this);
            menu = new Menu(this);
            playing = new Playing(this);
        }
@@ -77,6 +80,9 @@ public class Juego implements Runnable {
     //con este metodo, podemos actualizar lo que nosotros queramos(jugador, escenario, etc...)
     public void update(){
         switch(Gamestate.state){
+            case INTRO:
+                introScreen.update();
+                break;
             case MENU:
                 menu.update();
                 break;
@@ -95,6 +101,9 @@ public class Juego implements Runnable {
     //dibuja el nivel primero y el jugador encima para que quede en primer plano
     public void render(Graphics g){
         switch(Gamestate.state){
+            case INTRO:
+                introScreen.draw(g);
+                break;
             case MENU:
                 menu.draw(g);
                 break;

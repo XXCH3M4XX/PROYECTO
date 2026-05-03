@@ -75,13 +75,26 @@ public class Playing extends State implements Statemethods {
         cargarNivel();
     }
     public void cargarSiguienteNivel() {
-        resetAll();
+        gameOver = false;
+        pausado = false;
+        nivelCompletado = false;
+        jugador.resetearTodo();
+        ajusteEnemigo.resetearTodosEnemigos();
+        ajusteDeObjetos.resetearTodosLosObjetos();
+        OffsetXNivel = 0;
+
         ajusteNivel.cargarSiguienteNivel();
         jugador.setSpawn(ajusteNivel.getNivelActual().getSpawnJugador());
+        jugador.cargarDatosNivel(ajusteNivel.getNivelActual().getDatosNivel());
+        tilesMaximosOffsetX = ajusteNivel.getNivelActual().getOffsetNivel();
+        ajusteEnemigo.cargarEnemigos(ajusteNivel.getNivelActual()); // ← carga los enemigos del nuevo nivel
+        ajusteEnemigo.resetearTodosEnemigos(); // ← los resetea todos a su estado inicial
+        ajusteDeObjetos.cargarObjetos(ajusteNivel.getNivelActual()); // ← igual con los objetos
     }
 
     private void cargarNivel() {
         ajusteEnemigo.cargarEnemigos(ajusteNivel.getNivelActual());
+        ajusteEnemigo.resetearTodosEnemigos();
         ajusteDeObjetos.cargarObjetos(ajusteNivel.getNivelActual());
     }
 
@@ -137,6 +150,7 @@ public class Playing extends State implements Statemethods {
     }
     public void setNivelCompletado(boolean nivelCompletado) {
         this.nivelCompletado = nivelCompletado;
+        if(nivelCompletado) pausado = false;
     }
 
     @Override
@@ -224,14 +238,20 @@ public class Playing extends State implements Statemethods {
         gameOver = false;
         pausado = false;
         nivelCompletado = false;
+        ajusteNivel.resetNivel();
+        jugador.cargarDatosNivel(ajusteNivel.getNivelActual().getDatosNivel());
+        jugador.setSpawn(ajusteNivel.getNivelActual().getSpawnJugador());
+        ajusteEnemigo.cargarEnemigos(ajusteNivel.getNivelActual());
+        tilesMaximosOffsetX = ajusteNivel.getNivelActual().getOffsetNivel();
+        ajusteDeObjetos.cargarObjetos(ajusteNivel.getNivelActual()); // ← añade esto
         jugador.resetearTodo();
 
         //fundamental para que funcione el boton de reiniciar, si no no se reinicia la posicion
         ajusteEnemigo.resetearTodosEnemigos();
         OffsetXNivel = 0;
         ajusteDeObjetos.resetearTodosLosObjetos();
-
     }
+
 
     public void setGameOver(boolean gameOver){
         this.gameOver = gameOver;
