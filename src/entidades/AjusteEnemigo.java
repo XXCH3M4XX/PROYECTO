@@ -102,7 +102,7 @@ public class AjusteEnemigo {
     private void cargarImagenesEnemigo() {
         BufferedImage temp = LoadSave.GetSpriteAtlas(LoadSave.ENEMIGO1);
         System.out.println("Spritesheet: " + temp.getWidth() + "x" + temp.getHeight());
-        ArrayEnemigo1 = new BufferedImage[6][];
+        ArrayEnemigo1 = new BufferedImage[7][];
         for (int i = 0; i < ArrayEnemigo1.length; i++) {
             int frames = getSpriteAmount(ENEMIGO1, i);
             ArrayEnemigo1[i] = new BufferedImage[frames];

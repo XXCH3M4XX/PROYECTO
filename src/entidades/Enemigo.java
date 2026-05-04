@@ -160,9 +160,9 @@ public abstract class Enemigo extends Entidad {
                 aniIndice = 0;
 
                 //al terminar ataque o golpe vuelve a idle, al terminar muerte se desactiva
-                switch (estadoEnemigo) {
+                switch(estadoEnemigo){
                     case ATAQUE, GOLPE:
-                        nuevoEstado(IDLE);
+                        nuevoEstado(CORRER); // ← vuelve a patrullar siempre
                         break;
                     case MUERTE:
                         activo = false;

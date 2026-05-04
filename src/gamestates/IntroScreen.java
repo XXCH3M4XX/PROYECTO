@@ -85,7 +85,9 @@ public class IntroScreen extends State implements Statemethods {
     //permite saltar la intro pulsando cualquier tecla
     @Override
     public void keyPressed(java.awt.event.KeyEvent e) {
-        Gamestate.state = Gamestate.MENU;
+        if (e.getKeyCode() == java.awt.event.KeyEvent.VK_E) {
+            Gamestate.state = Gamestate.MENU;
+        }
     }
 
     @Override public void keyReleased(java.awt.event.KeyEvent e) {}

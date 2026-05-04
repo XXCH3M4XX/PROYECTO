@@ -37,9 +37,10 @@ public class Constantes {
         }
     }
 
-    public static class constantesDelEnemigo{
+    public static class constantesDelEnemigo {
         public static final int ENEMIGO1 = 0;
         public static final int IDLE = 0;
+        public static final int IDLE_PATRULLA = 1; // ← fila 1 del spritesheet
         public static final int CORRER = 2;
         public static final int ATAQUE = 3;
         public static final int GOLPE = 4;
@@ -60,6 +61,8 @@ public class Constantes {
             switch(tipoEnemigo){
                 case ENEMIGO1:
                     switch (estadoEnemigo){
+                        case IDLE_PATRULLA:
+                            return 6; // columnas 0 a 5 de la fila 1
                         case IDLE:
                             return 6;
                         case CORRER:

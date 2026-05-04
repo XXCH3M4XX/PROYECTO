@@ -249,6 +249,10 @@ public class Jugador extends Entidad {
     private boolean EnSuelo(Rectangle2D.Float hitbox, int[][] datosNivel) {
         return !puedeMoverse(hitbox.x, hitbox.y + 1, hitbox.width, hitbox.height, datosNivel);
     }
+    //devuelve true si hay un ataque en curso, usado para evitar ataques encadenados
+    public boolean isAtacando() {
+        return ataque;
+    }
 
     //calcula el movimiento vertical y horizontal y resuelve colisiones antes de aplicarlo
     private void actualizarPosicion() {

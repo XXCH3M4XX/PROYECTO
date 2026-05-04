@@ -30,6 +30,9 @@ public class KeyboardInputs implements KeyListener {
     @Override
     public void keyPressed(KeyEvent e) {
         switch(Gamestate.state){
+            case INTRO:
+                panelJuego.getJuego().getIntroScreen().keyPressed(e);
+                break;
             case MENU:
                 panelJuego.getJuego().getMenu().keyPressed(e);
                 break;

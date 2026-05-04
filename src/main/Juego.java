@@ -193,4 +193,8 @@ public class Juego implements Runnable {
     public Playing getPlaying(){
         return playing;
     }
+
+    public IntroScreen getIntroScreen() {
+        return introScreen;
+    }
 }

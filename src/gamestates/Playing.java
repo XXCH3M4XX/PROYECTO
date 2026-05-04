@@ -277,10 +277,14 @@ public class Playing extends State implements Statemethods {
 
     @Override
     public void mousePressed(MouseEvent e) {
-        if(!gameOver) {
+        if (!gameOver) {
+            // solo activa el ataque si no hay uno en curso
+            if (e.getButton() == MouseEvent.BUTTON1 && !jugador.isAtacando()) {
+                jugador.setAtaque(true);
+            }
             if (pausado) {
                 pausaOverlay.mousePressed(e);
-            } else if(nivelCompletado) {
+            } else if (nivelCompletado) {
                 nivelCompletadoMenu.mousePressed(e);
             }
         }
