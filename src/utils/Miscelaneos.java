@@ -2,7 +2,9 @@ package utils;
 
 import entidades.PersonajeEnemigo1;
 import main.Juego;
+import objetos.Cañon;
 import objetos.ContenedorJuego;
+import objetos.Pinchos;
 import objetos.Pocion;
 
 import java.awt.*;
@@ -12,6 +14,8 @@ import java.util.ArrayList;
 
 import static main.Juego.TILES_SIZE;
 import static utils.Constantes.constantesObjetos.*;
+import static utils.LoadSave.CAÑON;
+import static utils.LoadSave.TRAMPA;
 
 
 //funciones auxiliares para el control de colisiones y fisicas
@@ -64,6 +68,28 @@ public class Miscelaneos {
         return tileSolido((int) xTile, yTile, datosNivel);
     }
 
+    public static boolean cañonPuedeVerAlJugador(int[][] datosNivel, Rectangle2D.Float hitbox1, Rectangle2D.Float hitbox2, int tileY){
+        int xTile1 = (int) (hitbox1.x / TILES_SIZE);
+        int xTile2 = (int) (hitbox2.x / TILES_SIZE);
+
+        //¿Hay algun obstaculo?
+        if (xTile1 > xTile2) {
+            return direccionesLimpias(xTile2, xTile1, tileY, datosNivel);
+        } else {
+            return direccionesLimpias(xTile1, xTile2, tileY, datosNivel);
+
+        }
+    }
+
+    public static boolean direccionesLimpias(int xInicio, int xFinal, int y, int[][] datosNivel){
+        for (int i = 0; i<xInicio - xFinal; i++ ){
+            if (tileSolido(xInicio + i, y, datosNivel)){
+                return false;
+            }
+        }
+        return true;
+    }
+
     public static boolean tileSolido(int xTile, int yTile, int[][] datosNivel) {
         //evita errores de desbordamiento fuera de los limites del array del nivel
         if (xTile < 0 || yTile < 0 || yTile >= datosNivel.length || xTile >= datosNivel[0].length) {
@@ -105,10 +131,7 @@ public class Miscelaneos {
 
     //este metodo esta aqui porque se puede usar tambien para proyectiles
     //podemos reutilizar el codigo
-    public static boolean vistaDespejada(int[][] datosNivel,
-                                         Rectangle2D.Float hitbox1,
-                                         Rectangle2D.Float hitbox2,
-                                         int tileY) {
+    public static boolean vistaDespejada(int[][] datosNivel, Rectangle2D.Float hitbox1, Rectangle2D.Float hitbox2, int tileY) {
         int xTile1 = (int) (hitbox1.x / TILES_SIZE);
         int xTile2 = (int) (hitbox2.x / TILES_SIZE);
 
@@ -213,44 +236,55 @@ public class Miscelaneos {
 
     public static ArrayList<Pocion> getPociones(BufferedImage imagen) {
         ArrayList<Pocion> lista = new ArrayList<>();
-        for (int i = 0; i < imagen.getHeight(); i++) {
+        for (int i = 0; i < imagen.getHeight(); i++)
             for (int j = 0; j < imagen.getWidth(); j++) {
                 Color color = new Color(imagen.getRGB(j, i));
-                int r = color.getRed();
-                int g = color.getGreen();
-                int b = color.getBlue();
-
-                if (g > 150 && g > r * 2 && g > b * 2) {
-                    if (b <= 1) {
-                        lista.add(new Pocion(j * Juego.TILES_SIZE, i * Juego.TILES_SIZE, POCION_ROJA));
-                    } else if (b <= 4) {
-                        lista.add(new Pocion(j * Juego.TILES_SIZE, i * Juego.TILES_SIZE, POCION_AZUL));
-                    }
-                }
+                int valor = color.getBlue();
+                if (valor == POCION_ROJA || valor == POCION_AZUL)
+                    lista.add(new Pocion(j * Juego.TILES_SIZE, i * Juego.TILES_SIZE, valor));
             }
-        }
         return lista;
     }
 
     public static ArrayList<ContenedorJuego> getContenedor(BufferedImage imagen) {
         ArrayList<ContenedorJuego> lista = new ArrayList<>();
-        for (int i = 0; i < imagen.getHeight(); i++) {
+        for (int i = 0; i < imagen.getHeight(); i++)
             for (int j = 0; j < imagen.getWidth(); j++) {
                 Color color = new Color(imagen.getRGB(j, i));
-                int r = color.getRed();
-                int g = color.getGreen();
-                int b = color.getBlue();
+                int valor = color.getBlue();
+                if (valor == BARRIL || valor == CAJA)
+                    lista.add(new ContenedorJuego(j * Juego.TILES_SIZE, i * Juego.TILES_SIZE, valor));
+            }
+        return lista;
+    }
 
-                if (g > 150 && g > r * 2 && g > b * 2) {
-                    if (b > 4 && b <= 6) {
-                        lista.add(new ContenedorJuego(j * Juego.TILES_SIZE, i * Juego.TILES_SIZE, BARRIL));
-                    } else if (b > 6) {
-                        lista.add(new ContenedorJuego(j * Juego.TILES_SIZE, i * Juego.TILES_SIZE, CAJA));
-                    }
+    public static ArrayList<Pinchos> GetPinchos(BufferedImage img) {
+        ArrayList<Pinchos> lista = new ArrayList<>();
+        for (int i = 0; i < img.getHeight(); i++) {
+            for (int j = 0; j < img.getWidth(); j++) {
+                Color color = new Color(img.getRGB(j, i));
+                int valor = color.getBlue();
+                if (valor == PINCHO) {
+                    lista.add(new Pinchos(j * Juego.TILES_SIZE, i * Juego.TILES_SIZE, PINCHO));
                 }
             }
         }
         return lista;
     }
+
+    public static ArrayList<Cañon> GetCañon(BufferedImage img) {
+        ArrayList<Cañon> lista = new ArrayList<>();
+        for (int i = 0; i < img.getHeight(); i++) {
+            for (int j = 0; j < img.getWidth(); j++) {
+                Color color = new Color(img.getRGB(j, i));
+                int valor = color.getBlue();
+                if (valor == CAÑON_IZQUIERDA || valor == CAÑON_DERECHA) {
+                    lista.add(new Cañon(j * Juego.TILES_SIZE, i * Juego.TILES_SIZE, valor));
+                }
+            }
+        }
+        return lista;
+    }
+
 
 }

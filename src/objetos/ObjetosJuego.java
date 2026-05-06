@@ -32,6 +32,8 @@ public class ObjetosJuego {
                 if(tipoObjeto == BARRIL || tipoObjeto == CAJA){
                     animacion = false;
                     activa = false;
+                } else if (tipoObjeto == CAÑON_IZQUIERDA || tipoObjeto == CAÑON_DERECHA) {
+                    animacion = false;
                 }
             }
         }
@@ -41,7 +43,7 @@ public class ObjetosJuego {
         aniIndice = 0;
         aniTick = 0;
         activa = true;
-        if(tipoObjeto == BARRIL || tipoObjeto == CAJA){
+        if(tipoObjeto == BARRIL || tipoObjeto == CAJA ||tipoObjeto == CAÑON_IZQUIERDA || tipoObjeto == CAÑON_DERECHA){
             animacion = false;
         }else {
             animacion = true;

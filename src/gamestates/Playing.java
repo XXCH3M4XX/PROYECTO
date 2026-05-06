@@ -161,7 +161,7 @@ public class Playing extends State implements Statemethods {
             nivelCompletadoMenu.update();
         } else if (!gameOver) {
             ajusteNivel.update();
-            ajusteDeObjetos.update();
+            ajusteDeObjetos.update(ajusteNivel.getNivelActual().getDatosNivel(), jugador);
             jugador.update();
             ajusteEnemigo.update(ajusteNivel.getNivelActual().getDatosNivel(), jugador);
             comprobarBorde();
@@ -263,6 +263,10 @@ public class Playing extends State implements Statemethods {
 
     public void checkPocionTocada(Rectangle2D.Float hitbox) {
         ajusteDeObjetos.checkObjetoTocado(hitbox);
+    }
+
+    public void checkPinchosTocados(Jugador j) {
+        ajusteDeObjetos.checkJugadorTocaPinchos(j);
     }
 
     @Override
@@ -376,4 +380,6 @@ public class Playing extends State implements Statemethods {
     public void checkObjetoGolpeado(Rectangle2D.Float boxAtaque) {
         ajusteDeObjetos.chekGolpeoAlObjeto(boxAtaque);
     }
+
+
 }

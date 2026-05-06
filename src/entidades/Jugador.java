@@ -95,6 +95,8 @@ public class Jugador extends Entidad {
     private boolean ataqueRevisado;
     private Playing playing;
 
+    private int direccionY =0;
+
 //    private BufferedImage imagenFondo;
 
     //inicializa animaciones y coloca la hitbox en la posicion de spawn
@@ -131,10 +133,16 @@ public class Jugador extends Entidad {
         actualizarPosicion();
         if (movimiento){
             checkPocionTocada();
+            checkPinchosTocados();
+            direccionY = (int)(hitbox.y / Juego.TILES_SIZE);
         }
         if (ataque) revisarAtaque();
         setAnimacion();        // ← primero decide la animacion
         actualizarAnimacion(); // ← luego avanza el contador
+    }
+
+    private void checkPinchosTocados() {
+        playing.checkPinchosTocados(this);
     }
 
     private void checkPocionTocada() {
@@ -422,5 +430,13 @@ public class Jugador extends Entidad {
 
     public void cambiarPoder(int valorPocionAzul) {
         System.out.println("poder añadido");
+    }
+
+    public void muerte() {
+        saludActual = 0;
+    }
+
+    public int getDireccionY(){
+        return  direccionY;
     }
 }

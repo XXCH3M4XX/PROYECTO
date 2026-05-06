@@ -2,7 +2,9 @@ package niveles;
 
 import entidades.PersonajeEnemigo1;
 import main.Juego;
+import objetos.Cañon;
 import objetos.ContenedorJuego;
+import objetos.Pinchos;
 import objetos.Pocion;
 import utils.Miscelaneos;
 
@@ -18,7 +20,9 @@ public class Nivel {
     private BufferedImage imagen;
     private ArrayList<PersonajeEnemigo1> zombie;
     private ArrayList<Pocion> pocion;
+    private ArrayList<Pinchos> pinchos;
     private ArrayList<ContenedorJuego> contenedor;
+    private ArrayList<Cañon> cañon;
     private int tilesAnchoNivel;
     private int tilesMaximoOffset;
     private int tilesMaximosOffsetX;
@@ -32,9 +36,19 @@ public class Nivel {
         cargarEnemigos();
         crearPociones();
         crearContenedores();
+        crearPinchos();
+        crearCañones();
         calcularOffsetsNivel();
         calcularSpawnJugador();
 
+    }
+
+    private void crearCañones() {
+        cañon = Miscelaneos.GetCañon(imagen);
+    }
+
+    private void crearPinchos() {
+        pinchos = Miscelaneos.GetPinchos(imagen);
     }
 
     private void crearContenedores() {
@@ -96,6 +110,14 @@ public class Nivel {
             copia.add(new ContenedorJuego(c.getX(), c.getY(), c.getTipoObjeto()));
         }
         return copia;
+    }
+
+    public ArrayList<Pinchos> getPinchos(){
+        return pinchos;
+    }
+
+    public ArrayList<Cañon> getCañon(){
+        return cañon;
     }
 
 }

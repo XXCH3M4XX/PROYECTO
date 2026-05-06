@@ -34,6 +34,8 @@ public class LoadSave {
     public static final String OBJETOS = "objects_sprites.png";
     public static final String POCIONES = "potions_sprites.png";
     public static final String INTRO = "hpjmGames.png";
+    public static final String TRAMPA = "trap_atlas.png";
+    public static final String CAÑON = "cannon_atlas.png";
 
     //metodo para cargar una imagen desde la carpeta de recursos
     public static BufferedImage GetSpriteAtlas(String fileName){

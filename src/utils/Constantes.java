@@ -12,6 +12,9 @@ public class Constantes {
         public static final int POCION_AZUL = 1;
         public static final int BARRIL = 2;
         public static final int CAJA = 3;
+        public static final int PINCHO = 4;
+        public static final int CAÑON_DERECHA = 5;
+        public static final int CAÑON_IZQUIERDA = 6;
 
         public static final int VALOR_POCION_ROJA = 15;
         public static final int VALOR_POCION_AZUL = 10;
@@ -26,12 +29,24 @@ public class Constantes {
         public static final int ANCHO_POCION = (int) (Juego.ESCALA * ANCHO_POCION_DEFAULT);
         public static final int ALTO_POCION = (int) (Juego.ESCALA * ALTO_POCION_DEFAULT);
 
+        public static final int PINCHO_WIDTH_DEFAULT = 32;
+        public static final int PINCHO_HEIGHT_DEFAULT = 32;
+        public static final int PINCHO_WIDTH = (int) (Juego.ESCALA * PINCHO_WIDTH_DEFAULT);
+        public static final int PINCHO_HEIGHT = (int) (Juego.ESCALA * PINCHO_HEIGHT_DEFAULT);
+
+        public static final int ANCHO_CAÑON_PREDETERMINADO = 40;
+        public static final int ALTO_CAÑON_PREDETERMINADO = 26;
+        public static final int ANCHO_CAÑON = (int) (ANCHO_CAÑON_PREDETERMINADO * Juego.ESCALA);
+        public static final int ALTO_CAÑON = (int) (ALTO_CAÑON_PREDETERMINADO * Juego.ESCALA);
+
         public static int obtenerCantidadSprites(int tipoObjeto) {
             switch (tipoObjeto) {
                 case POCION_ROJA, POCION_AZUL:
                     return 7;
                 case BARRIL, CAJA:
                     return 8;
+                case CAÑON_IZQUIERDA, CAÑON_DERECHA:
+                    return 7;
             }
             return 1;
         }

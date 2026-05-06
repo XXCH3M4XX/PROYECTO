@@ -1,6 +1,8 @@
 package objetos;
 
+import entidades.Jugador;
 import gamestates.Playing;
+import main.Juego;
 import niveles.Nivel;
 import utils.LoadSave;
 
@@ -10,18 +12,31 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 import static utils.Constantes.constantesObjetos.*;
+import static utils.Miscelaneos.*;
 
 public class AjusteDeObjetos {
     private Playing playing;
+    private BufferedImage imagenPinchos;
     private BufferedImage[][] imagenesPociones, contenedorDeImagenes;
+    private BufferedImage [] imagenCañones;
     private ArrayList<Pocion> pociones;
     private ArrayList<Pocion> porcionesOriginales;
-
     private ArrayList<ContenedorJuego> contenedores;
+    private ArrayList<Pinchos> pinchos;
+    private ArrayList<Cañon> cañones;
+
 
     public AjusteDeObjetos(Playing playing){
         this.playing = playing;
         cargarImagenes();
+    }
+
+    public void checkJugadorTocaPinchos(Jugador j){
+        for(Pinchos p : pinchos){
+            if (p.getHitbox().intersects(j.getHitbox())){
+                j.muerte();
+            }
+        }
     }
 
     public void checkObjetoTocado(Rectangle2D.Float hitbox){
@@ -33,6 +48,7 @@ public class AjusteDeObjetos {
                 }
             }
         }
+
     }
 
     public void aplicarEfectoAlJugador(Pocion p){
@@ -65,6 +81,8 @@ public class AjusteDeObjetos {
         pociones = new ArrayList<>(nuevoNivel.getPocion());
         porcionesOriginales = new ArrayList<>(nuevoNivel.getPocion());
         contenedores = new ArrayList<>(nuevoNivel.getContenedor());
+        pinchos = nuevoNivel.getPinchos();
+        cañones = nuevoNivel.getCañon();
     }
 
 
@@ -86,9 +104,18 @@ public class AjusteDeObjetos {
                 contenedorDeImagenes[j][i] = spriteContenedor.getSubimage(40*i, 30*j, 40,30);
             }
         }
+        imagenPinchos = LoadSave.GetSpriteAtlas(LoadSave.TRAMPA);
+
+        imagenCañones = new BufferedImage[7];
+        BufferedImage temp = LoadSave.GetSpriteAtlas(LoadSave.CAÑON);
+
+        for (int i = 0; i < imagenCañones.length; i++){
+            imagenCañones[i] = temp.getSubimage(i * 40, 0, 40, 26);
+        }
+
     }
 
-    public void update(){
+    public void update(int [][]datosNivel, Jugador jugador){
         for (Pocion p : pociones){
             if(p.isActiva()){
                 p.update();
@@ -99,11 +126,71 @@ public class AjusteDeObjetos {
                 c.update();
             }
         }
+        actualizarCañones(datosNivel, jugador);
+    }
+
+    private void actualizarCañones(int[][] datosNivel, Jugador jugador) {
+        for(Cañon c : cañones){
+            if (!c.animacion){
+                if (c.getDireccionY() == jugador.getDireccionY()){
+                    if(jugadorEstaEnRango(c, jugador)){
+                        if (estaEnfrenteDelCañon(c, jugador)){
+                            if (cañonPuedeVerAlJugador(datosNivel, jugador.getHitbox(), c.getHitbox(), c.getDireccionY())){
+                                disparoCañon(c);
+                            }
+                        }
+                    }
+                }
+            }
+            c.update();
+        }
+    }
+
+    private void disparoCañon(Cañon c) {
+        c.setAnimacion(true);
+    }
+
+
+    private boolean estaEnfrenteDelCañon(Cañon c, Jugador jugador) {
+        if (c.getTipoObjeto() == CAÑON_IZQUIERDA){
+            if (c.getHitbox().x < jugador.getHitbox().x){
+                return true;
+            }
+        } else if (c.getHitbox().x > jugador.getHitbox().x) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean jugadorEstaEnRango(Cañon c, Jugador jugador) {
+        int valorAbsoluto = (int) Math.abs(jugador.getHitbox().x - c.getHitbox().x);
+        return valorAbsoluto <= Juego.TILES_SIZE * 5;
     }
 
     public void draw(Graphics g, int xNivelOffset){
         dibujarContenedores(g, xNivelOffset);
         dibujarPociones(g, xNivelOffset);
+        dibujarTrampas(g, xNivelOffset);
+        dibujarCañones(g, xNivelOffset);
+    }
+
+    private void dibujarCañones(Graphics g, int xNivelOffset) {
+        for (Cañon c : cañones){
+            int x = (int)(c.getHitbox().x - xNivelOffset);
+            int ancho = ANCHO_CAÑON;
+
+            if (c.getTipoObjeto() == CAÑON_IZQUIERDA){
+                x += ancho;
+                ancho *= -1;
+            }
+            g.drawImage(imagenCañones[c.getAniIndice()], x, (int)(c.getHitbox().y), ancho, ALTO_CAÑON, null);
+        }
+    }
+
+    private void dibujarTrampas(Graphics g, int xNivelOffset) {
+        for(Pinchos p : pinchos){
+            g.drawImage(imagenPinchos, (int)(p.getHitbox().x - xNivelOffset), (int)(p.getHitbox().y - p.getyDrawOffset()), PINCHO_WIDTH, PINCHO_HEIGHT, null);
+        }
     }
 
     private void dibujarPociones(Graphics g, int xNivelOffset) {
@@ -151,6 +238,9 @@ public class AjusteDeObjetos {
         }
         for (ContenedorJuego cj : contenedores){
             cj.reset();
+        }
+        for (Cañon c : cañones){
+            c.reset();
         }
     }
 }
