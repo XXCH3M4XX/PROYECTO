@@ -18,7 +18,7 @@ public class AjusteDeObjetos {
     private Playing playing;
     private BufferedImage imagenPinchos;
     private BufferedImage[][] imagenesPociones, contenedorDeImagenes;
-    private BufferedImage [] imagenCañones;
+    private BufferedImage [][] imagenCañones;
     private ArrayList<Pocion> pociones;
     private ArrayList<Pocion> porcionesOriginales;
     private ArrayList<ContenedorJuego> contenedores;
@@ -75,6 +75,12 @@ public class AjusteDeObjetos {
                 }
             }
         }
+        for (Cañon c : cañones) {
+            if (c.getHitbox().intersects(hitboxAtaque)) {
+                c.recibirGolpe();
+                return;
+            }
+        }
     }
 
     public void cargarObjetos(Nivel nuevoNivel) {
@@ -106,11 +112,13 @@ public class AjusteDeObjetos {
         }
         imagenPinchos = LoadSave.GetSpriteAtlas(LoadSave.TRAMPA);
 
-        imagenCañones = new BufferedImage[7];
+        imagenCañones = new BufferedImage[4][7];
         BufferedImage temp = LoadSave.GetSpriteAtlas(LoadSave.CAÑON);
 
-        for (int i = 0; i < imagenCañones.length; i++){
-            imagenCañones[i] = temp.getSubimage(i * 40, 0, 40, 26);
+        for (int j = 0; j < imagenCañones.length; j++){
+            for (int i = 0; i < imagenCañones[j].length; i++){
+                imagenCañones[j][i] = temp.getSubimage(i * 72, j * 32, 72, 32);
+            }
         }
 
     }
@@ -147,7 +155,7 @@ public class AjusteDeObjetos {
     }
 
     private void disparoCañon(Cañon c) {
-        c.setAnimacion(true);
+        c.setEstadoDisparo();
     }
 
 
@@ -179,11 +187,13 @@ public class AjusteDeObjetos {
             int x = (int)(c.getHitbox().x - xNivelOffset);
             int ancho = ANCHO_CAÑON;
 
-            if (c.getTipoObjeto() == CAÑON_IZQUIERDA){
+            if (c.getTipoObjeto() == CAÑON_DERECHA){
                 x += ancho;
                 ancho *= -1;
             }
-            g.drawImage(imagenCañones[c.getAniIndice()], x, (int)(c.getHitbox().y), ancho, ALTO_CAÑON, null);
+            g.drawImage(imagenCañones[c.getEstado()][c.getAniIndice()], x, (int)(c.getHitbox().y), ancho, ALTO_CAÑON, null);
+            c.pintarHitbox(g, xNivelOffset);
+
         }
     }
 

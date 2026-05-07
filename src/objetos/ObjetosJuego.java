@@ -93,5 +93,8 @@ public class ObjetosJuego {
     public void setAnimacion(boolean animacion){
         this.animacion = animacion;
     }
+    public boolean isAnimacion() {
+        return animacion;
+    }
 
 }

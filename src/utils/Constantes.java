@@ -34,8 +34,8 @@ public class Constantes {
         public static final int PINCHO_WIDTH = (int) (Juego.ESCALA * PINCHO_WIDTH_DEFAULT);
         public static final int PINCHO_HEIGHT = (int) (Juego.ESCALA * PINCHO_HEIGHT_DEFAULT);
 
-        public static final int ANCHO_CAÑON_PREDETERMINADO = 40;
-        public static final int ALTO_CAÑON_PREDETERMINADO = 26;
+        public static final int ANCHO_CAÑON_PREDETERMINADO = 72;
+        public static final int ALTO_CAÑON_PREDETERMINADO = 32;
         public static final int ANCHO_CAÑON = (int) (ANCHO_CAÑON_PREDETERMINADO * Juego.ESCALA);
         public static final int ALTO_CAÑON = (int) (ALTO_CAÑON_PREDETERMINADO * Juego.ESCALA);
 
