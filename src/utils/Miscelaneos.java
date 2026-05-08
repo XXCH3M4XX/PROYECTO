@@ -2,10 +2,11 @@ package utils;
 
 import entidades.PersonajeEnemigo1;
 import main.Juego;
-import objetos.Cañon;
+import entidades.EsqueletoHueso;
 import objetos.ContenedorJuego;
 import objetos.Pinchos;
 import objetos.Pocion;
+import objetos.Proyectil;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
@@ -14,8 +15,6 @@ import java.util.ArrayList;
 
 import static main.Juego.TILES_SIZE;
 import static utils.Constantes.constantesObjetos.*;
-import static utils.LoadSave.CAÑON;
-import static utils.LoadSave.TRAMPA;
 
 
 //funciones auxiliares para el control de colisiones y fisicas
@@ -43,6 +42,9 @@ public class Miscelaneos {
         //si ningun punto toca un tile solido permite el movimiento
         return true;
     }
+    public static boolean huesoGolpeaNivel(Proyectil p, int[][] datosNivel) {
+        return solido(p.getHitbox().x + p.getHitbox().width / 2, p.getHitbox().y + p.getHitbox().height / 2, datosNivel);
+    }
 
     //metodo privado para determinar si una coordenada especifica es solida
     public static boolean solido(float x, float y, int[][] datosNivel) {
@@ -68,28 +70,25 @@ public class Miscelaneos {
         return tileSolido((int) xTile, yTile, datosNivel);
     }
 
-    public static boolean cañonPuedeVerAlJugador(int[][] datosNivel, Rectangle2D.Float hitbox1, Rectangle2D.Float hitbox2, int tileY){
-        int xTile1 = (int) (hitbox1.x / TILES_SIZE);
-        int xTile2 = (int) (hitbox2.x / TILES_SIZE);
+    public static boolean esqueletoPuedeVerJudator(int[][] datosNivel, Rectangle2D.Float hitboxJugador, Rectangle2D.Float hitboxEsqueleto, int tileY){
+        int xTileJugador = (int)(hitboxJugador.x / TILES_SIZE);
+        int xTileEsqueleto = (int)(hitboxEsqueleto.x / TILES_SIZE);
 
-        //¿Hay algun obstaculo?
-        if (xTile1 > xTile2) {
-            return direccionesLimpias(xTile2, xTile1, tileY, datosNivel);
+        if (xTileJugador > xTileEsqueleto) {
+            return direccionesLimpias(xTileEsqueleto + 1, xTileJugador, tileY, datosNivel); // ← +1 excluye el tile del esqueleto
         } else {
-            return direccionesLimpias(xTile1, xTile2, tileY, datosNivel);
-
+            return direccionesLimpias(xTileJugador + 1, xTileEsqueleto, tileY, datosNivel); // ← +1 excluye el tile del jugador
         }
     }
 
     public static boolean direccionesLimpias(int xInicio, int xFinal, int y, int[][] datosNivel){
-        for (int i = 0; i<xInicio - xFinal; i++ ){
-            if (tileSolido(xInicio + i, y, datosNivel)){
+        for (int i = xInicio; i < xFinal; i++) { // ← itera por valor absoluto de tile
+            if (tileSolido(i, y, datosNivel)){
                 return false;
             }
         }
         return true;
     }
-
     public static boolean tileSolido(int xTile, int yTile, int[][] datosNivel) {
         //evita errores de desbordamiento fuera de los limites del array del nivel
         if (xTile < 0 || yTile < 0 || yTile >= datosNivel.length || xTile >= datosNivel[0].length) {
@@ -272,14 +271,14 @@ public class Miscelaneos {
         return lista;
     }
 
-    public static ArrayList<Cañon> GetCañon(BufferedImage img) {
-        ArrayList<Cañon> lista = new ArrayList<>();
+    public static ArrayList<EsqueletoHueso> getEsqueletoHueso(BufferedImage img) {
+        ArrayList<EsqueletoHueso> lista = new ArrayList<>();
         for (int i = 0; i < img.getHeight(); i++) {
             for (int j = 0; j < img.getWidth(); j++) {
                 Color color = new Color(img.getRGB(j, i));
                 int valor = color.getBlue();
-                if (valor == CAÑON_IZQUIERDA || valor == CAÑON_DERECHA) {
-                    lista.add(new Cañon(j * Juego.TILES_SIZE, i * Juego.TILES_SIZE, valor));
+                if (valor == ESQUELETO || valor == EH_DERECHA) { // ← acepta los dos
+                    lista.add(new EsqueletoHueso(j * Juego.TILES_SIZE, i * Juego.TILES_SIZE, ESQUELETO));
                 }
             }
         }

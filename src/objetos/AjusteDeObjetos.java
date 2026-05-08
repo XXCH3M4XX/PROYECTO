@@ -1,5 +1,6 @@
 package objetos;
 
+import entidades.EsqueletoHueso;
 import entidades.Jugador;
 import gamestates.Playing;
 import main.Juego;
@@ -10,6 +11,7 @@ import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import static utils.Constantes.Proyectiles.*;
 
 import static utils.Constantes.constantesObjetos.*;
 import static utils.Miscelaneos.*;
@@ -18,12 +20,14 @@ public class AjusteDeObjetos {
     private Playing playing;
     private BufferedImage imagenPinchos;
     private BufferedImage[][] imagenesPociones, contenedorDeImagenes;
-    private BufferedImage [][] imagenCañones;
+    private BufferedImage [][] imagenEsqueletoHueso;
+    private BufferedImage[][] huesoProyectil;
     private ArrayList<Pocion> pociones;
     private ArrayList<Pocion> porcionesOriginales;
     private ArrayList<ContenedorJuego> contenedores;
     private ArrayList<Pinchos> pinchos;
-    private ArrayList<Cañon> cañones;
+    private ArrayList<EsqueletoHueso> esqueletosHueso;
+    private ArrayList<Proyectil> proyectiles = new ArrayList<>();
 
 
     public AjusteDeObjetos(Playing playing){
@@ -75,7 +79,7 @@ public class AjusteDeObjetos {
                 }
             }
         }
-        for (Cañon c : cañones) {
+        for (EsqueletoHueso c : esqueletosHueso) {
             if (c.getHitbox().intersects(hitboxAtaque)) {
                 c.recibirGolpe();
                 return;
@@ -88,7 +92,8 @@ public class AjusteDeObjetos {
         porcionesOriginales = new ArrayList<>(nuevoNivel.getPocion());
         contenedores = new ArrayList<>(nuevoNivel.getContenedor());
         pinchos = nuevoNivel.getPinchos();
-        cañones = nuevoNivel.getCañon();
+        esqueletosHueso = nuevoNivel.getCañon();
+        proyectiles.clear();
     }
 
 
@@ -112,14 +117,28 @@ public class AjusteDeObjetos {
         }
         imagenPinchos = LoadSave.GetSpriteAtlas(LoadSave.TRAMPA);
 
-        imagenCañones = new BufferedImage[4][7];
-        BufferedImage temp = LoadSave.GetSpriteAtlas(LoadSave.CAÑON);
+        imagenEsqueletoHueso = new BufferedImage[6][];
+        BufferedImage temp = LoadSave.GetSpriteAtlas(LoadSave.ESQUELETO_HUESO);
 
-        for (int j = 0; j < imagenCañones.length; j++){
-            for (int i = 0; i < imagenCañones[j].length; i++){
-                imagenCañones[j][i] = temp.getSubimage(i * 72, j * 32, 72, 32);
+        for (int i = 0; i < imagenEsqueletoHueso.length; i++) {
+            int frames = getFramesEsqueleto(i);
+            imagenEsqueletoHueso[i] = new BufferedImage[frames];
+            for (int j = 0; j < frames; j++) {
+                imagenEsqueletoHueso[i][j] = temp.getSubimage(j * 72, i * 32, 72, 32);
             }
         }
+        //cargar el proyectil
+        BufferedImage temp2 = LoadSave.GetSpriteAtlas(LoadSave.HUESO_PROYECTIL);
+
+        huesoProyectil = new BufferedImage[2][6];
+
+        for(int fila = 0; fila < 2; fila++){
+            for(int col = 0; col < 6; col++){
+                huesoProyectil[fila][col] =
+                        temp2.getSubimage(col * 15, fila * 15, 15, 15);
+            }
+        }
+
 
     }
 
@@ -134,65 +153,141 @@ public class AjusteDeObjetos {
                 c.update();
             }
         }
-        actualizarCañones(datosNivel, jugador);
+        updateEsqueletosHueso(datosNivel, jugador);
+        updateProyectiles(datosNivel, jugador);
     }
 
-    private void actualizarCañones(int[][] datosNivel, Jugador jugador) {
-        for(Cañon c : cañones){
+    private void updateProyectiles(int[][] datosNivel, Jugador jugador) {
+        for(Proyectil p : proyectiles){
+            if(p.estaActivada()) {
+                p.updatePosicion();
+                if(p.getHitbox().intersects(jugador.getHitbox())){
+                    jugador.cambiarSalud(-25);
+                    p.setActivo(false);
+                    p.setImpacto(true);
+                    p.resetAniIndice(); // ← resetea para que empiece desde el frame 0
+                } else if(huesoGolpeaNivel(p, datosNivel)) {
+                    p.setActivo(false);
+                    p.setImpacto(true);
+                    p.resetAniIndice();
+                }
+            } else if(p.impacto()) {
+                p.actualizarAnimacionImpacto(); // ← avanza la animacion de impacto
+            }
+        }
+    }
+
+
+
+    private void updateEsqueletosHueso(int[][] datosNivel, Jugador jugador) {
+        for(EsqueletoHueso c : esqueletosHueso){
             if (!c.animacion){
-                if (c.getDireccionY() == jugador.getDireccionY()){
+                int tileYJugador = (int)(jugador.getHitbox().y / Juego.TILES_SIZE);
+                if(c.getDireccionY() == tileYJugador){
                     if(jugadorEstaEnRango(c, jugador)){
-                        if (estaEnfrenteDelCañon(c, jugador)){
-                            if (cañonPuedeVerAlJugador(datosNivel, jugador.getHitbox(), c.getHitbox(), c.getDireccionY())){
-                                disparoCañon(c);
+                        if(rangoVisionEsqueletoHueso(c, jugador)){
+                            boolean puedeVer = esqueletoPuedeVerJudator(datosNivel, jugador.getHitbox(), c.getHitbox(), c.getDireccionY());
+                            System.out.println("puedeVer: " + puedeVer);
+                            if(puedeVer){
+                                c.setEstadoDisparo();
                             }
                         }
                     }
                 }
             }
+
             c.update();
-        }
-    }
-
-    private void disparoCañon(Cañon c) {
-        c.setEstadoDisparo();
-    }
-
-
-    private boolean estaEnfrenteDelCañon(Cañon c, Jugador jugador) {
-        if (c.getTipoObjeto() == CAÑON_IZQUIERDA){
-            if (c.getHitbox().x < jugador.getHitbox().x){
-                return true;
+            if (c.debeDispararProyectil()) {
+                c.marcarProyectilLanzado();
+                int direccion = (jugador.getHitbox().x < c.getHitbox().x) ? -1 : 1;
+                c.setUltimaDireccion(direccion); // ← guarda la direccion
+                int x = (int)c.getHitbox().x;
+                if (direccion == 1) x += c.getHitbox().width;
+                proyectiles.add(new Proyectil(x, (int)c.getHitbox().y, direccion));
             }
-        } else if (c.getHitbox().x > jugador.getHitbox().x) {
-            return true;
         }
-        return false;
     }
 
-    private boolean jugadorEstaEnRango(Cañon c, Jugador jugador) {
+    private void disparoEsqueletoHueso(EsqueletoHueso c) {
+        c.setEstadoDisparo(); // ← antes era c.setAnimacion(true)
+
+        int direccion = (playing.getJugador().getHitbox().x < c.getHitbox().x) ? -1 : 1;
+        int x = (int)c.getHitbox().x;
+        if(direccion == 1){
+            x += c.getHitbox().width;
+        }
+        proyectiles.add(new Proyectil(x, (int)c.getHitbox().y, direccion));
+    }
+
+
+    private boolean rangoVisionEsqueletoHueso(EsqueletoHueso c, Jugador jugador) {
+        // el esqueleto ataca en ambas direcciones
+        return true;
+    }
+
+    private boolean jugadorEstaEnRango(EsqueletoHueso c, Jugador jugador) {
         int valorAbsoluto = (int) Math.abs(jugador.getHitbox().x - c.getHitbox().x);
-        return valorAbsoluto <= Juego.TILES_SIZE * 5;
+        return valorAbsoluto <= Juego.TILES_SIZE * 10; // ← era 5, ahora 10
     }
 
     public void draw(Graphics g, int xNivelOffset){
         dibujarContenedores(g, xNivelOffset);
         dibujarPociones(g, xNivelOffset);
         dibujarTrampas(g, xNivelOffset);
-        dibujarCañones(g, xNivelOffset);
+        dibujarEsqueletosHueso(g, xNivelOffset);
+        drawProyectiles(g, xNivelOffset);
     }
 
-    private void dibujarCañones(Graphics g, int xNivelOffset) {
-        for (Cañon c : cañones){
-            int x = (int)(c.getHitbox().x - xNivelOffset);
-            int ancho = ANCHO_CAÑON;
+    private void drawProyectiles(Graphics g, int xNivelOffset) {
+        for(Proyectil p : proyectiles){
+            if(p.estaActivada() || p.impacto()){
+                int fila = p.impacto() ? 1 : 0;
 
-            if (c.getTipoObjeto() == CAÑON_DERECHA){
-                x += ancho;
-                ancho *= -1;
+                // calcula la posicion del sprite compensando el offset de la hitbox
+                int spriteX = (int)(p.getHitbox().x - xNivelOffset) - p.getSpriteOffsetX();
+                int spriteY = (int)(p.getHitbox().y) - p.getSpriteOffsetY();
+
+                g.drawImage(
+                        huesoProyectil[fila][p.getAniIndice()],
+                        spriteX,
+                        spriteY,
+                        HUESO_PROYECTIL_ANCHO,
+                        HUESO_PROYECTIL_ALTO,
+                        null
+                );
+
             }
-            g.drawImage(imagenCañones[c.getEstado()][c.getAniIndice()], x, (int)(c.getHitbox().y), ancho, ALTO_CAÑON, null);
-            c.pintarHitbox(g, xNivelOffset);
+        }
+    }
+
+    private void dibujarEsqueletosHueso(Graphics g, int xNivelOffset) {
+        for (EsqueletoHueso c : esqueletosHueso){
+            int xOffset = -35;
+            int yOffset = -30;
+
+            int x = (int)(c.getHitbox().x - xNivelOffset);
+            int ancho = ANCHO_EH;
+
+            // voltea el sprite segun la ultima direccion de disparo
+            if (c.getUltimaDireccion() == -1) {
+                x += ancho + xOffset;
+                ancho *= -1;
+            } else {
+                x += xOffset;
+            }
+
+            int estadoDibujo = c.getEstado();
+            int indiceDibujo = c.getAniIndice();
+
+            if (estadoDibujo == EsqueletoHueso.EN_SUELO) {
+                estadoDibujo = EsqueletoHueso.DESCOMPONE;
+                indiceDibujo = imagenEsqueletoHueso[estadoDibujo].length - 1;
+            }
+
+            g.drawImage(imagenEsqueletoHueso[estadoDibujo][indiceDibujo],
+                    x, (int)(c.getHitbox().y) + yOffset,
+                    ancho, ALTO_EH, null);
+            g.setColor(Color.GREEN);
 
         }
     }
@@ -249,7 +344,7 @@ public class AjusteDeObjetos {
         for (ContenedorJuego cj : contenedores){
             cj.reset();
         }
-        for (Cañon c : cañones){
+        for (EsqueletoHueso c : esqueletosHueso){
             c.reset();
         }
     }

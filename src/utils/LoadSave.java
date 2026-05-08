@@ -1,16 +1,11 @@
 package utils;
 
-import entidades.PersonajeEnemigo1;
-import main.Juego;
-
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.ArrayList;
 
 //clase de utilidad para la carga de recursos y datos externos
 public class LoadSave {
@@ -35,7 +30,8 @@ public class LoadSave {
     public static final String POCIONES = "potions_sprites.png";
     public static final String INTRO = "hpjmGames.png";
     public static final String TRAMPA = "trap_atlas.png";
-    public static final String CAÑON = "cannon_atlas.png";
+    public static final String ESQUELETO_HUESO = "esqueletoHueso.png";
+    public static final String HUESO_PROYECTIL =  "huesoProyectil.png";
 
     //metodo para cargar una imagen desde la carpeta de recursos
     public static BufferedImage GetSpriteAtlas(String fileName){

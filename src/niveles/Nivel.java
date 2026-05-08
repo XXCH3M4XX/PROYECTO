@@ -2,7 +2,7 @@ package niveles;
 
 import entidades.PersonajeEnemigo1;
 import main.Juego;
-import objetos.Cañon;
+import entidades.EsqueletoHueso;
 import objetos.ContenedorJuego;
 import objetos.Pinchos;
 import objetos.Pocion;
@@ -22,7 +22,7 @@ public class Nivel {
     private ArrayList<Pocion> pocion;
     private ArrayList<Pinchos> pinchos;
     private ArrayList<ContenedorJuego> contenedor;
-    private ArrayList<Cañon> cañon;
+    private ArrayList<EsqueletoHueso> esqueletoHueso;
     private int tilesAnchoNivel;
     private int tilesMaximoOffset;
     private int tilesMaximosOffsetX;
@@ -44,7 +44,7 @@ public class Nivel {
     }
 
     private void crearCañones() {
-        cañon = Miscelaneos.GetCañon(imagen);
+        esqueletoHueso = Miscelaneos.getEsqueletoHueso(imagen);
     }
 
     private void crearPinchos() {
@@ -116,8 +116,8 @@ public class Nivel {
         return pinchos;
     }
 
-    public ArrayList<Cañon> getCañon(){
-        return cañon;
+    public ArrayList<EsqueletoHueso> getCañon(){
+        return esqueletoHueso;
     }
 
 }

@@ -5,6 +5,16 @@ import main.Juego;
 public class Constantes {
 
     public static final int VELOCIDAD_ANIMACION = 25;
+    public static class Proyectiles {
+        public static int HUESO_PROYECTIL_ANCHO = 45;
+        public static int HUESO_PROYECTIL_ALTO = 45;
+        public static int PROYECTIL_ANCHO = (int)(Juego.ESCALA * HUESO_PROYECTIL_ANCHO );
+        public static int PROYECTIL_ALTO = (int)(Juego.ESCALA * HUESO_PROYECTIL_ALTO
+        );
+        public static final float velocidad = 0.5f * Juego.ESCALA;
+
+
+    }
 
     public static class constantesObjetos {
 
@@ -13,8 +23,8 @@ public class Constantes {
         public static final int BARRIL = 2;
         public static final int CAJA = 3;
         public static final int PINCHO = 4;
-        public static final int CAÑON_DERECHA = 5;
-        public static final int CAÑON_IZQUIERDA = 6;
+        public static final int EH_DERECHA = 5;
+        public static final int ESQUELETO = 6;
 
         public static final int VALOR_POCION_ROJA = 15;
         public static final int VALOR_POCION_AZUL = 10;
@@ -34,10 +44,10 @@ public class Constantes {
         public static final int PINCHO_WIDTH = (int) (Juego.ESCALA * PINCHO_WIDTH_DEFAULT);
         public static final int PINCHO_HEIGHT = (int) (Juego.ESCALA * PINCHO_HEIGHT_DEFAULT);
 
-        public static final int ANCHO_CAÑON_PREDETERMINADO = 72;
-        public static final int ALTO_CAÑON_PREDETERMINADO = 32;
-        public static final int ANCHO_CAÑON = (int) (ANCHO_CAÑON_PREDETERMINADO * Juego.ESCALA);
-        public static final int ALTO_CAÑON = (int) (ALTO_CAÑON_PREDETERMINADO * Juego.ESCALA);
+        public static final int ANCHO_ESQUELETO_HUESO = 120;
+        public static final int ALTO_ESQUELETO_HUESO = 50;
+        public static final int ANCHO_EH = (int) (ANCHO_ESQUELETO_HUESO * Juego.ESCALA);
+        public static final int ALTO_EH = (int) (ALTO_ESQUELETO_HUESO * Juego.ESCALA);
 
         public static int obtenerCantidadSprites(int tipoObjeto) {
             switch (tipoObjeto) {
@@ -45,10 +55,18 @@ public class Constantes {
                     return 7;
                 case BARRIL, CAJA:
                     return 8;
-                case CAÑON_IZQUIERDA, CAÑON_DERECHA:
-                    return 7;
+
             }
             return 1;
+        }
+        public static int getFramesEsqueleto(int estado) {
+            switch (estado) {
+                case 1: return 5; // DESCOMPONE, columnas 0-4
+                case 2: return 5; // REGENERA, columnas 0-4
+                case 3: return 7; // DISPARO, columnas 0-6
+                case 5: return 3; // GOLPE, columnas 0-2
+                default: return 1;
+            }
         }
     }
 
