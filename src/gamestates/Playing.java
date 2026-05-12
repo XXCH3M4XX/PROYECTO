@@ -35,6 +35,7 @@ public class Playing extends State implements Statemethods {
     private PausaOverlay pausaOverlay;
     private OverOverlayJuego overlay;
     private NivelCompletadoOverlay nivelCompletadoMenu;
+
     //desplazamiento horizontal actual del nivel en pixeles
     private int OffsetXNivel;
 
@@ -45,7 +46,6 @@ public class Playing extends State implements Statemethods {
     //ancho total del nivel en tiles y offset maximo que puede alcanzar la camara
     private int tilesMaximosOffsetX;
 
-
     //imagenes del fondo, montañas y nubes
     private BufferedImage imagenFondo;
     private BufferedImage imagenMontañas;
@@ -54,9 +54,13 @@ public class Playing extends State implements Statemethods {
     //posiciones Y aleatorias de cada nube para distribuirlas verticalmente
     private int[] nubesPosicion;
     private Random random = new Random();
+
+    //flags que controlan el estado general de la partida
     private boolean gameOver = false;
     private boolean nivelCompletado = false;
+    private boolean jugadorMuriendo = false;
 
+    //inicializa todos los sistemas y carga las imagenes del entorno
     public Playing(Juego juego) {
         super(juego);
         initClasses();
@@ -74,6 +78,8 @@ public class Playing extends State implements Statemethods {
         calcularOffsetNivel();
         cargarNivel();
     }
+
+    //avanza al siguiente nivel reseteando todos los sistemas y cargando los nuevos datos
     public void cargarSiguienteNivel() {
         gameOver = false;
         pausado = false;
@@ -87,21 +93,21 @@ public class Playing extends State implements Statemethods {
         jugador.setSpawn(ajusteNivel.getNivelActual().getSpawnJugador());
         jugador.cargarDatosNivel(ajusteNivel.getNivelActual().getDatosNivel());
         tilesMaximosOffsetX = ajusteNivel.getNivelActual().getOffsetNivel();
-        ajusteEnemigo.cargarEnemigos(ajusteNivel.getNivelActual()); // ← carga los enemigos del nuevo nivel
-        ajusteEnemigo.resetearTodosEnemigos(); // ← los resetea todos a su estado inicial
-        ajusteDeObjetos.cargarObjetos(ajusteNivel.getNivelActual()); // ← igual con los objetos
+        ajusteEnemigo.cargarEnemigos(ajusteNivel.getNivelActual());
+        ajusteEnemigo.resetearTodosEnemigos();
+        ajusteDeObjetos.cargarObjetos(ajusteNivel.getNivelActual());
     }
 
+    //carga los enemigos y objetos del nivel actual en sus gestores correspondientes
     private void cargarNivel() {
         ajusteEnemigo.cargarEnemigos(ajusteNivel.getNivelActual());
         ajusteEnemigo.resetearTodosEnemigos();
         ajusteDeObjetos.cargarObjetos(ajusteNivel.getNivelActual());
     }
 
+    //obtiene el offset maximo del nivel actual y lo guarda para limitar la camara
     private void calcularOffsetNivel() {
-        // TODO Auto-generated method
         tilesMaximosOffsetX = ajusteNivel.getNivelActual().getOffsetNivel();
-
     }
 
     //crea el nivel y coloca al jugador encima del tile de suelo correspondiente
@@ -141,32 +147,40 @@ public class Playing extends State implements Statemethods {
         jugador.resetDirBooleans();
     }
 
+    //reenvía el evento de arrastre del raton a la pantalla de pausa si esta activa
     public void mouseDragged(MouseEvent e) {
-        if(!gameOver) {
+        if (!gameOver) {
             if (pausado) {
                 pausaOverlay.mouseDragged(e);
             }
         }
     }
+
+    //marca el nivel como completado y desactiva la pausa para mostrar el overlay
     public void setNivelCompletado(boolean nivelCompletado) {
         this.nivelCompletado = nivelCompletado;
-        if(nivelCompletado) pausado = false;
+        if (nivelCompletado) pausado = false;
     }
 
+    //bucle principal del estado, delega el update segun el estado activo de la partida
     @Override
     public void update() {
-        if(pausado) {
+        if (pausado) {
             pausaOverlay.actualizar();
-        } else if(nivelCompletado) {
+        } else if (nivelCompletado) {
             nivelCompletadoMenu.update();
-        } else if (!gameOver) {
+        } else if (gameOver) {
+            overlay.update();
+        } else if (jugadorMuriendo) {
+            //solo actualiza al jugador para que reproduzca la animacion de muerte
+            jugador.update();
+        } else {
             ajusteNivel.update();
             ajusteDeObjetos.update(ajusteNivel.getNivelActual().getDatosNivel(), jugador);
             jugador.update();
             ajusteEnemigo.update(ajusteNivel.getNivelActual().getDatosNivel(), jugador);
             comprobarBorde();
         }
-
     }
 
     //desplaza la camara cuando el jugador se acerca a los bordes de la pantalla
@@ -188,9 +202,9 @@ public class Playing extends State implements Statemethods {
         }
     }
 
+    //dibuja en orden: fondo, entorno, nivel, jugador, enemigos, objetos y overlays activos
     @Override
     public void draw(Graphics g) {
-        //dibuja en orden: fondo, entorno, nivel, jugador y pausa encima de todo
         g.drawImage(imagenFondo, 0, 0, Juego.GAME_WIDTH, Juego.GAME_HEIGHT, null);
         pintarMontañasYNubes(g);
         ajusteNivel.draw(g, OffsetXNivel);
@@ -205,8 +219,7 @@ public class Playing extends State implements Statemethods {
             pausaOverlay.draw(g);
         } else if (gameOver) {
             overlay.draw(g);
-
-        } else if(nivelCompletado) {
+        } else if (nivelCompletado) {
             nivelCompletadoMenu.draw(g);
         }
     }
@@ -234,7 +247,8 @@ public class Playing extends State implements Statemethods {
         }
     }
 
-    public void resetAll(){
+    //resetea todos los sistemas al estado inicial para reiniciar la partida desde cero
+    public void resetAll() {
         gameOver = false;
         pausado = false;
         nivelCompletado = false;
@@ -243,8 +257,9 @@ public class Playing extends State implements Statemethods {
         jugador.setSpawn(ajusteNivel.getNivelActual().getSpawnJugador());
         ajusteEnemigo.cargarEnemigos(ajusteNivel.getNivelActual());
         tilesMaximosOffsetX = ajusteNivel.getNivelActual().getOffsetNivel();
-        ajusteDeObjetos.cargarObjetos(ajusteNivel.getNivelActual()); // ← añade esto
+        ajusteDeObjetos.cargarObjetos(ajusteNivel.getNivelActual());
         jugador.resetearTodo();
+        jugadorMuriendo = false;
 
         //fundamental para que funcione el boton de reiniciar, si no no se reinicia la posicion
         ajusteEnemigo.resetearTodosEnemigos();
@@ -252,75 +267,93 @@ public class Playing extends State implements Statemethods {
         ajusteDeObjetos.resetearTodosLosObjetos();
     }
 
-
-    public void setGameOver(boolean gameOver){
+    //activa o desactiva la pantalla de game over
+    public void setGameOver(boolean gameOver) {
         this.gameOver = gameOver;
     }
 
-    public void revisarGolpeEnemigo(Rectangle2D.Float boxAtaque){
+    //delega en el gestor de enemigos la comprobacion de si el boxAtaque golpea a alguno
+    public void revisarGolpeEnemigo(Rectangle2D.Float boxAtaque) {
         ajusteEnemigo.golpeEnemigo(boxAtaque);
     }
 
+    //delega en el gestor de objetos la comprobacion de si la hitbox toca una pocion
     public void checkPocionTocada(Rectangle2D.Float hitbox) {
         ajusteDeObjetos.checkObjetoTocado(hitbox);
     }
 
+    //delega en el gestor de objetos la comprobacion de si el jugador toca pinchos
     public void checkPinchosTocados(Jugador j) {
         ajusteDeObjetos.checkJugadorTocaPinchos(j);
     }
 
+    //el click izquierdo activa el ataque del jugador si la partida esta en curso
     @Override
     public void mouseClicked(MouseEvent e) {
         if (!gameOver) {
-            //el click izquierdo activa el ataque del jugador
             if (e.getButton() == MouseEvent.BUTTON1) {
                 jugador.setAtaque(true);
             }
         }
     }
 
+    //reenvía el evento de pulsacion al overlay activo segun el estado de la partida
     @Override
     public void mousePressed(MouseEvent e) {
-        if (!gameOver) {
-            // solo activa el ataque si no hay uno en curso
-            if (e.getButton() == MouseEvent.BUTTON1 && !jugador.isAtacando()) {
-                jugador.setAtaque(true);
-            }
-            if (pausado) {
-                pausaOverlay.mousePressed(e);
-            } else if (nivelCompletado) {
-                nivelCompletadoMenu.mousePressed(e);
-            }
+        if (gameOver) {
+            overlay.mousePressed(e);
+            return;
+        }
+        if (e.getButton() == MouseEvent.BUTTON1 && !jugador.isAtacando()) {
+            jugador.setAtaque(true);
+        }
+        if (pausado) {
+            pausaOverlay.mousePressed(e);
+        } else if (nivelCompletado) {
+            nivelCompletadoMenu.mousePressed(e);
+        } else {
+            overlay.mousePressed(e);
         }
     }
 
+    //reenvía el evento de soltar el raton al overlay activo segun el estado de la partida
     @Override
     public void mouseReleased(MouseEvent e) {
-        if(!gameOver) {
-            if (pausado) {
-                pausaOverlay.mouseReleased(e);
-            } else if(nivelCompletado) {
-                nivelCompletadoMenu.mouseReleased(e);
-            }
+        if (gameOver) {
+            overlay.mouseReleased(e);
+            return;
+        }
+        if (pausado) {
+            pausaOverlay.mouseReleased(e);
+        } else if (nivelCompletado) {
+            nivelCompletadoMenu.mouseReleased(e);
+        } else {
+            overlay.mouseReleased(e);
         }
     }
 
+    //reenvía el evento de movimiento del raton al overlay activo segun el estado de la partida
     @Override
     public void mouseMoved(MouseEvent e) {
-        if(!gameOver) {
-            if (pausado) {
-                pausaOverlay.mouseMoved(e);
-            } else if(nivelCompletado) {
-                nivelCompletadoMenu.mouseMoved(e);
-            }
+        if (gameOver) {
+            overlay.mouseMoved(e);
+            return;
+        }
+        if (pausado) {
+            pausaOverlay.mouseMoved(e);
+        } else if (nivelCompletado) {
+            nivelCompletadoMenu.mouseMoved(e);
+        } else {
+            overlay.mouseMoved(e);
         }
     }
 
+    //gestiona las teclas segun el estado activo, game over solo acepta escape
     @Override
     public void keyPressed(KeyEvent e) {
-        if (gameOver){
+        if (gameOver) {
             overlay.teclaPresionada(e);
-        }else {
+        } else {
             switch (e.getKeyCode()) {
                 case KeyEvent.VK_A:
                     jugador.setIzquierda(true);
@@ -342,9 +375,10 @@ public class Playing extends State implements Statemethods {
         }
     }
 
+    //al soltar las teclas desactiva los flags correspondientes del jugador
     @Override
     public void keyReleased(KeyEvent e) {
-        if(!gameOver){
+        if (!gameOver) {
             switch (e.getKeyCode()) {
                 case KeyEvent.VK_A:
                     jugador.setIzquierda(false);
@@ -359,11 +393,14 @@ public class Playing extends State implements Statemethods {
                     break;
             }
         }
-
     }
-    public void setOffsetNivelMaximo(int offsetNivel){
+
+    //establece el offset maximo de la camara para el nivel actual
+    public void setOffsetNivelMaximo(int offsetNivel) {
         this.tilesMaximosOffsetX = offsetNivel;
     }
+
+    //devuelve el gestor de enemigos para que otros sistemas puedan acceder a el
     public AjusteEnemigo getAjusteEnemigo() {
         return ajusteEnemigo;
     }
@@ -373,13 +410,18 @@ public class Playing extends State implements Statemethods {
         pausado = false;
     }
 
-    public AjusteDeObjetos getAjusteDeObjetos(){
+    //devuelve el gestor de objetos para que otros sistemas puedan acceder a el
+    public AjusteDeObjetos getAjusteDeObjetos() {
         return ajusteDeObjetos;
     }
 
+    //delega en el gestor de objetos la comprobacion de si el boxAtaque golpea un objeto
     public void checkObjetoGolpeado(Rectangle2D.Float boxAtaque) {
         ajusteDeObjetos.chekGolpeoAlObjeto(boxAtaque);
     }
 
-
+    //activa el flag de jugador muriendo para que el update solo procese su animacion de muerte
+    public void setJugadorMuerte(boolean b) {
+        this.jugadorMuriendo = true;
+    }
 }

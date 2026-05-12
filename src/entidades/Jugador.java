@@ -10,8 +10,10 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
 import static utils.Constantes.ConstantesJugador.*;
-import static utils.Constantes.constantesDelEnemigo.IDLE;
+import static utils.Constantes.ConstantesJugador.PREDETERMINADO;
+import static utils.Constantes.ConstantesJugador.MUERTE;
 import static utils.Miscelaneos.*;
+import static utils.Constantes.*;
 
 //controla la logica, animaciones y colisiones del personaje principal
 public class Jugador extends Entidad {
@@ -60,44 +62,50 @@ public class Jugador extends Entidad {
     public static final int HITBOX_H = (int)(28 * Juego.ESCALA);
 
     //tamaño del sprite completo en pixeles escalados, solo para el renderizado
-    //Comentado porque no se usa
     public static final int SPRITE_W = (int)(64 * Juego.ESCALA);
     public static final int SPRITE_H = (int)(40 * Juego.ESCALA);
 
-    //variable booleana que nos permite saber si esta mirando a la derecha o a la izquierda
+    //true si el jugador mira hacia la derecha, false si mira hacia la izquierda
     boolean mirandoDerecha = true;
 
     //desplazamiento del sprite respecto a la hitbox para que coincidan visualmente
     private int offsetX = 50;
     private int offsetY = 25;
 
-    //StatusBarUI
+    //imagen de la barra de estado que se superpone sobre la barra de vida
     private BufferedImage imagenBarraEstado;
 
+    //posicion y tamaño de la barra de estado en pantalla ya escalados
     private int xBarraEstado = (int) (10 * Juego.ESCALA);
     private int yBarraEstado = (int) (10 * Juego.ESCALA);
+    private int anchoBarraEstado = (int) (345 * Juego.ESCALA);
+    private int altoBarraEstado  = (int) (87  * Juego.ESCALA);
 
-    private int anchoBarraEstado = (int) (345 * Juego.ESCALA); // 230 * 1.5
-    private int altoBarraEstado  = (int) (87  * Juego.ESCALA); // 58  * 1.5
+    //dimensiones y posicion del segmento verde que representa la vida actual
+    private int anchoBarraVida   = (int) (180 * Juego.ESCALA);
+    private int altoBarraVida    = (int) (4   * Juego.ESCALA);
+    private int xInicioBarraVida = (int) (61  * Juego.ESCALA);
+    private int yInicioBarraVida = (int) (22  * Juego.ESCALA);
 
-    private int anchoBarraVida   = (int) (180 * Juego.ESCALA); // 120 * 1.5
-    private int altoBarraVida    = (int) (4   * Juego.ESCALA); // era 2, ahora 6 px
-    private int xInicioBarraVida = (int) (61  * Juego.ESCALA); // 41  * 1.5
-    private int yInicioBarraVida = (int) (22  * Juego.ESCALA); // 15  * 1.5
+    //vida maxima del jugador y vida actual, anchoSalud se recalcula cada frame
     private int saludMaxima = 120;
     private int saludActual = 40;
     private int anchoSalud = anchoBarraVida;
 
+    //hitbox del ataque, se reposiciona cada frame segun la direccion del jugador
     private Rectangle2D.Float boxAtaque;
 
+    //posicion de aparicion del jugador, se guarda para poder volver a ella al morir
     private float spawnX, spawnY;
 
+    //evita que el golpe se registre mas de una vez por animacion de ataque
     private boolean ataqueRevisado;
+
+    //referencia al estado de juego para comunicar eventos como muerte o golpes
     private Playing playing;
 
-    private int direccionY =0;
-
-//    private BufferedImage imagenFondo;
+    //fila de tile en la que se encuentra el jugador, usada para logica de nivel
+    private int direccionY = 0;
 
     //inicializa animaciones y coloca la hitbox en la posicion de spawn
     public Jugador(float x, float y, int width, int height, Playing playing) {
@@ -107,50 +115,67 @@ public class Jugador extends Entidad {
         iniciarHitbox(x, y, HITBOX_W, HITBOX_H);
         iniciarHitboxAtaque();
         imagenBarraEstado = LoadSave.GetSpriteAtlas(LoadSave.BARRA_SALUD);
-
     }
+
+    //establece el punto de aparicion del jugador y mueve la hitbox a esa posicion
     public void setSpawn(Point spawn) {
         this.x = spawn.x;
         this.y = spawn.y;
-        this.spawnX = spawn.x; // ← añade esto
-        this.spawnY = spawn.y; // ← y esto
+        this.spawnX = spawn.x;
+        this.spawnY = spawn.y;
         hitbox.x = x;
         hitbox.y = y;
     }
 
+    //crea la hitbox de ataque con un tamaño fijo escalado, se reposiciona en cada update
     private void iniciarHitboxAtaque() {
-        boxAtaque = new Rectangle2D.Float(x, y, (int)(20* Juego.ESCALA), (int)(20*Juego.ESCALA));
+        boxAtaque = new Rectangle2D.Float(x, y, (int)(20 * Juego.ESCALA), (int)(20 * Juego.ESCALA));
     }
 
-    //punto de entrada del bucle del juego, llama a los tres sistemas en orden
-    public void update(){
+    //punto de entrada del bucle del juego, gestiona muerte, movimiento, ataque y animacion
+    public void update() {
         actualizarBarraDeVida();
-        if(saludActual <= 0){
-            playing.setGameOver(true);
+        if (saludActual <= 0) {
+            if (accionJugador != MUERTE) {
+                accionJugador = MUERTE;
+                tickAnim = 0;
+                indiceAnim = 0;
+                ataque = false;
+                ataqueRevisado = false;
+                playing.setJugadorMuerte(true);
+            } else if (indiceAnim == GetCantidadSprite(MUERTE) - 1
+                    && tickAnim >= VELOCIDAD_ANIMACION - 1) {
+                playing.setGameOver(true);
+            } else {
+                actualizarAnimacion();
+            }
             return;
         }
         actualizarHitboxAtaque();
         actualizarPosicion();
-        if (movimiento){
+        if (movimiento) {
             checkPocionTocada();
             checkPinchosTocados();
             direccionY = (int)(hitbox.y / Juego.TILES_SIZE);
         }
         if (ataque) revisarAtaque();
-        setAnimacion();        // ← primero decide la animacion
-        actualizarAnimacion(); // ← luego avanza el contador
+        setAnimacion();
+        actualizarAnimacion();
     }
 
+    //delega en playing la comprobacion de si el jugador toca pinchos este frame
     private void checkPinchosTocados() {
         playing.checkPinchosTocados(this);
     }
 
+    //delega en playing la comprobacion de si la hitbox toca una pocion este frame
     private void checkPocionTocada() {
         playing.checkPocionTocada(hitbox);
     }
 
+    //registra el golpe del ataque en el frame correcto y evita que se repita en la misma animacion
     private void revisarAtaque() {
-        if(ataqueRevisado || indiceAnim != 1){
+        if (ataqueRevisado || indiceAnim != 1) {
             return;
         }
         ataqueRevisado = true;
@@ -158,8 +183,9 @@ public class Jugador extends Entidad {
         playing.checkObjetoGolpeado(boxAtaque);
     }
 
+    //reposiciona la hitbox de ataque delante del jugador segun la direccion en que mira
     private void actualizarHitboxAtaque() {
-        if(derecha){
+        if (derecha) {
             boxAtaque.x = hitbox.x + hitbox.width + (int)(Juego.ESCALA * 1);
         } else if (izquierda) {
             boxAtaque.x = hitbox.x - hitbox.width - (int)(Juego.ESCALA * 1);
@@ -167,74 +193,73 @@ public class Jugador extends Entidad {
         boxAtaque.y = hitbox.y + (Juego.ESCALA * 10);
     }
 
+    //recalcula el ancho del segmento verde en proporcion a la vida actual sobre la maxima
     private void actualizarBarraDeVida() {
         anchoSalud = (int)((saludActual / (float)saludMaxima) * anchoBarraVida);
     }
 
     //inyecta los datos del nivel para que el jugador pueda comprobar colisiones
-    public void cargarDatosNivel(int[][] datosNivel){
+    public void cargarDatosNivel(int[][] datosNivel) {
         this.datosNivel = datosNivel;
     }
 
     //pinta el sprite usando los offsets para alinear visualmente con la hitbox
-    public void render(Graphics g, int nivelOffset){
-        int drawX = (int)(hitbox.x - offsetX) - nivelOffset;  // punto fijo, no depende de width
+    public void render(Graphics g, int nivelOffset) {
+        int drawX = (int)(hitbox.x - offsetX) - nivelOffset;
         int drawY = (int)(hitbox.y - offsetY);
 
         if (mirandoDerecha) {
-            g.drawImage(
-                    animaciones[accionJugador][indiceAnim],
-                    drawX, drawY,
-                    width, height,
-                    null
-            );
+            g.drawImage(animaciones[accionJugador][indiceAnim],
+                    drawX, drawY, width, height, null);
         } else {
-            g.drawImage(
-                    animaciones[accionJugador][indiceAnim],
-                    drawX + width, drawY,  // desplazamos el origen al borde derecho
-                    -width, height,        // y dibujamos hacia la izquierda
-                    null
-            );
+            //espeja el sprite horizontalmente desplazando el origen al borde derecho
+            g.drawImage(animaciones[accionJugador][indiceAnim],
+                    drawX + width, drawY, -width, height, null);
         }
         dibujarUI(g);
     }
 
+    //dibuja el rectangulo rojo de la hitbox de ataque, util para depuracion
     private void dibujarHitboxDeAtaque(Graphics g, int nivelOffsetX) {
         g.setColor(Color.red);
-        g.drawRect((int)boxAtaque.x - nivelOffsetX, (int)boxAtaque.y, (int)boxAtaque.width, (int)boxAtaque.height);
+        g.drawRect((int)boxAtaque.x - nivelOffsetX, (int)boxAtaque.y,
+                (int)boxAtaque.width, (int)boxAtaque.height);
     }
 
+    //dibuja la imagen de la barra de estado y rellena el segmento de vida con color verde
     private void dibujarUI(Graphics g) {
         Color verdeVida = new Color(0x5daf03);
-        g.drawImage(imagenBarraEstado, xBarraEstado, yBarraEstado, anchoBarraEstado, altoBarraEstado, null);
+        g.drawImage(imagenBarraEstado, xBarraEstado, yBarraEstado,
+                anchoBarraEstado, altoBarraEstado, null);
         g.setColor(verdeVida);
-        g.fillRect(xInicioBarraVida + xBarraEstado, yInicioBarraVida + yBarraEstado, anchoSalud, altoBarraVida);
+        g.fillRect(xInicioBarraVida + xBarraEstado, yInicioBarraVida + yBarraEstado,
+                anchoSalud, altoBarraVida);
     }
 
     //decide que animacion reproducir segun el estado del jugador, el aire tiene prioridad sobre el movimiento
     private void setAnimacion() {
         int startAni = accionJugador;
 
-        if(movimiento) {
+        if (movimiento) {
             accionJugador = CORRIENDO;
         } else {
             accionJugador = PREDETERMINADO;
         }
 
         //el aire sobreescribe el movimiento horizontal porque tiene mas prioridad visual
-        if(aire) {
+        if (aire) {
             //velocidad negativa significa que sube, positiva que cae
-            if(velocidadAire < 0) {
+            if (velocidadAire < 0) {
                 accionJugador = SALTANDO;
             } else {
                 accionJugador = CAYENDO;
             }
         }
 
-        //el ataque sobreescribe todo lo demas
-        if(ataque){
+        //el ataque sobreescribe todo lo demas y fuerza el inicio desde el frame correcto
+        if (ataque) {
             accionJugador = PATADA;
-            if (startAni != PATADA){
+            if (startAni != PATADA) {
                 indiceAnim = 1;
                 tickAnim = 0;
                 return;
@@ -242,13 +267,13 @@ public class Jugador extends Entidad {
         }
 
         //si la accion cambio reiniciamos el contador para no empezar por la mitad
-        if(startAni != accionJugador){
+        if (startAni != accionJugador) {
             resetAniTick();
         }
     }
 
     //reinicia los contadores de animacion al cambiar de accion
-    private void resetAniTick(){
+    private void resetAniTick() {
         tickAnim = 0;
         indiceAnim = 0;
     }
@@ -257,6 +282,7 @@ public class Jugador extends Entidad {
     private boolean EnSuelo(Rectangle2D.Float hitbox, int[][] datosNivel) {
         return !puedeMoverse(hitbox.x, hitbox.y + 1, hitbox.width, hitbox.height, datosNivel);
     }
+
     //devuelve true si hay un ataque en curso, usado para evitar ataques encadenados
     public boolean isAtacando() {
         return ataque;
@@ -282,7 +308,7 @@ public class Jugador extends Entidad {
         }
         if (derecha) {
             xVelocidad += velocidadJugador;
-            mirandoDerecha =  true;
+            mirandoDerecha = true;
         }
 
         if (aire) {
@@ -313,7 +339,6 @@ public class Jugador extends Entidad {
         if (xVelocidad != 0 || aire) {
             movimiento = true;
         }
-
     }
 
     //inicia el salto solo si el jugador esta en el suelo
@@ -350,9 +375,10 @@ public class Jugador extends Entidad {
         }
     }
 
-    public void cambiarSalud(int valor){
+    //suma o resta vida al jugador y la mantiene dentro del rango valido
+    public void cambiarSalud(int valor) {
         saludActual += valor;
-        if (saludActual <= 0){
+        if (saludActual <= 0) {
             saludActual = 0;
         } else if (saludActual >= saludMaxima) {
             saludActual = saludMaxima;
@@ -363,19 +389,22 @@ public class Jugador extends Entidad {
     private void actualizarAnimacion() {
         tickAnim++;
 
-        // velocidad segun la accion actual
         int velocidadActual = (accionJugador == PATADA) ? 30 : velocidadAnim;
-        if(tickAnim >= velocidadActual) { // ← cambia velocidadAnim por velocidadActual
+        if (tickAnim >= velocidadActual) {
             tickAnim = 0;
             indiceAnim++;
 
-            if(indiceAnim >= Constantes.ConstantesJugador.GetCantidadSprite(accionJugador)) {
+            if (indiceAnim >= Constantes.ConstantesJugador.GetCantidadSprite(accionJugador)) {
+                // Si es muerte, se congela en el último frame
+                if (accionJugador == MUERTE) {
+                    indiceAnim = Constantes.ConstantesJugador.GetCantidadSprite(MUERTE) - 1;
+                    return;
+                }
                 indiceAnim = 0;
                 ataque = false;
                 ataqueRevisado = false;
             }
         }
-
     }
 
     //carga el atlas y recorta cada frame de cada animacion en su posicion correspondiente
@@ -383,7 +412,7 @@ public class Jugador extends Entidad {
         BufferedImage imagen = LoadSave.GetSpriteAtlas(LoadSave.PLAYER_ATLAS);
 
         //7 filas de animaciones con hasta 4 frames cada una
-        animaciones = new BufferedImage[7][4];
+        animaciones = new BufferedImage[9][8];
 
         for (int j = 0; j < animaciones.length; j++) {
             int cantidad = Constantes.ConstantesJugador.GetCantidadSprite(j);
@@ -393,50 +422,54 @@ public class Jugador extends Entidad {
                 animaciones[j][i] = imagen.getSubimage(i * 64, j * 40, 64, 40);
             }
         }
-
-        System.out.println("Imagen cargada correctamente");
     }
 
-    //para el movimiento del jugador, se llama cuando la ventana pierde el foco
-    public void resetDirBooleans(){
+    //detiene el movimiento del jugador, se llama cuando la ventana pierde el foco
+    public void resetDirBooleans() {
         izquierda = derecha = arriba = abajo = false;
     }
 
-    public void resetearTodo(){
+    //restaura todos los valores del jugador a su estado inicial y lo mueve al spawn
+    public void resetearTodo() {
         resetDirBooleans();
         aire = false;
         ataque = false;
         movimiento = false;
-        accionJugador = IDLE;
+        accionJugador = PREDETERMINADO;
         saludActual = saludMaxima;
-        hitbox.x = spawnX; // ← antes era x
-        hitbox.y = spawnY; // ← antes era y
-        x = spawnX;        // ← añade esto
-        y = spawnY;        // ← y esto
+        hitbox.x = spawnX;
+        hitbox.y = spawnY;
+        x = spawnX;
+        y = spawnY;
     }
 
-    public void setAtaque(boolean ataque){ this.ataque = ataque; }
+    //activa o desactiva el flag de ataque desde el sistema de input
+    public void setAtaque(boolean ataque) { this.ataque = ataque; }
+
+    //activa o desactiva el flag de salto desde el sistema de input
     public void setSalto(boolean salto) { this.jump = salto; }
 
-    public boolean isAbajo() { return abajo; }
-    public boolean isArriba() { return arriba; }
-    public boolean isDerecha() { return derecha; }
-    public boolean isIzquierda() { return izquierda; }
-
-    public void setAbajo(boolean abajo) { this.abajo = abajo; }
-    public void setArriba(boolean arriba) { this.arriba = arriba; }
+    //activa o desactiva el movimiento hacia la derecha desde el sistema de input
     public void setDerecha(boolean derecha) { this.derecha = derecha; }
+
+    //activa o desactiva el movimiento hacia la izquierda desde el sistema de input
     public void setIzquierda(boolean izquierda) { this.izquierda = izquierda; }
 
+    //placeholder para el sistema de poder, actualmente solo imprime un mensaje
     public void cambiarPoder(int valorPocionAzul) {
         System.out.println("poder añadido");
     }
 
+    //devuelve true si el jugador esta pulsando la tecla de bajar
+    public boolean isAbajo() { return abajo; }
+
+    //reduce la vida a cero para forzar la muerte del jugador desde sistemas externos
     public void muerte() {
         saludActual = 0;
     }
 
-    public int getDireccionY(){
-        return  direccionY;
+    //devuelve la fila de tile en la que se encuentra el jugador
+    public int getDireccionY() {
+        return direccionY;
     }
 }

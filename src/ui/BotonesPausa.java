@@ -23,6 +23,7 @@ public class BotonesPausa {
         bordes = new Rectangle(x, y, widht, height);
     }
 
+    //getters y setters
     public int getX() { return x; }
     public void setX(int x) { this.x = x; }
     public int getY() { return y; }

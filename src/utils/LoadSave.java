@@ -11,7 +11,7 @@ import java.net.URL;
 public class LoadSave {
 
     //nombres de los archivos de imagen para los sprites y niveles
-    public static final String PLAYER_ATLAS = "Ordenado2.png";
+    public static final String PLAYER_ATLAS = "SpriteSheetJonathan.png";
     public static final String LEVEL_ATLAS = "sueloCampo.png";
     public static final String BOTONES_MENU = "botones.png";
     public static final String FONDO_MENU = "menuFondo.png";
@@ -32,6 +32,8 @@ public class LoadSave {
     public static final String TRAMPA = "trap_atlas.png";
     public static final String ESQUELETO_HUESO = "esqueletoHueso.png";
     public static final String HUESO_PROYECTIL =  "huesoProyectil.png";
+    public static final String PANTALLA_MUERTE =  "pantallaMuerte.png";
+
 
     //metodo para cargar una imagen desde la carpeta de recursos
     public static BufferedImage GetSpriteAtlas(String fileName){
