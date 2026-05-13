@@ -1,11 +1,10 @@
 package main;
 
 import entidades.Jugador;
-import gamestates.Gamestate;
-import gamestates.IntroScreen;
-import gamestates.Playing;
-import niveles.AjusteNivel;
+import gamestates.*;
 import gamestates.Menu;
+import niveles.AjusteNivel;
+import ui.OpcionesAudio;
 import utils.LoadSave;
 
 import java.awt.*;
@@ -16,6 +15,7 @@ public class Juego implements Runnable {
     private PantallaJuego pantallaJuego;
     private PanelJuego panelJuego;
     private Thread hiloJuego;
+    private OpcionesAudio opcionesAudio;
 
     //limite de fotogramas por segundo que se van a renderizar
     private final static int FPS_OBJETIVO = 120;
@@ -49,6 +49,7 @@ public class Juego implements Runnable {
     public final static int GAME_WIDTH = TILES_SIZE * TILES_IN_WIDTH;
     public final static int GAME_HEIGHT = TILES_SIZE * TILES_IN_HEIGHT;
     private IntroScreen introScreen;
+    private OpcionesDeJuego opcionesDeJuego;
 
     //inicializa todos los sistemas y arranca el bucle
     public Juego() {
@@ -66,9 +67,11 @@ public class Juego implements Runnable {
 
 //    //crea el nivel y coloca al jugador encima del tile de suelo correspondiente
        private void initClasses() {
+            opcionesAudio = new OpcionesAudio();
            introScreen = new IntroScreen(this);
            menu = new Menu(this);
            playing = new Playing(this);
+           opcionesDeJuego = new OpcionesDeJuego(this);
        }
 
     //metodo que empieza el bucle infinito del juego
@@ -90,6 +93,8 @@ public class Juego implements Runnable {
                 playing.update();
                 break;
             case OPTIONS:
+                opcionesDeJuego.update();
+                break;
             case QUIT:
             default:
                 System.exit(0);
@@ -109,6 +114,9 @@ public class Juego implements Runnable {
                 break;
             case PLAYING:
                 playing.draw(g);
+                break;
+            case OPTIONS:
+                opcionesDeJuego.draw(g);
                 break;
             default:
                 break;
@@ -197,4 +205,13 @@ public class Juego implements Runnable {
     public IntroScreen getIntroScreen() {
         return introScreen;
     }
+
+    public OpcionesAudio getOpcionesAudio(){
+        return opcionesAudio;
+    }
+
+    public OpcionesDeJuego opcionesDeJuego(){
+        return opcionesDeJuego;
+    }
+
 }

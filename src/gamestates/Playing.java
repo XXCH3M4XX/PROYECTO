@@ -311,9 +311,8 @@ public class Playing extends State implements Statemethods {
             pausaOverlay.mousePressed(e);
         } else if (nivelCompletado) {
             nivelCompletadoMenu.mousePressed(e);
-        } else {
-            overlay.mousePressed(e);
         }
+        // ✅ sin else final
     }
 
     //reenvía el evento de soltar el raton al overlay activo segun el estado de la partida
@@ -327,9 +326,8 @@ public class Playing extends State implements Statemethods {
             pausaOverlay.mouseReleased(e);
         } else if (nivelCompletado) {
             nivelCompletadoMenu.mouseReleased(e);
-        } else {
-            overlay.mouseReleased(e);
         }
+        // ✅ sin else final
     }
 
     //reenvía el evento de movimiento del raton al overlay activo segun el estado de la partida
@@ -343,9 +341,8 @@ public class Playing extends State implements Statemethods {
             pausaOverlay.mouseMoved(e);
         } else if (nivelCompletado) {
             nivelCompletadoMenu.mouseMoved(e);
-        } else {
-            overlay.mouseMoved(e);
         }
+        // ✅ sin else final
     }
 
     //gestiona las teclas segun el estado activo, game over solo acepta escape

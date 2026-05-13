@@ -33,7 +33,7 @@ public class LoadSave {
     public static final String ESQUELETO_HUESO = "esqueletoHueso.png";
     public static final String HUESO_PROYECTIL =  "huesoProyectil.png";
     public static final String PANTALLA_MUERTE =  "pantallaMuerte.png";
-
+    public static final String FONDO_OPCIONES = "MenuPausa.png";
 
     //metodo para cargar una imagen desde la carpeta de recursos
     public static BufferedImage GetSpriteAtlas(String fileName){
