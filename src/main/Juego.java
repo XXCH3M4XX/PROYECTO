@@ -1,5 +1,6 @@
 package main;
 
+import audio.AudioPlayer;
 import entidades.Jugador;
 import gamestates.*;
 import gamestates.Menu;
@@ -25,6 +26,7 @@ public class Juego implements Runnable {
 
     private Playing playing;
     private Menu menu;
+    private AudioPlayer audioPlayer;
 
     private Jugador jugador;
     private AjusteNivel ajusteNivel;
@@ -66,13 +68,14 @@ public class Juego implements Runnable {
     }
 
 //    //crea el nivel y coloca al jugador encima del tile de suelo correspondiente
-       private void initClasses() {
-            opcionesAudio = new OpcionesAudio();
-           introScreen = new IntroScreen(this);
-           menu = new Menu(this);
-           playing = new Playing(this);
-           opcionesDeJuego = new OpcionesDeJuego(this);
-       }
+    private void initClasses() {
+        audioPlayer = new AudioPlayer(); // ← primero
+        opcionesAudio = new OpcionesAudio(this);
+        introScreen = new IntroScreen(this); // ← ahora ya existe audioPlayer
+        menu = new Menu(this);
+        playing = new Playing(this);
+        opcionesDeJuego = new OpcionesDeJuego(this);
+    }
 
     //metodo que empieza el bucle infinito del juego
     private void empezarBucle() {
@@ -191,6 +194,12 @@ public class Juego implements Runnable {
        if(Gamestate.state == Gamestate.PLAYING){
            playing.getJugador().resetDirBooleans();
        }
+   }
+   public AudioPlayer getAudioPlayer(){
+        return audioPlayer;
+   }
+   public AjusteNivel getAjusteNivel(){
+        return ajusteNivel;
    }
 
     //metodo que usaremos para llamarlo en otras clases

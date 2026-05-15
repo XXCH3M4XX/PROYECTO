@@ -1,5 +1,6 @@
 package objetos;
 
+import audio.AudioPlayer;
 import entidades.EsqueletoHueso;
 import entidades.Jugador;
 import gamestates.Playing;
@@ -187,6 +188,8 @@ public class AjusteDeObjetos {
                     p.setActivo(false);
                     p.setImpacto(true);
                     p.resetAniIndice();
+                    playing.getJuego().getAudioPlayer().playEfecto(AudioPlayer.huesoProyectil); // ← añade esto
+
                 }
             } else if (p.impacto()) {
                 //avanza la animacion de impacto hasta que termina
@@ -212,8 +215,18 @@ public class AjusteDeObjetos {
                     }
                 }
             }
+            // guarda el estado antes del update para detectar transiciones
+            int estadoAntes = c.getEstado();
 
             c.update();
+            // reproduce el sonido cuando empieza a descomponerse o recomponerse
+            if (estadoAntes != c.getEstado()) {
+                if (c.getEstado() == EsqueletoHueso.DESCOMPONE) {
+                    playing.getJuego().getAudioPlayer().playEfecto(AudioPlayer.descomponerEsqueleto);
+                } else if (c.getEstado() == EsqueletoHueso.REGENERA) {
+                    playing.getJuego().getAudioPlayer().playEfecto(AudioPlayer.recomponerEsqueleto);
+                }
+            }
 
             //crea el proyectil en la direccion del jugador cuando la animacion lo indica
             if (c.debeDispararProyectil()) {
@@ -280,32 +293,41 @@ public class AjusteDeObjetos {
     //dibuja cada esqueleto espejando el sprite segun la ultima direccion de disparo
     private void dibujarEsqueletosHueso(Graphics g, int xNivelOffset) {
         for (EsqueletoHueso c : esqueletosHueso) {
-            int xOffset = -35;
-            int yOffset = -30;
+
+            // ajusta estos dos valores para mover el sprite respecto a la hitbox
+            int spriteOffsetX = -40; // positivo = derecha, negativo = izquierda
+            int spriteOffsetY = -30; // positivo = abajo, negativo = arriba
 
             int x = (int)(c.getHitbox().x - xNivelOffset);
             int ancho = ANCHO_EH;
 
-            //voltea el sprite horizontalmente si el esqueleto esta mirando a la izquierda
             if (c.getUltimaDireccion() == -1) {
-                x += ancho + xOffset;
+                x += ancho + spriteOffsetX;
                 ancho *= -1;
             } else {
-                x += xOffset;
+                x += spriteOffsetX;
             }
 
             int estadoDibujo = c.getEstado();
             int indiceDibujo = c.getAniIndice();
 
-            //en estado EN_SUELO muestra el ultimo frame de descomposicion como pose estatica
             if (estadoDibujo == EsqueletoHueso.EN_SUELO) {
                 estadoDibujo = EsqueletoHueso.DESCOMPONE;
                 indiceDibujo = imagenEsqueletoHueso[estadoDibujo].length - 1;
             }
 
             g.drawImage(imagenEsqueletoHueso[estadoDibujo][indiceDibujo],
-                    x, (int)(c.getHitbox().y) + yOffset,
+                    x, (int)(c.getHitbox().y) + spriteOffsetY,
                     ancho, ALTO_EH, null);
+
+//            //hitbox para depuracion
+//            g.setColor(Color.GREEN);
+//            g.drawRect(
+//                    (int)(c.getHitbox().x - xNivelOffset),
+//                    (int)(c.getHitbox().y),
+//                    (int)c.getHitbox().width,
+//                    (int)c.getHitbox().height
+//            );
         }
     }
 

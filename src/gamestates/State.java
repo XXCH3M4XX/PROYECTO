@@ -1,5 +1,6 @@
 package gamestates;
 
+import audio.AudioPlayer;
 import main.Juego;
 import ui.BotonMenu;
 
@@ -22,5 +23,21 @@ public class State {
 
     public Juego getJuego() {
         return juego;
+    }
+
+    public void setEstadoJuego(Gamestate estado) {
+        switch(estado) {
+            case INTRO:
+                juego.getAudioPlayer().playCancion(AudioPlayer.creditosIniciales);
+                break;
+            case MENU:
+                juego.getAudioPlayer().setCancionNivel(AudioPlayer.menu);
+                break;
+            case PLAYING:
+                juego.getAudioPlayer().setCancionNivel(AudioPlayer.musicaNiveles);
+                break;
+
+        }
+        Gamestate.state = estado;
     }
 }

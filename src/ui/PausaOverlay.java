@@ -90,7 +90,7 @@ public class PausaOverlay {
 
     //ejecuta la accion del boton si el raton se suelta encima del mismo donde se pulso
     public void mouseReleased(MouseEvent e) {
-         if (isIn(e, menuB)) {
+        if (isIn(e, menuB)) {
             if (menuB.isMousePressed()) {
                 //vuelve al menu principal y despausa el juego
                 Gamestate.state = Gamestate.MENU;
@@ -102,15 +102,19 @@ public class PausaOverlay {
                 playing.resetAll();
                 playing.depausarJuego();
             }
+        } else if (isIn(e, unpauseB)) {
+            if (unpauseB.isMousePressed()) {
+                //despausa el juego sin reiniciar
+                playing.depausarJuego();
+            }
         } else {
-             opcionesAudio.mouseReleased(e);
+            opcionesAudio.mouseReleased(e);
         }
 
         //limpia los flags de todos los botones tras soltar el raton
         menuB.reiniciarBooleanos();
         unpauseB.reiniciarBooleanos();
         replayB.reiniciarBooleanos();
-
     }
 
     //marca el boton como presionado cuando el raton hace click sobre el

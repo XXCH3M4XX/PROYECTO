@@ -1,5 +1,6 @@
 package ui;
 
+import audio.AudioPlayer;
 import gamestates.Gamestate;
 import gamestates.Playing;
 import main.Juego;
@@ -82,14 +83,19 @@ public class NivelCompletadoOverlay {
     public void mouseReleased(MouseEvent e) {
         if (comprobarBoton(menu, e)) {
             if (menu.isMousePressed()) {
+                //para el efecto de nivel completado antes de cambiar de estado
+                jugando.getJuego().getAudioPlayer().pararEfecto(AudioPlayer.nivelCompletado);
                 //resetea todo el juego y vuelve al menu principal
                 jugando.resetAll();
                 Gamestate.state = Gamestate.MENU;
             }
         } else if (comprobarBoton(siguiente, e)) {
             if (siguiente.isMousePressed()) {
+                //para el efecto de nivel completado antes de cargar el siguiente
+                jugando.getJuego().getAudioPlayer().pararEfecto(AudioPlayer.nivelCompletado);
                 //carga el siguiente nivel manteniendo el progreso del jugador
                 jugando.cargarSiguienteNivel();
+                jugando.getJuego().getAudioPlayer().setCancionNivel(AudioPlayer.musicaNiveles);
             }
         }
         //limpia los flags de ambos botones tras soltar el raton

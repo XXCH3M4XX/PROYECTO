@@ -23,6 +23,7 @@ public class VolumeButton extends BotonesPausa {
 
     //posicion actual del boton y limites horizontales dentro del slider
     private int botonX, minX, maxX;
+    private float floatValue = 0f;
 
     //coloca el slider y el boton en su posicion inicial y calcula los limites de arrastre
     public VolumeButton(int x, int y, int widht, int height) {
@@ -73,8 +74,18 @@ public class VolumeButton extends BotonesPausa {
         } else {
             botonX = x;
         }
+        updateFloatValue();
         //sincroniza el rectangulo de colision con la nueva posicion del boton
         bordes.x = botonX - VOLUME_WIDTH / 2;
+    }
+
+    private void updateFloatValue() {
+        float rango = maxX - minX;
+        float valor = botonX - minX;
+        floatValue = valor/rango;
+    }
+    public Float getFloatValue() {
+        return floatValue;
     }
 
     //resetea los flags de hover y pulsado al soltar el raton

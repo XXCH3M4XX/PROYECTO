@@ -6,7 +6,7 @@ import main.Juego;
 import niveles.AjusteNivel;
 import objetos.AjusteDeObjetos;
 import ui.NivelCompletadoOverlay;
-import ui.OverOverlayJuego;
+import ui.OverlayGameOver;
 import ui.PausaOverlay;
 import utils.LoadSave;
 
@@ -33,7 +33,7 @@ public class Playing extends State implements Statemethods {
     //indica si el juego esta en pausa
     private boolean pausado = false;
     private PausaOverlay pausaOverlay;
-    private OverOverlayJuego overlay;
+    private OverlayGameOver overlay;
     private NivelCompletadoOverlay nivelCompletadoMenu;
 
     //desplazamiento horizontal actual del nivel en pixeles
@@ -133,7 +133,7 @@ public class Playing extends State implements Statemethods {
         jugador.setSpawn(ajusteNivel.getNivelActual().getSpawnJugador());
 
         pausaOverlay = new PausaOverlay(this);
-        overlay = new OverOverlayJuego(this);
+        overlay = new OverlayGameOver(this);
         nivelCompletadoMenu = new NivelCompletadoOverlay(this);
     }
 
@@ -159,7 +159,11 @@ public class Playing extends State implements Statemethods {
     //marca el nivel como completado y desactiva la pausa para mostrar el overlay
     public void setNivelCompletado(boolean nivelCompletado) {
         this.nivelCompletado = nivelCompletado;
-        if (nivelCompletado) pausado = false;
+        if (nivelCompletado) {
+            pausado = false;
+            juego.getAudioPlayer().nivelCompletado();
+        }
+
     }
 
     //bucle principal del estado, delega el update segun el estado activo de la partida
@@ -349,7 +353,7 @@ public class Playing extends State implements Statemethods {
     @Override
     public void keyPressed(KeyEvent e) {
         if (gameOver) {
-            overlay.teclaPresionada(e);
+            overlay.keyPressed(e);
         } else {
             switch (e.getKeyCode()) {
                 case KeyEvent.VK_A:
@@ -405,6 +409,9 @@ public class Playing extends State implements Statemethods {
     //reactiva el estado de juego desde la pantalla de pausa
     public void depausarJuego() {
         pausado = false;
+    }
+    public AjusteNivel getAjusteNivel() {
+        return ajusteNivel;
     }
 
     //devuelve el gestor de objetos para que otros sistemas puedan acceder a el

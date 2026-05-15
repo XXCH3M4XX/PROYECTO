@@ -15,7 +15,9 @@ public class OpcionesAudio {
     private VolumeButton volumeButton;
     private BotonesDeSonido botonMusica, sfxBoton;
 
-    public OpcionesAudio(){
+    private Juego juego;
+    public OpcionesAudio(Juego juego){
+        this.juego = juego;
         crearBotonesSonido();
         crearBotonDeVolumen();
     }
@@ -57,7 +59,13 @@ public class OpcionesAudio {
     //mueve el slider de volumen si el boton esta siendo arrastrado
     public void mouseDragged(MouseEvent e) {
         if (volumeButton.isMousePressed()) {
+            float valorAntes = volumeButton.getFloatValue();
             volumeButton.changeX(e.getX());
+            float valorDes = volumeButton.getFloatValue();
+            if(valorAntes != valorDes){
+                juego.getAudioPlayer().setVolumen(valorDes);
+            }
+
         }
     }
 
@@ -93,11 +101,13 @@ public class OpcionesAudio {
             if (botonMusica.isMousePressed()) {
                 //alterna el silencio de la musica
                 botonMusica.setMuted(!botonMusica.isMuted());
+                juego.getAudioPlayer().mutearCanciones();
             }
         } else if (isIn(e, sfxBoton)) {
             if (sfxBoton.isMousePressed()) {
                 //alterna el silencio de los efectos de sonido
                 sfxBoton.setMuted(!sfxBoton.isMuted());
+                juego.getAudioPlayer().mutearEfectos();
             }
         }
 

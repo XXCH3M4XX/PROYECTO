@@ -1,5 +1,6 @@
 package gamestates;
 
+import audio.AudioPlayer;
 import main.Juego;
 import utils.LoadSave;
 
@@ -28,6 +29,7 @@ public class IntroScreen extends State implements Statemethods {
     public IntroScreen(Juego juego) {
         super(juego);
         imagen = LoadSave.GetSpriteAtlas(LoadSave.INTRO);
+        juego.getAudioPlayer().playCancion(AudioPlayer.creditosIniciales); // ← arranca los creditos
     }
 
     @Override
@@ -63,6 +65,7 @@ public class IntroScreen extends State implements Statemethods {
             //cuando termina el fade out pasamos al menu
             case TERMINADO:
                 Gamestate.state = Gamestate.MENU;
+                juego.getAudioPlayer().playCancion(AudioPlayer.menu); // ← después del cambio de estado
                 break;
         }
     }
@@ -86,6 +89,7 @@ public class IntroScreen extends State implements Statemethods {
     @Override
     public void keyPressed(java.awt.event.KeyEvent e) {
         if (e.getKeyCode() == java.awt.event.KeyEvent.VK_E) {
+            juego.getAudioPlayer().playCancion(AudioPlayer.menu); // ← cambia a menu
             Gamestate.state = Gamestate.MENU;
         }
     }

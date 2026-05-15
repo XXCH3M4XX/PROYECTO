@@ -33,6 +33,7 @@ public class EsqueletoHueso extends ObjetosJuego {
     private static final int ESPERA_MAX = 400;
     private int ultimaDireccion = 1; // 1 derecha, -1 izquierda
 
+
     public int getUltimaDireccion() {
         return ultimaDireccion;
     }
@@ -44,19 +45,26 @@ public class EsqueletoHueso extends ObjetosJuego {
     public EsqueletoHueso(int x, int y, int tipoObjeto) {
         super(x, y, tipoObjeto);
         direccionY = y / Juego.TILES_SIZE;
-        iniciarHitbox(10, 20); // ← antes era 72, 32 — ajusta a tu gusto
-        hitbox.x -= (int)(20 * Juego.ESCALA); // ← ajusta para centrar horizontalmente
-        hitbox.y += (int)(6 * Juego.ESCALA);  // ← ajusta para centrar verticalmente
+        iniciarHitbox(65, 28); // ← ancho y alto en pixels sin escalar, ajusta a tu gusto
+        hitbox.x -= (int)(17 * Juego.ESCALA);  // ← mueve la hitbox horizontalmente
+        hitbox.y += (int)(6 * Juego.ESCALA);  // ← mueve la hitbox verticalmente
     }
 
     //aplica golpe solo si esta en un estado que lo permita
     public void recibirGolpe() {
-        if (estado == IDLE || estado == DISPARO || estado == EN_SUELO) {
+        if (estado == IDLE || estado == DISPARO) {
             estado = GOLPE;
             aniIndice = 0;
             aniTick = 0;
             animacion = true;
         }
+    }
+    public boolean estaDescomponiendo() {
+        return estado == DESCOMPONE && aniIndice == 0 && aniTick == 0;
+    }
+
+    public boolean estaRecomponiendo() {
+        return estado == REGENERA && aniIndice == 0 && aniTick == 0;
     }
 
     //devuelve la direccion de disparo segun el tipo de esqueleto

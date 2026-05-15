@@ -86,6 +86,9 @@ public class BotonMenu {
         mouseOver = false;
         mousePressed = false;
     }
+    public Gamestate getGameState() {
+        return state;
+    }
 
     //devuelve el rectangulo de colision para comprobar si el raton esta sobre el boton
     public Rectangle getBordes() { return bordes; }

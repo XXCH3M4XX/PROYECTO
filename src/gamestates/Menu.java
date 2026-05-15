@@ -1,5 +1,6 @@
 package gamestates;
 
+import audio.AudioPlayer;
 import main.Juego;
 import ui.BotonMenu;
 import utils.LoadSave;
@@ -84,6 +85,9 @@ public class Menu extends State implements Statemethods{
             if(isIn(e, mb)){
                 if (mb.isMousePressed()){
                     mb.applyGameState();
+                    if(mb.getGameState() == Gamestate.PLAYING){
+                        juego.getAudioPlayer().setCancionNivel(AudioPlayer.musicaNiveles); // ← mueve aquí dentro del if isMousePressed
+                    }
                     break;
                 }
             }

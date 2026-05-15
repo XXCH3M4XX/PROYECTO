@@ -1,5 +1,6 @@
 package entidades;
 
+import audio.AudioPlayer;
 import gamestates.Playing;
 import niveles.Nivel;
 import utils.LoadSave;
@@ -92,6 +93,10 @@ public class AjusteEnemigo {
             if (e.isActivo()) {
                 if (boxAtaque.intersects(e.getHitbox())) {
                     e.daño(10);
+                    // comprueba si el estado es MUERTE despues del daño
+                    if (e.getEstadoEnemigo() == MUERTE) {
+                        playing.getJuego().getAudioPlayer().playEfecto(AudioPlayer.enemigoMuere);
+                    }
                     return;
                 }
             }

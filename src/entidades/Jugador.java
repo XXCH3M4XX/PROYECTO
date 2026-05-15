@@ -1,5 +1,6 @@
 package entidades;
 
+import audio.AudioPlayer;
 import gamestates.Playing;
 import main.Juego;
 import utils.Constantes;
@@ -92,6 +93,10 @@ public class Jugador extends Entidad {
     private int saludActual = 40;
     private int anchoSalud = anchoBarraVida;
 
+    private boolean recibioGolpe = false;
+    private int ticksGolpe = 0;
+    private static final int DURACION_GOLPE = 45;
+
     //hitbox del ataque, se reposiciona cada frame segun la direccion del jugador
     private Rectangle2D.Float boxAtaque;
 
@@ -143,9 +148,12 @@ public class Jugador extends Entidad {
                 ataque = false;
                 ataqueRevisado = false;
                 playing.setJugadorMuerte(true);
+                playing.getJuego().getAudioPlayer().playEfecto(AudioPlayer.morir);
             } else if (indiceAnim == GetCantidadSprite(MUERTE) - 1
                     && tickAnim >= VELOCIDAD_ANIMACION - 1) {
                 playing.setGameOver(true);
+                playing.getJuego().getAudioPlayer().pararCancion();
+                playing.getJuego().getAudioPlayer().playEfecto(AudioPlayer.gameOver);
             } else {
                 actualizarAnimacion();
             }
@@ -158,7 +166,7 @@ public class Jugador extends Entidad {
             checkPinchosTocados();
             direccionY = (int)(hitbox.y / Juego.TILES_SIZE);
         }
-        if (ataque) revisarAtaque();
+        if (ataque) checkAtaque();
         setAnimacion();
         actualizarAnimacion();
     }
@@ -174,13 +182,14 @@ public class Jugador extends Entidad {
     }
 
     //registra el golpe del ataque en el frame correcto y evita que se repita en la misma animacion
-    private void revisarAtaque() {
+    private void checkAtaque() {
         if (ataqueRevisado || indiceAnim != 1) {
             return;
         }
         ataqueRevisado = true;
         playing.revisarGolpeEnemigo(boxAtaque);
         playing.checkObjetoGolpeado(boxAtaque);
+        playing.getJuego().getAudioPlayer().playSonidoAtaque();
     }
 
     //reposiciona la hitbox de ataque delante del jugador segun la direccion en que mira
@@ -246,9 +255,7 @@ public class Jugador extends Entidad {
             accionJugador = PREDETERMINADO;
         }
 
-        //el aire sobreescribe el movimiento horizontal porque tiene mas prioridad visual
         if (aire) {
-            //velocidad negativa significa que sube, positiva que cae
             if (velocidadAire < 0) {
                 accionJugador = SALTANDO;
             } else {
@@ -256,7 +263,21 @@ public class Jugador extends Entidad {
             }
         }
 
-        //el ataque sobreescribe todo lo demas y fuerza el inicio desde el frame correcto
+        // el daño sobreescribe el movimiento y el aire pero no el ataque
+        if (recibioGolpe) {
+            accionJugador = DAÑO;
+            ticksGolpe++;
+            if (ticksGolpe >= DURACION_GOLPE) {
+                recibioGolpe = false;
+                ticksGolpe = 0;
+            }
+            if (startAni != DAÑO) {
+                resetAniTick();
+            }
+            return; // ← sale antes de llegar al ataque
+        }
+
+        // el ataque sobreescribe todo lo demas
         if (ataque) {
             accionJugador = PATADA;
             if (startAni != PATADA) {
@@ -266,7 +287,6 @@ public class Jugador extends Entidad {
             }
         }
 
-        //si la accion cambio reiniciamos el contador para no empezar por la mitad
         if (startAni != accionJugador) {
             resetAniTick();
         }
@@ -345,6 +365,7 @@ public class Jugador extends Entidad {
     private void saltar() {
         //descartamos el salto si ya estamos en el aire para evitar saltos infinitos
         if (aire) return;
+        playing.getJuego().getAudioPlayer().playEfecto(AudioPlayer.salto);
         aire = true;
         velocidadAire = velocidadSalto;
         //consumimos el flag aqui para que no se repita en el siguiente update
@@ -382,6 +403,12 @@ public class Jugador extends Entidad {
             saludActual = 0;
         } else if (saludActual >= saludMaxima) {
             saludActual = saludMaxima;
+        }
+        // si recibe daño activa la animacion y el sonido
+        if (valor < 0) {
+            recibioGolpe = true;
+            ticksGolpe = 0;
+            playing.getJuego().getAudioPlayer().playEfecto(AudioPlayer.golpeJonathan);
         }
     }
 
@@ -441,6 +468,8 @@ public class Jugador extends Entidad {
         hitbox.y = spawnY;
         x = spawnX;
         y = spawnY;
+        recibioGolpe = false;
+        ticksGolpe = 0;
     }
 
     //activa o desactiva el flag de ataque desde el sistema de input

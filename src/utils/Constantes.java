@@ -209,6 +209,7 @@ public class Constantes {
         public static final int CAYENDO = 3;
         public static final int PREDETERMINADO = 5;
         public static final int MUERTE = 8;
+        public static final int DAÑO = 7;
 
         //no esta hecho todavia
         //public static final int GOLPE = 5;
@@ -229,6 +230,8 @@ public class Constantes {
                     return 3;
                 case MUERTE:
                     return 8;
+                case DAÑO:
+                    return 3;
                 default:
                     return 1;
             }

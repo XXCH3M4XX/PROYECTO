@@ -49,9 +49,9 @@ public class BotonesDeSonido extends BotonesPausa {
     public void update() {
         //fila 0 silenciado, fila 1 activo
         if (muted) {
-            rowIndex = 0;
-        } else {
             rowIndex = 1;
+        } else {
+            rowIndex = 0;
         }
 
         //pressed tiene prioridad sobre hover, hover sobre reposo
