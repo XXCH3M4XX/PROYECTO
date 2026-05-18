@@ -66,6 +66,7 @@ public class AjusteDeObjetos {
                 if (hitbox.intersects(p.getHitbox())) {
                     p.setActiva(false);
                     aplicarEfectoAlJugador(p);
+                    playing.registrarPocion();
                 }
             }
         }

@@ -9,6 +9,7 @@ import ui.NivelCompletadoOverlay;
 import ui.OverlayGameOver;
 import ui.PausaOverlay;
 import utils.LoadSave;
+import utils.RegistroPartida;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -59,6 +60,12 @@ public class Playing extends State implements Statemethods {
     private boolean gameOver = false;
     private boolean nivelCompletado = false;
     private boolean jugadorMuriendo = false;
+
+    // contadores de estadisticas de la partida actual
+    private int muertes = 0;
+    private int dañoRecibido = 0;
+    private int porcionesRecogidas = 0;
+    private long ticksPartida = 0; // ← cuenta los UPS transcurridos
 
     //inicializa todos los sistemas y carga las imagenes del entorno
     public Playing(Juego juego) {
@@ -184,6 +191,7 @@ public class Playing extends State implements Statemethods {
             jugador.update();
             ajusteEnemigo.update(ajusteNivel.getNivelActual().getDatosNivel(), jugador);
             comprobarBorde();
+            ticksPartida++; // ← añade esto al final del bloque
         }
     }
 
@@ -269,6 +277,47 @@ public class Playing extends State implements Statemethods {
         ajusteEnemigo.resetearTodosEnemigos();
         OffsetXNivel = 0;
         ajusteDeObjetos.resetearTodosLosObjetos();
+    }
+    public void resetearPartidaCompleta() {
+        muertes = 0;
+        dañoRecibido = 0;
+        porcionesRecogidas = 0;
+        ticksPartida = 0;
+        resetAll();
+    }
+    // se llama desde Jugador cuando recibe daño
+    public void registrarDaño(int cantidad) {
+        dañoRecibido += cantidad;
+    }
+
+    // se llama desde Jugador cuando muere
+    public void registrarMuerte() {
+        muertes++;
+    }
+
+    // se llama desde AjusteDeObjetos cuando se recoge una pocion
+    public void registrarPocion() {
+        porcionesRecogidas++;
+    }
+
+    public int getMuertes() { return muertes; }
+    public int getDañoRecibido() { return dañoRecibido; }
+    public int getPorcionesRecogidas() { return porcionesRecogidas; }
+
+    // convierte los ticks a segundos usando los UPS del juego
+    public long getTiempoSegundos() {
+        return ticksPartida / 200; // ← 200 UPS
+    }
+
+    // devuelve un RegistroPartida con todas las estadisticas actuales
+    public RegistroPartida getEstadisticasActuales(String nombre) {
+        return new RegistroPartida(
+                nombre,
+                getTiempoSegundos(),
+                muertes,
+                dañoRecibido,
+                porcionesRecogidas
+        );
     }
 
     //activa o desactiva la pantalla de game over

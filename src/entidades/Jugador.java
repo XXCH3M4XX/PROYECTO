@@ -149,6 +149,7 @@ public class Jugador extends Entidad {
                 ataqueRevisado = false;
                 playing.setJugadorMuerte(true);
                 playing.getJuego().getAudioPlayer().playEfecto(AudioPlayer.morir);
+                playing.registrarMuerte();
             } else if (indiceAnim == GetCantidadSprite(MUERTE) - 1
                     && tickAnim >= VELOCIDAD_ANIMACION - 1) {
                 playing.setGameOver(true);
@@ -409,6 +410,8 @@ public class Jugador extends Entidad {
             recibioGolpe = true;
             ticksGolpe = 0;
             playing.getJuego().getAudioPlayer().playEfecto(AudioPlayer.golpeJonathan);
+            playing.registrarDaño(-valor);
+
         }
     }
 

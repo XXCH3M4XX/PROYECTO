@@ -27,6 +27,7 @@ public class Juego implements Runnable {
     private Playing playing;
     private Menu menu;
     private AudioPlayer audioPlayer;
+    private Stats stats;
 
     private Jugador jugador;
     private AjusteNivel ajusteNivel;
@@ -52,11 +53,11 @@ public class Juego implements Runnable {
     public final static int GAME_HEIGHT = TILES_SIZE * TILES_IN_HEIGHT;
     private IntroScreen introScreen;
     private OpcionesDeJuego opcionesDeJuego;
+    private PantallaIntroducirNombre pantallaIntroducirNombre;
 
     //inicializa todos los sistemas y arranca el bucle
     public Juego() {
         initClasses();
-        playing = new Playing(this);
         panelJuego = new PanelJuego(this);
         pantallaJuego = new PantallaJuego(panelJuego);
 
@@ -69,12 +70,16 @@ public class Juego implements Runnable {
 
 //    //crea el nivel y coloca al jugador encima del tile de suelo correspondiente
     private void initClasses() {
-        audioPlayer = new AudioPlayer(); // ← primero
+        audioPlayer = new AudioPlayer();
         opcionesAudio = new OpcionesAudio(this);
-        introScreen = new IntroScreen(this); // ← ahora ya existe audioPlayer
+        introScreen = new IntroScreen(this);
         menu = new Menu(this);
         playing = new Playing(this);
         opcionesDeJuego = new OpcionesDeJuego(this);
+        stats = new Stats(this);
+        pantallaIntroducirNombre = new PantallaIntroducirNombre(this);
+
+
     }
 
     //metodo que empieza el bucle infinito del juego
@@ -84,8 +89,8 @@ public class Juego implements Runnable {
     }
 
     //con este metodo, podemos actualizar lo que nosotros queramos(jugador, escenario, etc...)
-    public void update(){
-        switch(Gamestate.state){
+    public void update() {
+        switch (Gamestate.state) {
             case INTRO:
                 introScreen.update();
                 break;
@@ -98,17 +103,22 @@ public class Juego implements Runnable {
             case OPTIONS:
                 opcionesDeJuego.update();
                 break;
+            case STATS:
+                stats.update();
+                break;
+            case NOMBRE:
+                pantallaIntroducirNombre.update();
+                break;
             case QUIT:
             default:
                 System.exit(0);
                 break;
         }
-
     }
 
     //dibuja el nivel primero y el jugador encima para que quede en primer plano
-    public void render(Graphics g){
-        switch(Gamestate.state){
+    public void render(Graphics g) {
+        switch (Gamestate.state) {
             case INTRO:
                 introScreen.draw(g);
                 break;
@@ -121,10 +131,15 @@ public class Juego implements Runnable {
             case OPTIONS:
                 opcionesDeJuego.draw(g);
                 break;
+            case NOMBRE:
+                pantallaIntroducirNombre.draw(g);
+                break;
+            case STATS:
+                stats.draw(g); // ← añade esto
+                break;
             default:
                 break;
         }
-
     }
 
     @Override
@@ -201,6 +216,12 @@ public class Juego implements Runnable {
    public AjusteNivel getAjusteNivel(){
         return ajusteNivel;
    }
+    public Stats getStats() {
+        return stats;
+    }
+    public PantallaIntroducirNombre getPantallaIntroducirNombre() {
+        return pantallaIntroducirNombre;
+    }
 
     //metodo que usaremos para llamarlo en otras clases
     public Menu getMenu() {

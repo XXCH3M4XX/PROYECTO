@@ -85,8 +85,9 @@ public class AjusteNivel {
         indiceNivel++;
         if(indiceNivel >= niveles.size()){
             indiceNivel = 0;
-            System.out.println("No hay mas niveles. Juego completado");
-            Gamestate.state = Gamestate.MENU;
+            juego.getPantallaIntroducirNombre().reset();
+            Gamestate.state = Gamestate.NOMBRE;
+            return;
         }
         Nivel nuevoNivel = niveles.get(indiceNivel);
         juego.getPlaying().getAjusteEnemigo().cargarEnemigos(nuevoNivel);

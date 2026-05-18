@@ -93,6 +93,7 @@ public class PausaOverlay {
         if (isIn(e, menuB)) {
             if (menuB.isMousePressed()) {
                 //vuelve al menu principal y despausa el juego
+                playing.resetearPartidaCompleta();
                 Gamestate.state = Gamestate.MENU;
                 playing.depausarJuego();
             }

@@ -85,7 +85,7 @@ public class OverlayGameOver {
         if (comprobarBoton(menu, e)) {
             if (menu.isMousePressed()) {
                 playing.getJuego().getAudioPlayer().pararEfecto(AudioPlayer.gameOver); // ← añade esto
-                playing.resetAll();
+                playing.resetearPartidaCompleta();
                 Gamestate.state = Gamestate.MENU;
             }
         } else if (comprobarBoton(jugar, e)) {

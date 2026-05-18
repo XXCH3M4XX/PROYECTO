@@ -86,7 +86,7 @@ public class NivelCompletadoOverlay {
                 //para el efecto de nivel completado antes de cambiar de estado
                 jugando.getJuego().getAudioPlayer().pararEfecto(AudioPlayer.nivelCompletado);
                 //resetea todo el juego y vuelve al menu principal
-                jugando.resetAll();
+                jugando.resetearPartidaCompleta();
                 Gamestate.state = Gamestate.MENU;
             }
         } else if (comprobarBoton(siguiente, e)) {
