@@ -88,6 +88,14 @@ public class Jugador extends Entidad {
     private int xInicioBarraVida = (int) (61  * Juego.ESCALA);
     private int yInicioBarraVida = (int) (22  * Juego.ESCALA);
 
+    private int anchuraBarraSuperAtaque = (int) (90 * Juego.ESCALA);
+    private int alturaBarraSuperAtaque = (int) (6 * Juego.ESCALA);
+    private int superAtaqueBarraXInicio = (int) (83 * Juego.ESCALA);
+    private int superAtaqueBarraYInicio = (int) (51  * Juego.ESCALA);
+    private int anchuraSuperAtaque = anchuraBarraSuperAtaque;
+    private int superAtaqueValorMaximo = 200;
+    private int superAtaqueValor = superAtaqueValorMaximo;
+
     //vida maxima del jugador y vida actual, anchoSalud se recalcula cada frame
     private int saludMaxima = 120;
     private int saludActual = 40;
@@ -111,6 +119,11 @@ public class Jugador extends Entidad {
 
     //fila de tile en la que se encuentra el jugador, usada para logica de nivel
     private int direccionY = 0;
+
+    private boolean superAtaqueActivado;
+    private int tickSuperAtaque;
+    private int crecimientoPoder = 15;
+    private int crecimientoPoderTick;
 
     //inicializa animaciones y coloca la hitbox en la posicion de spawn
     public Jugador(float x, float y, int width, int height, Playing playing) {
@@ -140,6 +153,7 @@ public class Jugador extends Entidad {
     //punto de entrada del bucle del juego, gestiona muerte, movimiento, ataque y animacion
     public void update() {
         actualizarBarraDeVida();
+        actualizarBarraDeSuperAtaque();
         if (saludActual <= 0) {
             if (accionJugador != MUERTE) {
                 accionJugador = MUERTE;
@@ -166,8 +180,14 @@ public class Jugador extends Entidad {
             checkPocionTocada();
             checkPinchosTocados();
             direccionY = (int)(hitbox.y / Juego.TILES_SIZE);
+            if(superAtaqueActivado){
+                tickSuperAtaque++;
+            }if (tickSuperAtaque >= 120){
+                tickSuperAtaque = 0;
+                superAtaqueActivado = false;
+            }
         }
-        if (ataque) checkAtaque();
+        if (ataque || superAtaqueActivado) checkAtaque();
         setAnimacion();
         actualizarAnimacion();
     }
@@ -188,6 +208,9 @@ public class Jugador extends Entidad {
             return;
         }
         ataqueRevisado = true;
+        if (superAtaqueActivado){
+            ataqueRevisado = false;
+        }
         playing.revisarGolpeEnemigo(boxAtaque);
         playing.checkObjetoGolpeado(boxAtaque);
         playing.getJuego().getAudioPlayer().playSonidoAtaque();
@@ -206,6 +229,17 @@ public class Jugador extends Entidad {
     //recalcula el ancho del segmento verde en proporcion a la vida actual sobre la maxima
     private void actualizarBarraDeVida() {
         anchoSalud = (int)((saludActual / (float)saludMaxima) * anchoBarraVida);
+    }
+
+    //
+    private void actualizarBarraDeSuperAtaque(){
+        anchuraSuperAtaque = (int) ((superAtaqueValor / (float) superAtaqueValorMaximo) * anchuraSuperAtaque);
+
+        crecimientoPoderTick++;
+        if (tickSuperAtaque >= crecimientoPoder){
+            crecimientoPoderTick = 0;
+            cambiarPoder(1);
+        }
     }
 
     //inyecta los datos del nivel para que el jugador pueda comprobar colisiones
@@ -244,6 +278,8 @@ public class Jugador extends Entidad {
         g.setColor(verdeVida);
         g.fillRect(xInicioBarraVida + xBarraEstado, yInicioBarraVida + yBarraEstado,
                 anchoSalud, altoBarraVida);
+        g.setColor(Color.YELLOW);
+        g.fillRect(superAtaqueBarraXInicio + xBarraEstado, superAtaqueBarraYInicio + yBarraEstado, anchuraBarraSuperAtaque, alturaBarraSuperAtaque);
     }
 
     //decide que animacion reproducir segun el estado del jugador, el aire tiene prioridad sobre el movimiento
@@ -276,6 +312,16 @@ public class Jugador extends Entidad {
                 resetAniTick();
             }
             return; // ← sale antes de llegar al ataque
+        }
+
+        if(superAtaqueActivado){
+            if (startAni != PUÑETAZO) {
+                accionJugador = PUÑETAZO;
+                resetAniTick();  // solo reinicia al cambiar de accion
+            } else {
+                accionJugador = PUÑETAZO;
+            }
+            return;
         }
 
         // el ataque sobreescribe todo lo demas
@@ -317,9 +363,12 @@ public class Jugador extends Entidad {
 
         //si no esta en el aire comprobamos si hay suelo, si no lo hay lo ponemos en caida libre
         if (!aire) {
-            if (!EnSuelo(hitbox, datosNivel)) {
-                aire = true;
+            if (!superAtaqueActivado){
+                if (!EnSuelo(hitbox, datosNivel)) {
+                    aire = true;
+                }
             }
+
         }
 
         float xVelocidad = 0;
@@ -332,7 +381,19 @@ public class Jugador extends Entidad {
             mirandoDerecha = true;
         }
 
-        if (aire) {
+        if (superAtaqueActivado){
+            if (!izquierda && !derecha){
+                if (!mirandoDerecha){
+                    xVelocidad = -velocidadJugador;
+                }else {
+                    xVelocidad = velocidadJugador;
+                }
+            }
+            xVelocidad *= 3;
+        }
+
+
+        if (aire && !superAtaqueActivado) {
             float newY = hitbox.y + velocidadAire;
 
             if (puedeMoverse(hitbox.x, newY, hitbox.width, hitbox.height, datosNivel)) {
@@ -394,6 +455,10 @@ public class Jugador extends Entidad {
             //alineamos el borde de la hitbox con el tile de impacto
             hitbox.x = GetXPosPared(hitbox, xVelocidad, newX);
             x = hitbox.x;
+            if (superAtaqueActivado){
+                superAtaqueActivado = false;
+                tickSuperAtaque = 0;
+            }
         }
     }
 
@@ -419,7 +484,15 @@ public class Jugador extends Entidad {
     private void actualizarAnimacion() {
         tickAnim++;
 
-        int velocidadActual = (accionJugador == PATADA) ? 30 : velocidadAnim;
+        int velocidadActual;
+        if (accionJugador == PATADA) {
+            velocidadActual = 30;
+        } else if (accionJugador == PUÑETAZO) {
+            velocidadActual = 45;  // ajusta a tu gusto
+        } else {
+            velocidadActual = velocidadAnim;
+        }
+
         if (tickAnim >= velocidadActual) {
             tickAnim = 0;
             indiceAnim++;
@@ -442,7 +515,7 @@ public class Jugador extends Entidad {
         BufferedImage imagen = LoadSave.GetSpriteAtlas(LoadSave.PLAYER_ATLAS);
 
         //7 filas de animaciones con hasta 4 frames cada una
-        animaciones = new BufferedImage[9][8];
+        animaciones = new BufferedImage[10][9];
 
         for (int j = 0; j < animaciones.length; j++) {
             int cantidad = Constantes.ConstantesJugador.GetCantidadSprite(j);
@@ -489,7 +562,12 @@ public class Jugador extends Entidad {
 
     //placeholder para el sistema de poder, actualmente solo imprime un mensaje
     public void cambiarPoder(int valorPocionAzul) {
-        System.out.println("poder añadido");
+        superAtaqueValor += valorPocionAzul;
+        if (superAtaqueValor >= superAtaqueValorMaximo){
+            superAtaqueValor = superAtaqueValorMaximo;
+        } else if (superAtaqueValor <= 0) {
+            superAtaqueValor = 0;
+        }
     }
 
     //devuelve true si el jugador esta pulsando la tecla de bajar
@@ -503,5 +581,15 @@ public class Jugador extends Entidad {
     //devuelve la fila de tile en la que se encuentra el jugador
     public int getDireccionY() {
         return direccionY;
+    }
+
+    public void superAtaque() {
+        if (superAtaqueActivado){
+            return;
+        }
+        if (superAtaqueValor >= 60){
+            superAtaqueActivado = true;
+            cambiarPoder(-60);
+        }
     }
 }

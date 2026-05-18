@@ -346,6 +346,8 @@ public class Playing extends State implements Statemethods {
         if (!gameOver) {
             if (e.getButton() == MouseEvent.BUTTON1) {
                 jugador.setAtaque(true);
+            } else if (e.getButton() == MouseEvent.BUTTON3){
+                jugador.superAtaque();
             }
         }
     }
@@ -365,7 +367,7 @@ public class Playing extends State implements Statemethods {
         } else if (nivelCompletado) {
             nivelCompletadoMenu.mousePressed(e);
         }
-        // ✅ sin else final
+
     }
 
     //reenvía el evento de soltar el raton al overlay activo segun el estado de la partida
@@ -380,7 +382,7 @@ public class Playing extends State implements Statemethods {
         } else if (nivelCompletado) {
             nivelCompletadoMenu.mouseReleased(e);
         }
-        // ✅ sin else final
+
     }
 
     //reenvía el evento de movimiento del raton al overlay activo segun el estado de la partida
