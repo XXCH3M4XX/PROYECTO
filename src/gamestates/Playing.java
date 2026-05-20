@@ -398,7 +398,7 @@ public class Playing extends State implements Statemethods {
         } else if (nivelCompletado) {
             nivelCompletadoMenu.mouseMoved(e);
         }
-        // ✅ sin else final
+
     }
 
     //gestiona las teclas segun el estado activo, game over solo acepta escape

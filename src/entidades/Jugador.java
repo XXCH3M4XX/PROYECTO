@@ -180,7 +180,7 @@ public class Jugador extends Entidad {
         //el contador del super ataque avanza siempre, no solo cuando hay movimiento
         if (superAtaqueActivado) {
             tickSuperAtaque++;
-            if (tickSuperAtaque >= 120) {
+            if (tickSuperAtaque >= 210) {
                 tickSuperAtaque = 0;
                 superAtaqueActivado = false;
             }
@@ -448,7 +448,6 @@ public class Jugador extends Entidad {
 
     //mueve al jugador horizontalmente o lo pega a la pared si hay colision
     private void actualizarXPos(float xVelocidad) {
-        //si no hay velocidad horizontal no hay nada que calcular
         if (xVelocidad == 0) return;
 
         float newX = hitbox.x + xVelocidad;
@@ -461,10 +460,7 @@ public class Jugador extends Entidad {
             //alineamos el borde de la hitbox con el tile de impacto
             hitbox.x = GetXPosPared(hitbox, xVelocidad, newX);
             x = hitbox.x;
-            if (superAtaqueActivado){
-                superAtaqueActivado = false;
-                tickSuperAtaque = 0;
-            }
+
         }
     }
 
@@ -494,7 +490,7 @@ public class Jugador extends Entidad {
         if (accionJugador == PATADA) {
             velocidadActual = 30;
         } else if (accionJugador == PUÑETAZO) {
-            velocidadActual = 45;  // ajusta a tu gusto
+            velocidadActual = 30;
         } else {
             velocidadActual = velocidadAnim;
         }
