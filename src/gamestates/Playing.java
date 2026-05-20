@@ -91,7 +91,7 @@ public class Playing extends State implements Statemethods {
         gameOver = false;
         pausado = false;
         nivelCompletado = false;
-        jugador.resetearTodo();
+        jugador.resetearEntreNiveles();
         ajusteEnemigo.resetearTodosEnemigos();
         ajusteDeObjetos.resetearTodosLosObjetos();
         OffsetXNivel = 0;
@@ -284,6 +284,8 @@ public class Playing extends State implements Statemethods {
         porcionesRecogidas = 0;
         ticksPartida = 0;
         resetAll();
+        jugador.resetearTodo();
+
     }
     // se llama desde Jugador cuando recibe daño
     public void registrarDaño(int cantidad) {
@@ -344,9 +346,8 @@ public class Playing extends State implements Statemethods {
     @Override
     public void mouseClicked(MouseEvent e) {
         if (!gameOver) {
-            if (e.getButton() == MouseEvent.BUTTON1) {
-                jugador.setAtaque(true);
-            } else if (e.getButton() == MouseEvent.BUTTON3){
+            //solo el super ataque aqui, el ataque normal va en mousePressed
+            if (e.getButton() == MouseEvent.BUTTON3) {
                 jugador.superAtaque();
             }
         }
@@ -359,6 +360,7 @@ public class Playing extends State implements Statemethods {
             overlay.mousePressed(e);
             return;
         }
+        //activa el ataque sin bloqueo para que siempre responda al click
         if (e.getButton() == MouseEvent.BUTTON1 && !jugador.isAtacando()) {
             jugador.setAtaque(true);
         }
@@ -367,7 +369,6 @@ public class Playing extends State implements Statemethods {
         } else if (nivelCompletado) {
             nivelCompletadoMenu.mousePressed(e);
         }
-
     }
 
     //reenvía el evento de soltar el raton al overlay activo segun el estado de la partida

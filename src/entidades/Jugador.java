@@ -94,11 +94,11 @@ public class Jugador extends Entidad {
     private int superAtaqueBarraYInicio = (int) (51  * Juego.ESCALA);
     private int anchuraSuperAtaque = anchuraBarraSuperAtaque;
     private int superAtaqueValorMaximo = 200;
-    private int superAtaqueValor = superAtaqueValorMaximo;
+    private int superAtaqueValor = 0;
 
     //vida maxima del jugador y vida actual, anchoSalud se recalcula cada frame
     private int saludMaxima = 120;
-    private int saludActual = 40;
+    private int saludActual = saludMaxima;
     private int anchoSalud = anchoBarraVida;
 
     private boolean recibioGolpe = false;
@@ -176,17 +176,22 @@ public class Jugador extends Entidad {
         }
         actualizarHitboxAtaque();
         actualizarPosicion();
-        if (movimiento) {
-            checkPocionTocada();
-            checkPinchosTocados();
-            direccionY = (int)(hitbox.y / Juego.TILES_SIZE);
-            if(superAtaqueActivado){
-                tickSuperAtaque++;
-            }if (tickSuperAtaque >= 120){
+
+        //el contador del super ataque avanza siempre, no solo cuando hay movimiento
+        if (superAtaqueActivado) {
+            tickSuperAtaque++;
+            if (tickSuperAtaque >= 120) {
                 tickSuperAtaque = 0;
                 superAtaqueActivado = false;
             }
         }
+
+        if (movimiento) {
+            checkPocionTocada();
+            checkPinchosTocados();
+            direccionY = (int)(hitbox.y / Juego.TILES_SIZE);
+        }
+
         if (ataque || superAtaqueActivado) checkAtaque();
         setAnimacion();
         actualizarAnimacion();
@@ -204,13 +209,16 @@ public class Jugador extends Entidad {
 
     //registra el golpe del ataque en el frame correcto y evita que se repita en la misma animacion
     private void checkAtaque() {
+        if (superAtaqueActivado) {
+            //durante el super ataque hace daño continuamente sin necesidad de frame especifico
+            playing.revisarGolpeEnemigo(boxAtaque);
+            playing.checkObjetoGolpeado(boxAtaque);
+            return; // ← sin sonido durante el dash
+        }
         if (ataqueRevisado || indiceAnim != 1) {
             return;
         }
         ataqueRevisado = true;
-        if (superAtaqueActivado){
-            ataqueRevisado = false;
-        }
         playing.revisarGolpeEnemigo(boxAtaque);
         playing.checkObjetoGolpeado(boxAtaque);
         playing.getJuego().getAudioPlayer().playSonidoAtaque();
@@ -233,13 +241,9 @@ public class Jugador extends Entidad {
 
     //
     private void actualizarBarraDeSuperAtaque(){
-        anchuraSuperAtaque = (int) ((superAtaqueValor / (float) superAtaqueValorMaximo) * anchuraSuperAtaque);
+        anchuraSuperAtaque = (int)((superAtaqueValor / (float)superAtaqueValorMaximo) * anchuraBarraSuperAtaque);
 
-        crecimientoPoderTick++;
-        if (tickSuperAtaque >= crecimientoPoder){
-            crecimientoPoderTick = 0;
-            cambiarPoder(1);
-        }
+
     }
 
     //inyecta los datos del nivel para que el jugador pueda comprobar colisiones
@@ -279,7 +283,9 @@ public class Jugador extends Entidad {
         g.fillRect(xInicioBarraVida + xBarraEstado, yInicioBarraVida + yBarraEstado,
                 anchoSalud, altoBarraVida);
         g.setColor(Color.YELLOW);
-        g.fillRect(superAtaqueBarraXInicio + xBarraEstado, superAtaqueBarraYInicio + yBarraEstado, anchuraBarraSuperAtaque, alturaBarraSuperAtaque);
+        g.fillRect(superAtaqueBarraXInicio + xBarraEstado, superAtaqueBarraYInicio + yBarraEstado,
+                anchuraSuperAtaque, // ← este es el que cambia dinamicamente
+                alturaBarraSuperAtaque);
     }
 
     //decide que animacion reproducir segun el estado del jugador, el aire tiene prioridad sobre el movimiento
@@ -352,7 +358,7 @@ public class Jugador extends Entidad {
 
     //devuelve true si hay un ataque en curso, usado para evitar ataques encadenados
     public boolean isAtacando() {
-        return ataque;
+        return superAtaqueActivado;
     }
 
     //calcula el movimiento vertical y horizontal y resuelve colisiones antes de aplicarlo
@@ -544,8 +550,29 @@ public class Jugador extends Entidad {
         hitbox.y = spawnY;
         x = spawnX;
         y = spawnY;
+        superAtaqueValor = 0;
+        superAtaqueActivado = false;
         recibioGolpe = false;
         ticksGolpe = 0;
+    }
+
+    //resetea el jugador entre niveles manteniendo el poder acumulado
+    public void resetearEntreNiveles() {
+        resetDirBooleans();
+        aire = false;
+        ataque = false;
+        movimiento = false;
+        accionJugador = PREDETERMINADO;
+        saludActual = saludMaxima;
+        hitbox.x = spawnX;
+        hitbox.y = spawnY;
+        x = spawnX;
+        y = spawnY;
+        recibioGolpe = false;
+        ticksGolpe = 0;
+        superAtaqueActivado = false;
+        tickSuperAtaque = 0;
+        // ← superAtaqueValor no se resetea
     }
 
     //activa o desactiva el flag de ataque desde el sistema de input
@@ -562,8 +589,11 @@ public class Jugador extends Entidad {
 
     //placeholder para el sistema de poder, actualmente solo imprime un mensaje
     public void cambiarPoder(int valorPocionAzul) {
+        //no permite cambiar el poder durante el super ataque
+        if (superAtaqueActivado) return;
+
         superAtaqueValor += valorPocionAzul;
-        if (superAtaqueValor >= superAtaqueValorMaximo){
+        if (superAtaqueValor >= superAtaqueValorMaximo) {
             superAtaqueValor = superAtaqueValorMaximo;
         } else if (superAtaqueValor <= 0) {
             superAtaqueValor = 0;
@@ -584,12 +614,12 @@ public class Jugador extends Entidad {
     }
 
     public void superAtaque() {
-        if (superAtaqueActivado){
+        if (superAtaqueActivado) {
             return;
         }
-        if (superAtaqueValor >= 60){
+        if (superAtaqueValor >= superAtaqueValorMaximo) {
             superAtaqueActivado = true;
-            cambiarPoder(-60);
+            superAtaqueValor = 0;
         }
     }
 }

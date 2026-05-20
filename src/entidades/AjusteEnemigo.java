@@ -96,6 +96,7 @@ public class AjusteEnemigo {
                     // comprueba si el estado es MUERTE despues del daño
                     if (e.getEstadoEnemigo() == MUERTE) {
                         playing.getJuego().getAudioPlayer().playEfecto(AudioPlayer.enemigoMuere);
+                        playing.getJugador().cambiarPoder(50);
                     }
                     return;
                 }

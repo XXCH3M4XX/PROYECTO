@@ -26,8 +26,8 @@ public class Constantes {
         public static final int EH_DERECHA = 5;
         public static final int ESQUELETO = 6;
 
-        public static final int VALOR_POCION_ROJA = 15;
-        public static final int VALOR_POCION_AZUL = 10;
+        public static final int VALOR_POCION_ROJA = 50;
+        public static final int VALOR_POCION_AZUL = 100;
 
         public static final int ANCHO_CONTENEDOR_DEFAULT = 40;
         public static final int ALTO_CONTENEDOR_DEFAULT = 30;

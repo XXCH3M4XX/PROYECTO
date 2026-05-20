@@ -102,12 +102,19 @@ public class PantallaIntroducirNombre extends State implements Statemethods {
         //instruccion en gris
         g.setColor(Color.GRAY);
         g.setFont(new Font("Arial", Font.PLAIN, (int)(10 * Juego.ESCALA)));
-        g.drawString("ENTER para guardar", centroX, (int)(375 * Juego.ESCALA));
+        g.drawString("ENTER para guardar   |   ESCAPE para saltar", centroX, (int)(375 * Juego.ESCALA));
     }
 
     @Override
     public void keyPressed(KeyEvent e) {
         switch (e.getKeyCode()) {
+            case KeyEvent.VK_ESCAPE:
+                //salta el guardado y vuelve al menu sin guardar la partida
+                //llamamos a resetearPartidaCompleta para quw la barra de poder SIEMPRE salga a 0 en una partida nueva
+                juego.getPlaying().resetearPartidaCompleta();
+                Gamestate.state = Gamestate.MENU;
+                juego.getAudioPlayer().playCancion(AudioPlayer.menu);
+                break;
             case KeyEvent.VK_ENTER:
                 //solo guarda si hay nombre introducido
                 if (!nombreActual.isEmpty()) {

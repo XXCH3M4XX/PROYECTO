@@ -17,8 +17,14 @@ public class Stats extends State implements Statemethods {
 
     private BufferedImage fondoPantalla;
 
-    //indice del record seleccionado actualmente, -1 si no hay ninguno
+    //indice del record seleccionado actualmente
     private int seleccionado = 0;
+
+    //cuantas filas se ha desplazado hacia abajo
+    private int scrollOffset = 0;
+
+    //cuantas filas se ven a la vez
+    private static final int FILAS_VISIBLES = 4;
 
     public Stats(Juego juego) {
         super(juego);
@@ -40,7 +46,7 @@ public class Stats extends State implements Statemethods {
         //titulo en amarillo
         g.setColor(new Color(255, 215, 0));
         g.setFont(new Font("Arial", Font.BOLD, (int)(20 * Juego.ESCALA)));
-        g.drawString("MEJORES PARTIDAS", (int)(Juego.GAME_WIDTH / 2 - 150 * Juego.ESCALA), (int)(60 * Juego.ESCALA));
+        g.drawString("ESTADISTICAS DE PARTIDAS", (int)(Juego.GAME_WIDTH / 2 - 150 * Juego.ESCALA), (int)(60 * Juego.ESCALA));
 
         //cabecera en naranja
         g.setFont(new Font("Arial", Font.BOLD, (int)(12 * Juego.ESCALA)));
@@ -62,9 +68,11 @@ public class Stats extends State implements Statemethods {
             //limita la seleccion al numero de records disponibles
             if (seleccionado >= records.size()) seleccionado = records.size() - 1;
 
-            for (int i = 0; i < records.size(); i++) {
+            //dibuja solo las filas visibles segun el scroll actual
+            for (int i = scrollOffset; i < Math.min(scrollOffset + FILAS_VISIBLES, records.size()); i++) {
                 RegistroPartida r = records.get(i);
-                int y = (int)((160 + i * 50) * Juego.ESCALA);
+                //resta scrollOffset para que la posicion visual empiece siempre desde arriba
+                int y = (int)((160 + (i - scrollOffset) * 50) * Juego.ESCALA);
 
                 //dibuja el fondo de seleccion en el record seleccionado
                 if (i == seleccionado) {
@@ -73,6 +81,7 @@ public class Stats extends State implements Statemethods {
                             (int)(580 * Juego.ESCALA), (int)(30 * Juego.ESCALA));
                 }
 
+                //color oro, plata y bronce para los tres primeros
                 if (i == 0) g.setColor(new Color(255, 215, 0));
                 else if (i == 1) g.setColor(new Color(192, 192, 192));
                 else g.setColor(new Color(205, 127, 50));
@@ -90,12 +99,23 @@ public class Stats extends State implements Statemethods {
                 g.drawString(String.valueOf(r.getDañoRecibido()), (int)(480 * Juego.ESCALA), y);
                 g.drawString(String.valueOf(r.getPorcionesRecogidas()), (int)(560 * Juego.ESCALA), y);
             }
+
+            //indicador de scroll si hay mas partidas de las que caben en pantalla
+            if (records.size() > FILAS_VISIBLES) {
+                g.setColor(Color.GRAY);
+                g.setFont(new Font("Arial", Font.PLAIN, (int)(10 * Juego.ESCALA)));
+                g.drawString("Mostrando " + (scrollOffset + 1) + "-" +
+                                Math.min(scrollOffset + FILAS_VISIBLES, records.size()) +
+                                " de " + records.size() + " partidas",
+                        (int)(80 * Juego.ESCALA), (int)(330 * Juego.ESCALA));
+            }
         }
 
         //instrucciones
         g.setColor(Color.GRAY);
         g.setFont(new Font("Arial", Font.PLAIN, (int)(10 * Juego.ESCALA)));
-        g.drawString(" | ↑↓ para seleccionar |  SUPR para borrar | R para borrar todo |  ESCAPE para volver |", (int)(80 * Juego.ESCALA), (int)(350 * Juego.ESCALA));
+        g.drawString(" | ↑↓ para seleccionar |  SUPR para borrar | R para borrar todo |  ESCAPE para volver |",
+                (int)(80 * Juego.ESCALA), (int)(350 * Juego.ESCALA));
     }
 
     @Override
@@ -107,12 +127,18 @@ public class Stats extends State implements Statemethods {
                 Gamestate.state = Gamestate.MENU;
                 break;
             case KeyEvent.VK_UP:
-                //sube la seleccion
-                if (seleccionado > 0) seleccionado--;
+                if (seleccionado > 0) {
+                    seleccionado--;
+                    //si la seleccion sale por arriba de la vista ajusta el scroll
+                    if (seleccionado < scrollOffset) scrollOffset--;
+                }
                 break;
             case KeyEvent.VK_DOWN:
-                //baja la seleccion
-                if (seleccionado < records.size() - 1) seleccionado++;
+                if (seleccionado < records.size() - 1) {
+                    seleccionado++;
+                    //si la seleccion sale por abajo de la vista ajusta el scroll
+                    if (seleccionado >= scrollOffset + FILAS_VISIBLES) scrollOffset++;
+                }
                 break;
             case KeyEvent.VK_DELETE:
                 //borra el record seleccionado
@@ -125,6 +151,7 @@ public class Stats extends State implements Statemethods {
                 //borra todos los records de una vez
                 GestorRecords.borrarTodosLosRecords();
                 seleccionado = 0;
+                scrollOffset = 0; // ← resetea el scroll al borrar todo
                 break;
         }
     }

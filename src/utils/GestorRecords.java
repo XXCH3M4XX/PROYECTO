@@ -52,15 +52,7 @@ public class GestorRecords {
     public static void añadirRecord(RegistroPartida nuevo) {
         ArrayList<RegistroPartida> records = cargarRecords();
         records.add(nuevo);
-
-        //ordena por tiempo ascendente, el mas rapido primero
         records.sort(Comparator.comparingLong(RegistroPartida::getTiempoSegundos));
-
-        //mantiene solo el top 3
-        while (records.size() > MAX_RECORDS) {
-            records.remove(records.size() - 1);
-        }
-
         guardarRecords(records);
     }
 
