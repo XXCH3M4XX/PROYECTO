@@ -25,6 +25,9 @@ public class PausaOverlay {
     private UrmBoton menuB, replayB, unpauseB;
 
     private OpcionesAudio opcionesAudio;
+    private BotonControles botonControles;
+
+
 
     //recibe la referencia al estado de juego e inicializa todos los elementos del overlay
     public PausaOverlay(Playing playing) {
@@ -32,8 +35,13 @@ public class PausaOverlay {
         cargarFondo();
         opcionesAudio = playing.getJuego().getOpcionesAudio();
         crearURMBotones();
+        botonControles = new BotonControles(
+                (int)(550 * Juego.ESCALA),
+                (int)(200 * Juego.ESCALA)
+        );
 
     }
+
     //crea los botones de menu, reiniciar y despausar y los coloca en su posicion escalada
     private void crearURMBotones() {
         int menuX = (int)(313 * Juego.ESCALA);
@@ -60,6 +68,8 @@ public class PausaOverlay {
         replayB.update();
         unpauseB.update();
         opcionesAudio.update();
+        botonControles.update();
+
     }
 
     //dibuja el fondo y todos los botones del menu de pausa
@@ -69,6 +79,8 @@ public class PausaOverlay {
         replayB.draw(g);
         unpauseB.draw(g);
         opcionesAudio.draw(g);
+        botonControles.draw(g);
+
     }
 
     //activa el hover del boton sobre el que esta el raton y desactiva el del resto
@@ -76,6 +88,8 @@ public class PausaOverlay {
         menuB.setMouseOver(false);
         unpauseB.setMouseOver(false);
         replayB.setMouseOver(false);
+        botonControles.setMouseOver(false);
+
 
         if (isIn(e, menuB)) {
             menuB.setMouseOver(true);
@@ -85,6 +99,9 @@ public class PausaOverlay {
             replayB.setMouseOver(true);
         } else {
             opcionesAudio.mouseMoved(e);
+        }
+        if (isIn(e, botonControles)) {
+            botonControles.setMouseOver(true);
         }
     }
 
@@ -108,6 +125,12 @@ public class PausaOverlay {
                 //despausa el juego sin reiniciar
                 playing.depausarJuego();
             }
+        } else if (isIn(e, botonControles)) {
+            if (botonControles.isMousePressed()) {
+                //muestra la pantalla de controles
+                Gamestate.state = Gamestate.CONTROLES;
+                playing.depausarJuego();
+            }
         } else {
             opcionesAudio.mouseReleased(e);
         }
@@ -116,6 +139,7 @@ public class PausaOverlay {
         menuB.reiniciarBooleanos();
         unpauseB.reiniciarBooleanos();
         replayB.reiniciarBooleanos();
+        botonControles.resetBools();
     }
 
     //marca el boton como presionado cuando el raton hace click sobre el
@@ -126,6 +150,8 @@ public class PausaOverlay {
             replayB.setMousePressed(true);
         } else if (isIn(e, unpauseB)) {
             unpauseB.setMousePressed(true);
+        } else if (isIn(e, botonControles)) {
+            botonControles.setMousePressed(true);
         } else {
             opcionesAudio.mousePressed(e);
         }

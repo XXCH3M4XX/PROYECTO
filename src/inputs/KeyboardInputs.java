@@ -45,6 +45,9 @@ public class KeyboardInputs implements KeyListener {
             case STATS:
                 panelJuego.getJuego().getStats().keyPressed(e);
                 break;
+            case CONTROLES:
+                panelJuego.getJuego().getControles().keyPressed(e);
+                break;
             case NOMBRE:
                 panelJuego.getJuego().getPantallaIntroducirNombre().keyPressed(e);
                 break;

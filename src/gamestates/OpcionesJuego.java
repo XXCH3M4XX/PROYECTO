@@ -1,6 +1,7 @@
 package gamestates;
 
 import main.Juego;
+import ui.BotonControles;
 import ui.BotonesPausa;
 import ui.OpcionesAudio;
 import ui.UrmBoton;
@@ -13,14 +14,15 @@ import java.awt.image.BufferedImage;
 
 import static utils.Constantes.UI.URMBotones.URM_SIZE;
 
-public class OpcionesDeJuego extends State implements Statemethods{
+public class OpcionesJuego extends State implements Statemethods{
 
     private OpcionesAudio opcionesAudio;
     private BufferedImage imagenFondo, opcionesImagenFondo;
     private int bgX, bgY, bgW, bgH;
     private UrmBoton menuB;
+    private BotonControles botonControles;
 
-    public OpcionesDeJuego(Juego juego) {
+    public OpcionesJuego(Juego juego) {
         super(juego);
         cargarImagenes();
         cargarBotones();
@@ -32,6 +34,10 @@ public class OpcionesDeJuego extends State implements Statemethods{
         int menuY = (int) (325 * Juego.ESCALA);
 
         menuB = new UrmBoton(menuX, menuY, URM_SIZE, URM_SIZE, 2);
+        botonControles = new BotonControles(
+                (int)(550 * Juego.ESCALA),
+                (int)(200 * Juego.ESCALA)
+        );
 
     }
 
@@ -49,6 +55,7 @@ public class OpcionesDeJuego extends State implements Statemethods{
     public void update() {
         menuB.update();
         opcionesAudio.update();
+        botonControles.update();
 
     }
 
@@ -59,6 +66,7 @@ public class OpcionesDeJuego extends State implements Statemethods{
 
         menuB.draw(g);
         opcionesAudio.draw(g);
+        botonControles.draw(g);
     }
 
     public void mouseDragged(MouseEvent e) {
@@ -75,9 +83,11 @@ public class OpcionesDeJuego extends State implements Statemethods{
     public void mousePressed(MouseEvent e) {
         if (isIn(e, menuB)) {
             menuB.setMousePressed(true);
-        } else
+        } else if (isIn(e, botonControles)) {
+            botonControles.setMousePressed(true);
+        } else {
             opcionesAudio.mousePressed(e);
-
+        }
     }
 
     @Override
@@ -85,22 +95,29 @@ public class OpcionesDeJuego extends State implements Statemethods{
         if (isIn(e, menuB)) {
             if (menuB.isMousePressed())
                 Gamestate.state = Gamestate.MENU;
-        } else
+        } else if (isIn(e, botonControles)) {
+            if (botonControles.isMousePressed())
+                Gamestate.state = Gamestate.CONTROLES;
+        } else {
             opcionesAudio.mouseReleased(e);
-
+        }
         menuB.reiniciarBooleanos();
-
+        botonControles.resetBools();
     }
 
     @Override
     public void mouseMoved(MouseEvent e) {
         menuB.setMouseOver(false);
+        botonControles.setMouseOver(false);
 
         if (isIn(e, menuB))
             menuB.setMouseOver(true);
         else
             opcionesAudio.mouseMoved(e);
 
+        if (isIn(e, botonControles)) {
+            botonControles.setMouseOver(true);
+        }
     }
 
     @Override

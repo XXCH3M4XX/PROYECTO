@@ -6,7 +6,6 @@ import gamestates.*;
 import gamestates.Menu;
 import niveles.AjusteNivel;
 import ui.OpcionesAudio;
-import utils.LoadSave;
 
 import java.awt.*;
 
@@ -52,8 +51,10 @@ public class Juego implements Runnable {
     public final static int GAME_WIDTH = TILES_SIZE * TILES_IN_WIDTH;
     public final static int GAME_HEIGHT = TILES_SIZE * TILES_IN_HEIGHT;
     private IntroScreen introScreen;
-    private OpcionesDeJuego opcionesDeJuego;
+    private OpcionesJuego opcionesJuego;
     private PantallaIntroducirNombre pantallaIntroducirNombre;
+    private Controles controles;
+
 
     //inicializa todos los sistemas y arranca el bucle
     public Juego() {
@@ -75,9 +76,10 @@ public class Juego implements Runnable {
         introScreen = new IntroScreen(this);
         menu = new Menu(this);
         playing = new Playing(this);
-        opcionesDeJuego = new OpcionesDeJuego(this);
+        opcionesJuego = new OpcionesJuego(this);
         stats = new Stats(this);
         pantallaIntroducirNombre = new PantallaIntroducirNombre(this);
+        controles = new Controles(this);
 
 
     }
@@ -101,13 +103,16 @@ public class Juego implements Runnable {
                 playing.update();
                 break;
             case OPTIONS:
-                opcionesDeJuego.update();
+                opcionesJuego.update();
                 break;
             case STATS:
                 stats.update();
                 break;
             case NOMBRE:
                 pantallaIntroducirNombre.update();
+                break;
+            case CONTROLES:
+                controles.update();
                 break;
             case QUIT:
             default:
@@ -129,13 +134,16 @@ public class Juego implements Runnable {
                 playing.draw(g);
                 break;
             case OPTIONS:
-                opcionesDeJuego.draw(g);
+                opcionesJuego.draw(g);
                 break;
             case NOMBRE:
                 pantallaIntroducirNombre.draw(g);
                 break;
             case STATS:
                 stats.draw(g); // ← añade esto
+                break;
+            case CONTROLES:
+                controles.draw(g);
                 break;
             default:
                 break;
@@ -219,6 +227,9 @@ public class Juego implements Runnable {
     public Stats getStats() {
         return stats;
     }
+    public Controles getControles() {
+        return controles;
+    }
     public PantallaIntroducirNombre getPantallaIntroducirNombre() {
         return pantallaIntroducirNombre;
     }
@@ -240,8 +251,8 @@ public class Juego implements Runnable {
         return opcionesAudio;
     }
 
-    public OpcionesDeJuego opcionesDeJuego(){
-        return opcionesDeJuego;
+    public OpcionesJuego opcionesDeJuego(){
+        return opcionesJuego;
     }
 
 }
