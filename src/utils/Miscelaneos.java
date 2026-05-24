@@ -45,15 +45,20 @@ public class Miscelaneos {
         int widthMax = datosNivel[0].length * TILES_SIZE;
 
         //fuera de los limites del nivel se considera solido para bloquear el movimiento
-        if (x < 0 || x >= widthMax || y < 0 || y >= Juego.GAME_HEIGHT) return true;
+        if (x < 0 || x >= widthMax || y < 0) {
+            return true;
+        }
 
         //calculo de la posicion del tile correspondiente segun la coordenada pixel
         int xTile = (int)(x / TILES_SIZE);
         int yTile = (int)(y / TILES_SIZE);
 
-        //evita errores de desbordamiento fuera de los limites del array del nivel
-        if (xTile < 0 || yTile < 0 || yTile >= datosNivel.length || xTile >= datosNivel[0].length) {
+        //si esta por debajo del nivel no es solido, permite la caida
+        if (xTile < 0 || xTile >= datosNivel[0].length || yTile < 0) {
             return true;
+        }
+        if (yTile >= datosNivel.length) {
+            return false; // ← por debajo del nivel no es solido
         }
 
         return tileSolido(xTile, yTile, datosNivel);

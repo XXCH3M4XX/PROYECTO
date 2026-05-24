@@ -19,10 +19,9 @@ public class AjusteNivel {
     //constructor que recibe la instancia del juego e inicializa el nivel
     public AjusteNivel(Juego juego){
         this.juego = juego;
-        importarSpritesNivel();
+        importarSpritesNivel(0);
         niveles = new ArrayList<>();
         crearNiveles();
-
     }
 
     private void crearNiveles() {
@@ -35,16 +34,23 @@ public class AjusteNivel {
     }
 
     //carga la imagen del atlas y la divide en un array de subimagenes
-    private void importarSpritesNivel() {
-        BufferedImage imagen = LoadSave.GetSpriteAtlas(LoadSave.LEVEL_ATLAS);
+    private void importarSpritesNivel(int indice) {
+        //selecciona el atlas de tiles correspondiente al nivel actual
+        String atlas;
+        switch (indice) {
+            case 1: atlas = LoadSave.SUELO2; break;
+            case 2: atlas = LoadSave.SUELO3; break;
+            default: atlas = LoadSave.SUELO1; break;
+        }
+        BufferedImage imagen = LoadSave.GetSpriteAtlas(atlas);
         //inicializacion del array para almacenar los 48 sprites
         spriteNivel = new BufferedImage[48];
         //bucles para recorrer las filas y columnas de la hoja de sprites
-        for(int i = 0; i < 4; i++) {
-            for(int j = 0; j < 12; j++) {
-                int indice = i*12 + j;
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 12; j++) {
+                int indiceSprite = i * 12 + j;
                 //extraccion de cada tile de 32x32 pixeles
-                spriteNivel[indice] = imagen.getSubimage(j*32, i*32, 32, 32);
+                spriteNivel[indiceSprite] = imagen.getSubimage(j * 32, i * 32, 32, 32);
             }
         }
     }
@@ -67,6 +73,9 @@ public class AjusteNivel {
     public  void update(){
 
     }
+    public int getIndiceNivel() {
+        return indiceNivel;
+    }
 
     //devuelve el objeto nivel cargado actualmente
     public Nivel getNivelActual(){
@@ -76,6 +85,7 @@ public class AjusteNivel {
     //vuelve al primer nivel, se usa al morir y reiniciar
     public void resetNivel() {
         indiceNivel = 0;
+        importarSpritesNivel(0);
     }
     public int getCantidadNiveles() {
         return niveles.size();
@@ -89,6 +99,7 @@ public class AjusteNivel {
             Gamestate.state = Gamestate.NOMBRE;
             return;
         }
+        importarSpritesNivel(indiceNivel); // ← recarga el atlas del nuevo nivel
         Nivel nuevoNivel = niveles.get(indiceNivel);
         juego.getPlaying().getAjusteEnemigo().cargarEnemigos(nuevoNivel);
         juego.getPlaying().getJugador().cargarDatosNivel(nuevoNivel.getDatosNivel());

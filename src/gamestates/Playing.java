@@ -52,6 +52,10 @@ public class Playing extends State implements Statemethods {
     private BufferedImage imagenMontañas;
     private BufferedImage nube;
 
+    private BufferedImage[] fondosNivel;
+    private BufferedImage[] montañasNivel;
+    private BufferedImage[] nubesNivel;
+
     //posiciones Y aleatorias de cada nube para distribuirlas verticalmente
     private int[] nubesPosicion;
     private Random random = new Random();
@@ -60,6 +64,8 @@ public class Playing extends State implements Statemethods {
     private boolean gameOver = false;
     private boolean nivelCompletado = false;
     private boolean jugadorMuriendo = false;
+    private BufferedImage castillo;
+    private int anchoCastillo, altoCastillo;
 
     // contadores de estadisticas de la partida actual
     private int muertes = 0;
@@ -76,6 +82,9 @@ public class Playing extends State implements Statemethods {
         imagenFondo = LoadSave.GetSpriteAtlas(LoadSave.FONDO_NIVEL1);
         imagenMontañas = LoadSave.GetSpriteAtlas(LoadSave.MONTAÑASYBOSQUES_NIVEL1);
         nube = LoadSave.GetSpriteAtlas(LoadSave.NUBES_NIVEL1);
+        castillo = LoadSave.GetSpriteAtlas(LoadSave.CASTILLO);
+        anchoCastillo = (int)(castillo.getWidth() * Juego.ESCALA);
+        altoCastillo = (int)(castillo.getHeight() * Juego.ESCALA);
 
         //asigna una altura aleatoria a cada nube dentro de un rango
         nubesPosicion = new int[8];
@@ -84,6 +93,31 @@ public class Playing extends State implements Statemethods {
         }
         calcularOffsetNivel();
         cargarNivel();
+    }
+
+    //carga los fondos correspondientes al nivel indicado
+    private void cargarFondosNivel(int indice) {
+        switch (indice) {
+            case 1:
+                imagenFondo = LoadSave.GetSpriteAtlas(LoadSave.FONDO_NIVEL2);
+                imagenMontañas = null;
+                nube = LoadSave.GetSpriteAtlas(LoadSave.ARAÑA_NIVEL2);
+                castillo = null; // ← sin castillo en nivel 2
+                break;
+            case 2:
+                //nivel 3: solo fondo estatico, sin montañas ni nubes
+                imagenFondo = LoadSave.GetSpriteAtlas(LoadSave.FONDO_NIVEL3);
+                imagenMontañas = null;
+                nube = null;
+                castillo = null;
+                break;
+            default:
+                //nivel 1: fondo estrellado con montañas y nubes
+                imagenFondo = LoadSave.GetSpriteAtlas(LoadSave.FONDO_NIVEL1);
+                imagenMontañas = LoadSave.GetSpriteAtlas(LoadSave.MONTAÑASYBOSQUES_NIVEL1);
+                nube = LoadSave.GetSpriteAtlas(LoadSave.NUBES_NIVEL1);
+                break;
+        }
     }
 
     //avanza al siguiente nivel reseteando todos los sistemas y cargando los nuevos datos
@@ -97,6 +131,8 @@ public class Playing extends State implements Statemethods {
         OffsetXNivel = 0;
 
         ajusteNivel.cargarSiguienteNivel();
+        cargarFondosNivel(ajusteNivel.getIndiceNivel()); // ← añade esto
+
         jugador.setSpawn(ajusteNivel.getNivelActual().getSpawnJugador());
         jugador.cargarDatosNivel(ajusteNivel.getNivelActual().getDatosNivel());
         tilesMaximosOffsetX = ajusteNivel.getNivelActual().getOffsetNivel();
@@ -190,21 +226,21 @@ public class Playing extends State implements Statemethods {
             ajusteDeObjetos.update(ajusteNivel.getNivelActual().getDatosNivel(), jugador);
             jugador.update();
             ajusteEnemigo.update(ajusteNivel.getNivelActual().getDatosNivel(), jugador);
+
+
+            if (jugador.getHitbox().y > Juego.GAME_HEIGHT) {
+                jugador.muerte();
+            }
+
             comprobarBorde();
-            ticksPartida++; // ← añade esto al final del bloque
+            ticksPartida++;
         }
     }
 
     //desplaza la camara cuando el jugador se acerca a los bordes de la pantalla
     private void comprobarBorde() {
         int posicionX = (int) jugador.getHitbox().x;
-        int diferencia = posicionX - OffsetXNivel;
-
-        if (diferencia > bordeDerecho) {
-            OffsetXNivel += diferencia - bordeDerecho;
-        } else if (diferencia < bordeIzquierdo) {
-            OffsetXNivel += diferencia - bordeIzquierdo;
-        }
+        OffsetXNivel = posicionX - Juego.GAME_WIDTH / 2;
 
         //limita el offset para que la camara no salga de los limites del nivel
         if (OffsetXNivel > tilesMaximosOffsetX) {
@@ -237,43 +273,58 @@ public class Playing extends State implements Statemethods {
     }
 
     //dibuja las montañas y nubes con parallax, moviendose mas despacio que el nivel
+    //dibuja las montañas y nubes con parallax, moviendose mas despacio que el nivel
     private void pintarMontañasYNubes(Graphics g) {
+        int anchoNivelPixeles = ajusteNivel.getNivelActual().getDatosNivel()[0].length * Juego.TILES_SIZE;
+        int repeticiones = (anchoNivelPixeles / anchuraMontañas) + 2;
 
-        //calcula cuantas repeticiones hacen falta para cubrir la pantalla sin huecos
-        int repeticiones = (Juego.GAME_WIDTH / anchuraMontañas) + 2;
-
-        //las montañas se anclan al borde inferior de la pantalla automaticamente
-        for (int i = 0; i < repeticiones; i++) {
-            g.drawImage(imagenMontañas,
-                    i * anchuraMontañas - (int)(OffsetXNivel * 0.3),
-                    Juego.GAME_HEIGHT - alturaMontañas,
-                    anchuraMontañas, alturaMontañas, null);
+        //capa 1: montañas, parallax lento (solo si hay montañas en este nivel)
+        if (imagenMontañas != null) {
+            for (int i = 0; i < repeticiones; i++) {
+                g.drawImage(imagenMontañas,
+                        i * anchuraMontañas - (int)(OffsetXNivel * 0.3),
+                        Juego.GAME_HEIGHT - alturaMontañas,
+                        anchuraMontañas, alturaMontañas, null);
+            }
         }
 
-        //las nubes se mueven al 50% de la velocidad del nivel para dar sensacion de profundidad
-        for (int i = 0; i < nubesPosicion.length; i++) {
-            g.drawImage(nube,
-                    anchuraNube * 4 * i - (int)(OffsetXNivel * 0.5),
-                    nubesPosicion[i],
-                    anchuraNube, alturaNube, null);
+        //capa 2: castillo al final del nivel, solo en nivel 1
+        if (castillo != null) {
+            int castilloX = (int)((anchoNivelPixeles - anchoCastillo * 3) * 0.5) - (int)(OffsetXNivel * 0.5);
+            int castilloY = Juego.GAME_HEIGHT - altoCastillo * 3;
+            g.drawImage(castillo, castilloX, castilloY, anchoCastillo * 3, altoCastillo * 3, null);
+        }
+
+        //capa 3: nubes o arañas segun el nivel, parallax rapido
+
+        if (nube != null) {
+            int numNubes = (anchoNivelPixeles / (anchuraNube * 4)) + 2;
+            for (int i = 0; i < numNubes; i++) {
+                int yNube = nubesPosicion.length > i ? nubesPosicion[i] : (int)(90 * Juego.ESCALA);
+                g.drawImage(nube,
+                        anchuraNube * 4 * i - (int)(OffsetXNivel * 0.5),
+                        yNube,
+                        anchuraNube * 2,
+                        alturaNube * 2,
+                        null);
+            }
         }
     }
 
     //resetea todos los sistemas al estado inicial para reiniciar la partida desde cero
     public void resetAll() {
         gameOver = false;
+        jugadorMuriendo = false;
         pausado = false;
         nivelCompletado = false;
+        jugador.resetearTodo(); // ← primero de todo, restaura la salud a saludMaxima
         ajusteNivel.resetNivel();
+        cargarFondosNivel(0);
         jugador.cargarDatosNivel(ajusteNivel.getNivelActual().getDatosNivel());
         jugador.setSpawn(ajusteNivel.getNivelActual().getSpawnJugador());
         ajusteEnemigo.cargarEnemigos(ajusteNivel.getNivelActual());
         tilesMaximosOffsetX = ajusteNivel.getNivelActual().getOffsetNivel();
         ajusteDeObjetos.cargarObjetos(ajusteNivel.getNivelActual());
-        jugador.resetearTodo();
-        jugadorMuriendo = false;
-
-        //fundamental para que funcione el boton de reiniciar, si no no se reinicia la posicion
         ajusteEnemigo.resetearTodosEnemigos();
         OffsetXNivel = 0;
         ajusteDeObjetos.resetearTodosLosObjetos();
@@ -339,7 +390,9 @@ public class Playing extends State implements Statemethods {
 
     //delega en el gestor de objetos la comprobacion de si el jugador toca pinchos
     public void checkPinchosTocados(Jugador j) {
-        ajusteDeObjetos.checkJugadorTocaPinchos(j);
+        if (!jugadorMuriendo) {
+            ajusteDeObjetos.checkJugadorTocaPinchos(j);
+        }
     }
 
     //el click izquierdo activa el ataque del jugador si la partida esta en curso

@@ -13,12 +13,20 @@ public class LoadSave {
     //nombres de los archivos de imagen para los sprites y niveles
 
     //suelos
-    public static final String LEVEL_ATLAS = "suelos/suelosCampo.png";
+    public static final String SUELO1 = "suelos/suelosCampo.png";
+    public static final String SUELO2 = "suelos/suelosMadera.png";
+    public static final String SUELO3 = "suelos/sueloAjedrezado.png";
 
     //fondos
     public static final String FONDO_NIVEL1 = "fondos/fondoNivel1.png";
     public static final String MONTAÑASYBOSQUES_NIVEL1 = "fondos/montañasYBosquesNivel1.png";
     public static final String NUBES_NIVEL1 = "fondos/nubesPequeñasNivel1.png";
+    public static final String CASTILLO = "fondos/castilloDio.png";
+    public static final String FONDO_NIVEL2 = "fondos/fondoNivel2.png";
+    public static final String ARAÑA_NIVEL2 = "fondos/arañaNivel2.png";
+    public static final String FONDO_NIVEL3 = "fondos/castilloDioNivel3.png";
+
+
 
 
     //spritesheets

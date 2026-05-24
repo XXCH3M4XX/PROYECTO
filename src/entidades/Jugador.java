@@ -251,6 +251,12 @@ public class Jugador extends Entidad {
 
     //pinta el sprite usando los offsets para alinear visualmente con la hitbox
     public void render(Graphics g, int nivelOffset) {
+        //no dibuja el sprite si el jugador ha caido por debajo de la pantalla
+        if (hitbox.y > Juego.GAME_HEIGHT) {
+            dibujarUI(g);
+            return;
+        }
+
         int drawX = (int)(hitbox.x - offsetX) - nivelOffset;
         int drawY = (int)(hitbox.y - offsetY);
 
@@ -258,7 +264,6 @@ public class Jugador extends Entidad {
             g.drawImage(animaciones[accionJugador][indiceAnim],
                     drawX, drawY, width, height, null);
         } else {
-            //espeja el sprite horizontalmente desplazando el origen al borde derecho
             g.drawImage(animaciones[accionJugador][indiceAnim],
                     drawX + width, drawY, -width, height, null);
         }
