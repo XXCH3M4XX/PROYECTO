@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 
 //clase de utilidad para la carga de recursos y datos externos
 public class LoadSave {
@@ -84,44 +85,23 @@ public class LoadSave {
         return imagen;
     }
     public static BufferedImage[] getNiveles() {
-        URL url = LoadSave.class.getResource("/Levels");
-        File archivo = null;
+        // carga los niveles por nombre directamente sin listar carpetas
+        // añade mas entradas si tienes mas niveles
+        String[] nombresNiveles = {"Levels/1.png", "Levels/2.png", "Levels/3.png"};
 
-        //abrimos el archivo y extraemos los niveles
-        //hay un error con el tipo de excepcion
-        try {
-            archivo = new File(url.toURI());
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-        File[] listaNiveles = archivo.listFiles();
-        File[] nivelesOrdenados = new File[listaNiveles.length];
-
-        //algoritmo sencillo pero poquito eficiente para ordenar los 3 niveles que
-        //vamos a tener
-        for(int i = 0; i< nivelesOrdenados.length; i++){
-            for(int j = 0; j < listaNiveles.length; j++){
-                if(listaNiveles[j].getName().equals("" + (i + 1) + ".png")){
-                    nivelesOrdenados[i] = listaNiveles[j];
+        ArrayList<BufferedImage> imagenes = new ArrayList<>();
+        for (String nombre : nombresNiveles) {
+            InputStream is = LoadSave.class.getResourceAsStream("/" + nombre);
+            if (is != null) {
+                try {
+                    imagenes.add(ImageIO.read(is));
+                    is.close();
+                } catch (IOException e) {
+                    System.out.println("Error cargando nivel: " + nombre);
                 }
             }
         }
-
-        //recorremos los archivos para sacar los niveles
-        for(File f : listaNiveles) {
-            System.out.println("Archivo: " + archivo.getName());
-        }
-        BufferedImage[] imagenes = new BufferedImage[nivelesOrdenados.length];
-        try {
-            for(int i = 0; i < imagenes.length; i++){
-                //el metodo read es muy importante
-                imagenes[i] = ImageIO.read(nivelesOrdenados[i]);
-            }
-        }catch(Exception e){
-            System.out.println("Error generando las imagenes.");
-        }
-
-        return imagenes;
+        return imagenes.toArray(new BufferedImage[0]);
     }
 
 
