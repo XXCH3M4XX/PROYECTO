@@ -29,6 +29,7 @@ public class LoadSave {
     public static final String POCIONES = "spritesheets/spritesPociones.png";
     public static final String ESQUELETO_HUESO = "spritesheets/esqueletoHueso.png";
     public static final String HUESO_PROYECTIL =  "spritesheets/huesoProyectil.png";
+    public static final String DIO = "spritesheets/SpriteDio.png";
 
 
     //interfaces
@@ -40,6 +41,7 @@ public class LoadSave {
     public static final String INTRO = "interfaces/hpjmGames.png";
     public static final String PANTALLA_MUERTE =  "interfaces/pantallaMuerteInterfaz.png";
     public static final String FONDO_OPCIONES = "interfaces/MenuPausaInterfaz.png";
+    public static final String BARRA_VIDA_DIO = "interfaces/SALUD_ENERGIA_DIO.png";
 
 
     //botones

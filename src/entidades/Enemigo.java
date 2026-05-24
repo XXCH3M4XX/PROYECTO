@@ -220,4 +220,9 @@ public abstract class Enemigo extends Entidad {
         }
         ataqueRealizado = true;
     }
+
+    //getter para la vida de Dio
+    public int getVidaActual() {
+        return vidaActual;
+    }
 }

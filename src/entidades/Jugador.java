@@ -242,8 +242,6 @@ public class Jugador extends Entidad {
     //
     private void actualizarBarraDeSuperAtaque(){
         anchuraSuperAtaque = (int)((superAtaqueValor / (float)superAtaqueValorMaximo) * anchuraBarraSuperAtaque);
-
-
     }
 
     //inyecta los datos del nivel para que el jugador pueda comprobar colisiones

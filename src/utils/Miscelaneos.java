@@ -1,6 +1,7 @@
 package utils;
 
 import entidades.PersonajeEnemigo1;
+import entidades.PersonajeDio;
 import main.Juego;
 import entidades.EsqueletoHueso;
 import objetos.ContenedorJuego;
@@ -198,6 +199,20 @@ public class Miscelaneos {
                 Color color = new Color(imagen.getRGB(j, i));
                 if (color.getGreen() == Constantes.constantesDelEnemigo.ENEMIGO1) {
                     lista.add(new PersonajeEnemigo1(j * TILES_SIZE, i * TILES_SIZE));
+                }
+            }
+        }
+        return lista;
+    }
+
+    //busca en la imagen los pixeles de Dio (verde == 7) y crea una instancia por cada uno
+    public static ArrayList<PersonajeDio> getPersonajeDio(BufferedImage imagen) {
+        ArrayList<PersonajeDio> lista = new ArrayList<>();
+        for (int i = 0; i < imagen.getHeight(); i++) {
+            for (int j = 0; j < imagen.getWidth(); j++) {
+                Color color = new Color(imagen.getRGB(j, i));
+                if (color.getBlue() == Constantes.constantesDelEnemigo.DIO) {
+                    lista.add(new PersonajeDio(j * TILES_SIZE, i * TILES_SIZE));
                 }
             }
         }

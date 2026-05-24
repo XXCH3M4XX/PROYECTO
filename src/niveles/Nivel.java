@@ -1,6 +1,7 @@
 package niveles;
 
 import entidades.PersonajeEnemigo1;
+import entidades.PersonajeDio;
 import main.Juego;
 import entidades.EsqueletoHueso;
 import objetos.ContenedorJuego;
@@ -24,6 +25,7 @@ public class Nivel {
 
     //listas de entidades y objetos presentes en el nivel
     private ArrayList<PersonajeEnemigo1> zombie;
+    private ArrayList<PersonajeDio> dio;
     private ArrayList<Pocion> pocion;
     private ArrayList<Pinchos> pinchos;
     private ArrayList<ContenedorJuego> contenedor;
@@ -42,6 +44,7 @@ public class Nivel {
         this.imagen = imagen;
         cargarDatosNivel();
         cargarEnemigos();
+        cargarDio();
         crearPociones();
         crearContenedores();
         crearPinchos();
@@ -87,6 +90,11 @@ public class Nivel {
         zombie = getPersonajeEnemigo1(imagen);
     }
 
+    //extrae la lista de enemigos Dio de la imagen del nivel
+    private void cargarDio() {
+        dio = Miscelaneos.getPersonajeDio(imagen);
+    }
+
     //extrae la matriz de indices de tiles de la imagen del nivel
     private void cargarDatosNivel() {
         datosNivel = conseguirDatosNivel(imagen);
@@ -100,6 +108,11 @@ public class Nivel {
     //devuelve la lista de enemigos zombie del nivel
     public ArrayList<PersonajeEnemigo1> getEnemigos() {
         return zombie;
+    }
+
+    //devuelve la lista de enemigos Dio del nivel
+    public ArrayList<PersonajeDio> getDio() {
+        return dio;
     }
 
     //devuelve el punto de spawn del jugador en este nivel
