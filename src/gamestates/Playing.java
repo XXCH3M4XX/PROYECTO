@@ -73,9 +73,9 @@ public class Playing extends State implements Statemethods {
         initClasses();
 
         //carga las imagenes del entorno
-        imagenFondo = LoadSave.GetSpriteAtlas(LoadSave.FONDO_JUGANDO);
-        imagenMontañas = LoadSave.GetSpriteAtlas(LoadSave.MONTAÑAS_YBOSQUES);
-        nube = LoadSave.GetSpriteAtlas(LoadSave.nubes);
+        imagenFondo = LoadSave.GetSpriteAtlas(LoadSave.FONDO_NIVEL1);
+        imagenMontañas = LoadSave.GetSpriteAtlas(LoadSave.MONTAÑASYBOSQUES_NIVEL1);
+        nube = LoadSave.GetSpriteAtlas(LoadSave.NUBES_NIVEL1);
 
         //asigna una altura aleatoria a cada nube dentro de un rango
         nubesPosicion = new int[8];

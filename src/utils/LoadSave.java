@@ -11,31 +11,44 @@ import java.net.URL;
 public class LoadSave {
 
     //nombres de los archivos de imagen para los sprites y niveles
-    public static final String PLAYER_ATLAS = "SpriteSheetJonathan.png";
-    public static final String LEVEL_ATLAS = "sueloCampo.png";
-    public static final String BOTONES_MENU = "botones.png";
-    public static final String FONDO_MENU = "menuFondo.png";
-    public static final String FONDO_PANTALLA = "fondoPantallaMenu.png";
-    public static final String FONDO_PAUSA = "MenuPausa.png";
-    public static final String BOTONES_VOLUMEN = "sound_button.png";
-    public static final String BOTONES_URM = "urm_buttons.png";
-    public static final String BOTON_NIVEL_VOLUMEN = "volume_buttons.png";
-    public static final String FONDO_JUGANDO = "fondoJugando.png";
-    public static final String MONTAÑAS_YBOSQUES = "montañasYBosques.png";
-    public static final String nubes = "nubesPequeñas.png";
-    public static final String ENEMIGO1 = "SpriteSheetLanza.png";
-    public static final String BARRA_SALUD = "SALUD_ENERGIA.png";
-    public static final String NIVELCOMPLETADO_MENU = "completed_sprite.png";
-    public static final String OBJETOS = "objects_sprites.png";
-    public static final String POCIONES = "potions_sprites.png";
-    public static final String INTRO = "hpjmGames.png";
-    public static final String TRAMPA = "trap_atlas.png";
-    public static final String ESQUELETO_HUESO = "esqueletoHueso.png";
-    public static final String HUESO_PROYECTIL =  "huesoProyectil.png";
-    public static final String PANTALLA_MUERTE =  "pantallaMuerte.png";
-    public static final String FONDO_OPCIONES = "MenuPausa.png";
-    public static final String BOTON_OPCIONES = "botonOpciones.png";
-    public static final String BOTON_CONTROLES = "botonControles.png";
+
+    //suelos
+    public static final String LEVEL_ATLAS = "suelos/suelosCampo.png";
+
+    //fondos
+    public static final String FONDO_NIVEL1 = "fondos/fondoNivel1.png";
+    public static final String MONTAÑASYBOSQUES_NIVEL1 = "fondos/montañasYBosquesNivel1.png";
+    public static final String NUBES_NIVEL1 = "fondos/nubesPequeñasNivel1.png";
+
+
+    //spritesheets
+    public static final String JUGADOR = "spritesheets/SpriteSheetJonathan.png";
+    public static final String ENEMIGO1 = "spritesheets/SpriteSheetLanza.png";
+    public static final String TRAMPA = "spritesheets/trampa.png";
+    public static final String OBJETOS = "spritesheets/cajasBarrilesSprites.png";
+    public static final String POCIONES = "spritesheets/spritesPociones.png";
+    public static final String ESQUELETO_HUESO = "spritesheets/esqueletoHueso.png";
+    public static final String HUESO_PROYECTIL =  "spritesheets/huesoProyectil.png";
+
+
+    //interfaces
+    public static final String FONDO_MENU = "interfaces/menuFondoInterfaz.png";
+    public static final String FONDO_PANTALLA = "interfaces/fondoPantallaMenu.png";
+    public static final String FONDO_PAUSA = "interfaces/MenuPausaInterfaz.png";
+    public static final String BARRA_SALUD = "interfaces/saludEnergiaInterfaz.png";
+    public static final String NIVELCOMPLETADO_MENU = "interfaces/nivelCompletadoInterfaz.png";
+    public static final String INTRO = "interfaces/hpjmGames.png";
+    public static final String PANTALLA_MUERTE =  "interfaces/pantallaMuerteInterfaz.png";
+    public static final String FONDO_OPCIONES = "interfaces/MenuPausaInterfaz.png";
+
+
+    //botones
+    public static final String BOTONES_MENU = "botones/botonesMenuPrincipal.png";
+    public static final String BOTON_NIVEL_VOLUMEN = "botones/botonVolumen.png";
+    public static final String BOTONES_NAVEGACION = "botones/botonesNavegacion.png";
+    public static final String BOTON_OPCIONES = "botones/botonOpciones.png";
+    public static final String BOTON_CONTROLES = "botones/botonControles.png";
+    public static final String BOTONES_VOLUMEN = "botones/efectosMusicaBotones.png";
 
     //metodo para cargar una imagen desde la carpeta de recursos
     public static BufferedImage GetSpriteAtlas(String fileName){

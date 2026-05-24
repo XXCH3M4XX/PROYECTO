@@ -514,7 +514,7 @@ public class Jugador extends Entidad {
 
     //carga el atlas y recorta cada frame de cada animacion en su posicion correspondiente
     private void cargarAnimaciones() {
-        BufferedImage imagen = LoadSave.GetSpriteAtlas(LoadSave.PLAYER_ATLAS);
+        BufferedImage imagen = LoadSave.GetSpriteAtlas(LoadSave.JUGADOR);
 
         //7 filas de animaciones con hasta 4 frames cada una
         animaciones = new BufferedImage[10][9];

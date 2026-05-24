@@ -27,7 +27,7 @@ public class UrmBoton extends BotonesPausa {
 
     //carga los tres frames del boton desde el spritesheet de botones URM
     private void loadImages() {
-        BufferedImage temp = LoadSave.GetSpriteAtlas(LoadSave.BOTONES_URM);
+        BufferedImage temp = LoadSave.GetSpriteAtlas(LoadSave.BOTONES_NAVEGACION);
         imgs = new BufferedImage[3];
         for (int i = 0; i < imgs.length; i++) {
             imgs[i] = temp.getSubimage(i * URM_DEFAULT_SIZE, rowIndex * URM_DEFAULT_SIZE,
