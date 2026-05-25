@@ -128,7 +128,7 @@ public class BossFinal extends Enemigo {
         hitbox.y = y;
         primeraActualizacion = true;
         vidaActual = vidaMax;
-        nuevoEstado(PREDETERMINADO); // arranca quieto
+        nuevoEstado(PREDETERMINADO);
         activo = true;
         velocidadCaida = 0;
         ticksIdle = 0;
@@ -173,7 +173,7 @@ public class BossFinal extends Enemigo {
             nuevoEstado(MUERTEDIO);
             playing.getJuego().getAudioPlayer().playEfecto(AudioPlayer.muerteDio);
         } else {
-            if (estadoEnemigo != DAÑO && estadoEnemigo != GANCHO) { // ← no interrumpe si está atacando
+            if (estadoEnemigo != DAÑO && estadoEnemigo != GANCHO) {
                 playing.getJuego().getAudioPlayer().playEfectoSinInterrumpir(AudioPlayer.dañoDio);
                 nuevoEstado(DAÑO);
             }

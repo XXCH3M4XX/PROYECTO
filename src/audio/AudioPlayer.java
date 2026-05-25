@@ -217,6 +217,7 @@ public class AudioPlayer {
         }
     }
 
+    //metodo que evita colisiones en audios
     public void playEfectoSinInterrumpir(int efecto) {
         if (!efectos[efecto].isActive()) {
             efectos[efecto].setMicrosecondPosition(0);
