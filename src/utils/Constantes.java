@@ -179,8 +179,7 @@ public class Constantes {
     public static class Direcciones {
         public static final int IZQUIERDA = 0;
         public static final int DERECHA = 1;
-        public static final int ARRIBA = 2;
-        public static final int ABAJO = 3;
+
     }
 
     public static class ConstantesJugador {

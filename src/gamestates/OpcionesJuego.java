@@ -5,7 +5,7 @@ import ui.BotonControles;
 import ui.BotonesPausa;
 import ui.OpcionesAudio;
 import ui.UrmBoton;
-import utils.LoadSave;
+import utils.CargaSprites;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -14,7 +14,7 @@ import java.awt.image.BufferedImage;
 
 import static utils.Constantes.UI.URMBotones.URM_SIZE;
 
-public class OpcionesJuego extends State implements Statemethods{
+public class OpcionesJuego extends Estado implements MetodosEstadoJuego {
 
     private OpcionesAudio opcionesAudio;
     private BufferedImage imagenFondo, opcionesImagenFondo;
@@ -43,8 +43,8 @@ public class OpcionesJuego extends State implements Statemethods{
 
     private void cargarImagenes() {
 
-        imagenFondo = LoadSave.GetSpriteAtlas(LoadSave.FONDO_PANTALLA);
-        opcionesImagenFondo = LoadSave.GetSpriteAtlas(LoadSave.FONDO_OPCIONES);
+        imagenFondo = CargaSprites.GetSpriteAtlas(CargaSprites.FONDO_PANTALLA);
+        opcionesImagenFondo = CargaSprites.GetSpriteAtlas(CargaSprites.FONDO_OPCIONES);
         bgW = (int) (opcionesImagenFondo.getWidth() * Juego.ESCALA);
         bgH = (int) (opcionesImagenFondo.getHeight() * Juego.ESCALA);
         bgX = Juego.GAME_WIDTH / 2 - bgW / 2;
@@ -94,10 +94,10 @@ public class OpcionesJuego extends State implements Statemethods{
     public void mouseReleased(MouseEvent e) {
         if (isIn(e, menuB)) {
             if (menuB.isMousePressed())
-                Gamestate.state = Gamestate.MENU;
+                EstadoJuego.state = EstadoJuego.MENU;
         } else if (isIn(e, botonControles)) {
             if (botonControles.isMousePressed())
-                Gamestate.state = Gamestate.CONTROLES;
+                EstadoJuego.state = EstadoJuego.CONTROLES;
         } else {
             opcionesAudio.mouseReleased(e);
         }
@@ -123,7 +123,7 @@ public class OpcionesJuego extends State implements Statemethods{
     @Override
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE)
-            Gamestate.state = Gamestate.MENU;
+            EstadoJuego.state = EstadoJuego.MENU;
 
     }
 

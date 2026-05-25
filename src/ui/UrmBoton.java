@@ -1,6 +1,6 @@
 package ui;
 
-import utils.LoadSave;
+import utils.CargaSprites;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -27,7 +27,7 @@ public class UrmBoton extends BotonesPausa {
 
     //carga los tres frames del boton desde el spritesheet de botones URM
     private void loadImages() {
-        BufferedImage temp = LoadSave.GetSpriteAtlas(LoadSave.BOTONES_NAVEGACION);
+        BufferedImage temp = CargaSprites.GetSpriteAtlas(CargaSprites.BOTONES_NAVEGACION);
         imgs = new BufferedImage[3];
         for (int i = 0; i < imgs.length; i++) {
             imgs[i] = temp.getSubimage(i * URM_DEFAULT_SIZE, rowIndex * URM_DEFAULT_SIZE,
@@ -53,8 +53,7 @@ public class UrmBoton extends BotonesPausa {
         mousePressed = false;
     }
 
-    //devuelve true si el raton esta encima del boton
-    public boolean isMouseOver() { return mouseOver; }
+
 
     //activa o desactiva el efecto hover del boton
     public void setMouseOver(boolean mouseOver) { this.mouseOver = mouseOver; }

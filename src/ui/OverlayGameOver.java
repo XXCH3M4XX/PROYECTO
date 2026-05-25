@@ -1,10 +1,10 @@
 package ui;
 
 import audio.AudioPlayer;
-import gamestates.Gamestate;
+import gamestates.EstadoJuego;
 import gamestates.Playing;
 import main.Juego;
-import utils.LoadSave;
+import utils.CargaSprites;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -39,7 +39,7 @@ public class OverlayGameOver {
 
     //carga la imagen de fondo del overlay y calcula su posicion centrada en pantalla
     private void crearImagen() {
-        img = LoadSave.GetSpriteAtlas(LoadSave.PANTALLA_MUERTE);
+        img = CargaSprites.GetSpriteAtlas(CargaSprites.PANTALLA_MUERTE);
         imgW = (int) (img.getWidth() * Juego.ESCALA);
         imgH = (int) (img.getHeight() * Juego.ESCALA);
         imgX = Juego.GAME_WIDTH / 2 - imgW / 2;
@@ -84,13 +84,13 @@ public class OverlayGameOver {
     public void mouseReleased(MouseEvent e) {
         if (comprobarBoton(menu, e)) {
             if (menu.isMousePressed()) {
-                playing.getJuego().getAudioPlayer().pararEfecto(AudioPlayer.gameOver); // ← añade esto
+                playing.getJuego().getAudioPlayer().pararEfecto(AudioPlayer.gameOver);
                 playing.resetearPartidaCompleta();
-                Gamestate.state = Gamestate.MENU;
+                EstadoJuego.state = EstadoJuego.MENU;
             }
         } else if (comprobarBoton(jugar, e)) {
             if (jugar.isMousePressed()) {
-                playing.getJuego().getAudioPlayer().pararEfecto(AudioPlayer.gameOver); // ← añade esto
+                playing.getJuego().getAudioPlayer().pararEfecto(AudioPlayer.gameOver);
                 playing.resetAll();
                 playing.getJuego().getAudioPlayer().setCancionNivel(AudioPlayer.musicaNiveles);
             }

@@ -1,8 +1,8 @@
 package niveles;
 
-import gamestates.Gamestate;
+import gamestates.EstadoJuego;
 import main.Juego;
-import utils.LoadSave;
+import utils.CargaSprites;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -27,7 +27,7 @@ public class AjusteNivel {
     private void crearNiveles() {
         //permite la escalabilidad,
         //da igual cuantos niveles añadamos funcionara
-        BufferedImage[] listaNiveles = LoadSave.getNiveles();
+        BufferedImage[] listaNiveles = CargaSprites.getNiveles();
         for(BufferedImage imagen: listaNiveles){
             niveles.add(new Nivel(imagen));
         }
@@ -38,11 +38,11 @@ public class AjusteNivel {
         //selecciona el atlas de tiles correspondiente al nivel actual
         String atlas;
         switch (indice) {
-            case 1: atlas = LoadSave.SUELO2; break;
-            case 2: atlas = LoadSave.SUELO3; break;
-            default: atlas = LoadSave.SUELO1; break;
+            case 1: atlas = CargaSprites.SUELO2; break;
+            case 2: atlas = CargaSprites.SUELO3; break;
+            default: atlas = CargaSprites.SUELO1; break;
         }
-        BufferedImage imagen = LoadSave.GetSpriteAtlas(atlas);
+        BufferedImage imagen = CargaSprites.GetSpriteAtlas(atlas);
         //inicializacion del array para almacenar los 48 sprites
         spriteNivel = new BufferedImage[48];
         //bucles para recorrer las filas y columnas de la hoja de sprites
@@ -84,19 +84,20 @@ public class AjusteNivel {
     }
     //vuelve al primer nivel, se usa al morir y reiniciar
     public void resetNivel() {
+        System.out.println("resetNivel llamado, indice antes: " + indiceNivel);
         indiceNivel = 0;
         importarSpritesNivel(0);
+        System.out.println("resetNivel completado, atlas recargado");
     }
-    public int getCantidadNiveles() {
-        return niveles.size();
-    }
+
 
     public void cargarSiguienteNivel() {
         indiceNivel++;
         if(indiceNivel >= niveles.size()){
             indiceNivel = 0;
+            importarSpritesNivel(0);
             juego.getPantallaIntroducirNombre().reset();
-            Gamestate.state = Gamestate.NOMBRE;
+            EstadoJuego.state = EstadoJuego.NOMBRE;
             return;
         }
         importarSpritesNivel(indiceNivel); // ← recarga el atlas del nuevo nivel

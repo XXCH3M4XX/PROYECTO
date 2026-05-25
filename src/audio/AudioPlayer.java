@@ -32,8 +32,7 @@ public class AudioPlayer {
     public static int descomponerEsqueleto = 6;
     //lo tenemos
     public static int huesoProyectil = 7;
-    //lo tenemos
-    public static int lanzaEnemigo = 8;
+
     //lo tenemos
     public static int morir = 9;
     //lo tenemos
@@ -44,6 +43,10 @@ public class AudioPlayer {
     public static int ataquePatada3 = 12;
     //lo tenemos
     public static int golpeJonathan = 13;
+    //lo tenemos
+    public static final int pociones = 14;
+    //lo tenemos
+    public static final int superataque = 15;
 
     //volumen global aplicado tanto a canciones como a efectos, entre 0.0 y 1.0
     private float volumen = 1f;
@@ -106,7 +109,7 @@ public class AudioPlayer {
     private void cargarEfectos() {
         String[] nombresEfectos = {"enemigoMuerte", "gameOverMusica", "salto", "victoria", "pincho",
                 "recomponerEsqueleto", "descomponerEsqueleto", "huesoProyectil", "lanzaEnemigo",
-                "muerte", "patada1", "patada2", "patada3", "golpeJonathan"};
+                "muerte", "patada1", "patada2", "patada3", "golpeJonathan", "pociones" , "superataque"};
         efectos = new Clip[nombresEfectos.length];
         for (int i = 0; i < efectos.length; i++) {
             efectos[i] = getClip(nombresEfectos[i]);
@@ -191,21 +194,20 @@ public class AudioPlayer {
 
     //actualiza el volumen de la cancion actual usando el control de ganancia maestra
     private void updateVolumenCanciones() {
-        //hay diferentes tipos de controles, aqui usamos el de ganancia maestra sobre la cancion actual
         FloatControl controlGanancia = (FloatControl) canciones[idCancionActual].getControl(FloatControl.Type.MASTER_GAIN);
-        float rangoVolumen = controlGanancia.getMaximum() - controlGanancia.getMinimum();
-        float volumenGanancia = (rangoVolumen * volumen) + controlGanancia.getMinimum();
-        controlGanancia.setValue(volumenGanancia);
+        //convierte volumen lineal a decibelios correctamente
+        float dB = (float)(Math.log10(Math.max(volumen, 0.0001)) * 20);
+        dB = Math.max(controlGanancia.getMinimum(), Math.min(controlGanancia.getMaximum(), dB));
+        controlGanancia.setValue(dB);
     }
 
     //actualiza el volumen de todos los efectos usando el control de ganancia maestra
     private void updateVolumenEfectos() {
-        //hay diferentes tipos de controles, aqui usamos el de ganancia maestra sobre cada efecto
         for (Clip c : efectos) {
             FloatControl controlGanancia = (FloatControl) c.getControl(FloatControl.Type.MASTER_GAIN);
-            float rangoVolumen = controlGanancia.getMaximum() - controlGanancia.getMinimum();
-            float volumenGanancia = (rangoVolumen * volumen) + controlGanancia.getMinimum();
-            controlGanancia.setValue(volumenGanancia);
+            float dB = (float)(Math.log10(Math.max(volumen, 0.0001)) * 20);
+            dB = Math.max(controlGanancia.getMinimum(), Math.min(controlGanancia.getMaximum(), dB));
+            controlGanancia.setValue(dB);
         }
     }
 }

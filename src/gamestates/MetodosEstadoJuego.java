@@ -5,7 +5,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
 //con esta clase crearemos los metodos que queramos implementar en las demas clases y si una clase implementa la clase, debe de tener todos
-public interface Statemethods {
+public interface MetodosEstadoJuego {
     public void update();
     public void draw(Graphics g);
     public void mouseClicked(MouseEvent e);

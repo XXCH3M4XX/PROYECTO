@@ -4,7 +4,7 @@ import audio.AudioPlayer;
 import main.Juego;
 import utils.GestorRecords;
 import utils.RegistroPartida;
-import utils.LoadSave;
+import utils.CargaSprites;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -12,11 +12,9 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 
 //pantalla que aparece al completar el juego para introducir el nombre del jugador
-public class PantallaIntroducirNombre extends State implements Statemethods {
+public class PantallaIntroducirNombre extends Estado implements MetodosEstadoJuego {
 
-    //imagen de fondo del panel
-    private BufferedImage fondo;
-    private int fondoX, fondoY, fondoW, fondoH;
+
     private BufferedImage fondoPantalla;
 
     //nombre que va escribiendo el jugador
@@ -32,7 +30,7 @@ public class PantallaIntroducirNombre extends State implements Statemethods {
     }
 
     private void cargarFondo() {
-        fondoPantalla = LoadSave.GetSpriteAtlas(LoadSave.FONDO_PANTALLA);
+        fondoPantalla = CargaSprites.GetSpriteAtlas(CargaSprites.FONDO_PANTALLA);
 ////        fondo = LoadSave.GetSpriteAtlas(LoadSave.FONDO_MENU);
 //        fondoW = (int)(fondo.getWidth() * Juego.ESCALA);
 //        fondoH = (int)(fondo.getHeight() * Juego.ESCALA);
@@ -112,7 +110,7 @@ public class PantallaIntroducirNombre extends State implements Statemethods {
                 //salta el guardado y vuelve al menu sin guardar la partida
                 //llamamos a resetearPartidaCompleta para quw la barra de poder SIEMPRE salga a 0 en una partida nueva
                 juego.getPlaying().resetearPartidaCompleta();
-                Gamestate.state = Gamestate.MENU;
+                EstadoJuego.state = EstadoJuego.MENU;
                 juego.getAudioPlayer().playCancion(AudioPlayer.menu);
                 break;
             case KeyEvent.VK_ENTER:
@@ -140,7 +138,7 @@ public class PantallaIntroducirNombre extends State implements Statemethods {
     private void guardarYSalir() {
         RegistroPartida registro = juego.getPlaying().getEstadisticasActuales(nombreActual);
         GestorRecords.añadirRecord(registro);
-        Gamestate.state = Gamestate.MENU;
+        EstadoJuego.state = EstadoJuego.MENU;
         juego.getAudioPlayer().playCancion(AudioPlayer.menu);
     }
 

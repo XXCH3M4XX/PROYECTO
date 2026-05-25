@@ -4,7 +4,7 @@ import audio.AudioPlayer;
 import main.Juego;
 import ui.BotonMenu;
 import ui.BotonOpciones;
-import utils.LoadSave;
+import utils.CargaSprites;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -12,7 +12,7 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 
 //esta clase es para el menu principal
-public class Menu extends State implements Statemethods {
+public class Menu extends Estado implements MetodosEstadoJuego {
     private BufferedImage fondo;
     private int menuX, menuY, menuWidth, menuHeight;
     private BotonMenu[] botones = new BotonMenu[3];
@@ -37,20 +37,20 @@ public class Menu extends State implements Statemethods {
 
     private void loadFondo() {
         //carga el panel central del menu
-        fondo = LoadSave.GetSpriteAtlas(LoadSave.FONDO_MENU);
+        fondo = CargaSprites.GetSpriteAtlas(CargaSprites.FONDO_MENU);
         menuWidth = (int)(fondo.getWidth() * Juego.ESCALA);
         menuHeight = (int)(fondo.getHeight() * Juego.ESCALA);
         menuX = Juego.GAME_WIDTH / 2 - menuWidth / 2;
         menuY = (int)(45 * Juego.ESCALA);
 
         //carga el fondo de pantalla completa
-        fondoPantalla = LoadSave.GetSpriteAtlas(LoadSave.FONDO_PANTALLA);
+        fondoPantalla = CargaSprites.GetSpriteAtlas(CargaSprites.FONDO_PANTALLA);
     }
 
     private void loadButtons() {
-        botones[0] = new BotonMenu(Juego.GAME_WIDTH / 2, (int)(150 * Juego.ESCALA), 0, Gamestate.PLAYING);
-        botones[1] = new BotonMenu(Juego.GAME_WIDTH / 2, (int)(220 * Juego.ESCALA), 1, Gamestate.STATS); // ← STATS en vez de OPTIONS
-        botones[2] = new BotonMenu(Juego.GAME_WIDTH / 2, (int)(290 * Juego.ESCALA), 2, Gamestate.QUIT);
+        botones[0] = new BotonMenu(Juego.GAME_WIDTH / 2, (int)(150 * Juego.ESCALA), 0, EstadoJuego.PLAYING);
+        botones[1] = new BotonMenu(Juego.GAME_WIDTH / 2, (int)(220 * Juego.ESCALA), 1, EstadoJuego.STATS);
+        botones[2] = new BotonMenu(Juego.GAME_WIDTH / 2, (int)(290 * Juego.ESCALA), 2, EstadoJuego.QUIT);
     }
 
     @Override
@@ -100,7 +100,7 @@ public class Menu extends State implements Statemethods {
             if (isIn(e, mb)) {
                 if (mb.isMousePressed()) {
                     mb.applyGameState();
-                    if (mb.getGameState() == Gamestate.PLAYING) {
+                    if (mb.getGameState() == EstadoJuego.PLAYING) {
                         juego.getAudioPlayer().setCancionNivel(AudioPlayer.musicaNiveles);
                     }
                     break;
@@ -110,7 +110,7 @@ public class Menu extends State implements Statemethods {
         //comprueba si se pulso el boton de opciones
         if (botonOpciones.getBordes().contains(e.getX(), e.getY())) {
             if (botonOpciones.isMousePressed()) {
-                Gamestate.state = Gamestate.OPTIONS;
+                EstadoJuego.state = EstadoJuego.OPTIONS;
             }
         }
         resetButtons();
@@ -144,7 +144,7 @@ public class Menu extends State implements Statemethods {
     @Override
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-            Gamestate.state = Gamestate.PLAYING;
+            EstadoJuego.state = EstadoJuego.PLAYING;
         }
     }
 

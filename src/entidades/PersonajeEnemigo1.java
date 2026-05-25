@@ -3,6 +3,7 @@ import main.Juego;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
 import java.util.Random;
 
 import static utils.Constantes.Direcciones.IZQUIERDA;
@@ -45,8 +46,8 @@ public class PersonajeEnemigo1 extends Enemigo {
     }
 
     //actualiza movimiento, animacion y posicion de la hitbox de ataque cada frame
-    public void update(int[][] datosNivel, Jugador jugador) {
-        actualizarMovimiento(datosNivel, jugador);
+    public void update(int[][] datosNivel, Jugador jugador, ArrayList<Enemigo> enemigos) {
+        actualizarMovimiento(datosNivel, jugador, enemigos);
         actualizarAnimacionTick();
         actualizarBoxAtaque();
     }
@@ -58,7 +59,7 @@ public class PersonajeEnemigo1 extends Enemigo {
     }
 
     //maquina de estados que controla el comportamiento del enemigo segun su estado actual
-    private void actualizarMovimiento(int[][] datosNivel, Jugador jugador) {
+    private void actualizarMovimiento(int[][] datosNivel, Jugador jugador, ArrayList<Enemigo> enemigos) {
         if (primeraActualizacion) {
             checkPrimeraActualizacion(datosNivel);
         }
@@ -124,7 +125,7 @@ public class PersonajeEnemigo1 extends Enemigo {
                             nuevoEstado(ATAQUE);
                         }
                     }
-                    movimiento(datosNivel);
+                    movimiento(datosNivel, enemigos);
                     break;
 
                 case ATAQUE:
@@ -161,10 +162,5 @@ public class PersonajeEnemigo1 extends Enemigo {
         ciclosIdleCompletados = 0;
     }
 
-    //dibuja el rectangulo rojo de la hitbox de ataque, util para depuracion
-    public void drawBoxAtaque(Graphics g, int nivelOffset) {
-        g.setColor(Color.red);
-        g.drawRect((int)(boxAtaque.x - nivelOffset), (int)boxAtaque.y,
-                (int)boxAtaque.width, (int)boxAtaque.height);
-    }
+
 }

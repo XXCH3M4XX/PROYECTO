@@ -4,7 +4,7 @@ import audio.AudioPlayer;
 import gamestates.Playing;
 import main.Juego;
 import utils.Constantes;
-import utils.LoadSave;
+import utils.CargaSprites;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
@@ -52,8 +52,7 @@ public class Jugador extends Entidad {
     //velocidad inicial del salto, negativa porque y crece hacia abajo
     private float velocidadSalto = -2.25f * Juego.ESCALA;
 
-    //velocidad maxima de caida, actualmente sin usar pero disponible para limitarla
-    private float velocidadCaida = 0.5f * Juego.ESCALA;
+
 
     //true cuando el jugador no esta apoyado en el suelo
     private boolean aire = false;
@@ -122,8 +121,7 @@ public class Jugador extends Entidad {
 
     private boolean superAtaqueActivado;
     private int tickSuperAtaque;
-    private int crecimientoPoder = 15;
-    private int crecimientoPoderTick;
+
 
     //inicializa animaciones y coloca la hitbox en la posicion de spawn
     public Jugador(float x, float y, int width, int height, Playing playing) {
@@ -132,7 +130,7 @@ public class Jugador extends Entidad {
         cargarAnimaciones();
         iniciarHitbox(x, y, HITBOX_W, HITBOX_H);
         iniciarHitboxAtaque();
-        imagenBarraEstado = LoadSave.GetSpriteAtlas(LoadSave.BARRA_SALUD);
+        imagenBarraEstado = CargaSprites.GetSpriteAtlas(CargaSprites.BARRA_SALUD);
     }
 
     //establece el punto de aparicion del jugador y mueve la hitbox a esa posicion
@@ -239,7 +237,7 @@ public class Jugador extends Entidad {
         anchoSalud = (int)((saludActual / (float)saludMaxima) * anchoBarraVida);
     }
 
-    //
+
     private void actualizarBarraDeSuperAtaque(){
         anchuraSuperAtaque = (int)((superAtaqueValor / (float)superAtaqueValorMaximo) * anchuraBarraSuperAtaque);
     }
@@ -270,12 +268,7 @@ public class Jugador extends Entidad {
         dibujarUI(g);
     }
 
-    //dibuja el rectangulo rojo de la hitbox de ataque, util para depuracion
-    private void dibujarHitboxDeAtaque(Graphics g, int nivelOffsetX) {
-        g.setColor(Color.red);
-        g.drawRect((int)boxAtaque.x - nivelOffsetX, (int)boxAtaque.y,
-                (int)boxAtaque.width, (int)boxAtaque.height);
-    }
+
 
     //dibuja la imagen de la barra de estado y rellena el segmento de vida con color verde
     private void dibujarUI(Graphics g) {
@@ -320,20 +313,21 @@ public class Jugador extends Entidad {
             if (startAni != DAÑO) {
                 resetAniTick();
             }
-            return; // ← sale antes de llegar al ataque
+            //sale antes de llegar al ataque, con esto solucione el bug del otro dia
+            return;
         }
 
         if(superAtaqueActivado){
             if (startAni != PUÑETAZO) {
                 accionJugador = PUÑETAZO;
-                resetAniTick();  // solo reinicia al cambiar de accion
+                resetAniTick();
             } else {
                 accionJugador = PUÑETAZO;
             }
             return;
         }
 
-        // el ataque sobreescribe todo lo demas
+        //el ataque sobreescribe todo lo demas
         if (ataque) {
             accionJugador = PATADA;
             if (startAni != PATADA) {
@@ -517,7 +511,7 @@ public class Jugador extends Entidad {
 
     //carga el atlas y recorta cada frame de cada animacion en su posicion correspondiente
     private void cargarAnimaciones() {
-        BufferedImage imagen = LoadSave.GetSpriteAtlas(LoadSave.JUGADOR);
+        BufferedImage imagen = CargaSprites.GetSpriteAtlas(CargaSprites.JUGADOR);
 
         //7 filas de animaciones con hasta 4 frames cada una
         animaciones = new BufferedImage[10][9];
@@ -571,7 +565,7 @@ public class Jugador extends Entidad {
         ticksGolpe = 0;
         superAtaqueActivado = false;
         tickSuperAtaque = 0;
-        // ← superAtaqueValor no se resetea
+
     }
 
     //activa o desactiva el flag de ataque desde el sistema de input
@@ -599,18 +593,14 @@ public class Jugador extends Entidad {
         }
     }
 
-    //devuelve true si el jugador esta pulsando la tecla de bajar
-    public boolean isAbajo() { return abajo; }
+
 
     //reduce la vida a cero para forzar la muerte del jugador desde sistemas externos
     public void muerte() {
         saludActual = 0;
     }
 
-    //devuelve la fila de tile en la que se encuentra el jugador
-    public int getDireccionY() {
-        return direccionY;
-    }
+
 
     public void superAtaque() {
         if (superAtaqueActivado) {
@@ -620,5 +610,6 @@ public class Jugador extends Entidad {
             superAtaqueActivado = true;
             superAtaqueValor = 0;
         }
+        playing.getJuego().getAudioPlayer().playEfecto(AudioPlayer.superataque);
     }
 }

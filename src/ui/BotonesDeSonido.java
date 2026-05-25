@@ -1,6 +1,6 @@
 package ui;
 
-import utils.LoadSave;
+import utils.CargaSprites;
 import static utils.Constantes.UI.BotonesPausa.*;
 
 import java.awt.*;
@@ -32,7 +32,7 @@ public class BotonesDeSonido extends BotonesPausa {
 
     //carga el spritesheet y recorta cada frame en su posicion correspondiente
     private void cargarImagenesSonido() {
-        BufferedImage temp = LoadSave.GetSpriteAtlas(LoadSave.BOTONES_VOLUMEN);
+        BufferedImage temp = CargaSprites.GetSpriteAtlas(CargaSprites.BOTONES_VOLUMEN);
         imagenesSonido = new BufferedImage[2][3];
         for (int i = 0; i < imagenesSonido.length; i++) {
             for (int j = 0; j < imagenesSonido[i].length; j++) {
@@ -47,7 +47,7 @@ public class BotonesDeSonido extends BotonesPausa {
 
     //decide que frame dibujar segun si esta silenciado y el estado del raton
     public void update() {
-        //fila 0 silenciado, fila 1 activo
+        /* fila 0 silenciado, */
         if (muted) {
             rowIndex = 1;
         } else {

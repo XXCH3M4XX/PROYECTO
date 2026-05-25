@@ -1,7 +1,7 @@
 package ui;
 
-import gamestates.Gamestate;
-import utils.LoadSave;
+import gamestates.EstadoJuego;
+import utils.CargaSprites;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -18,7 +18,7 @@ public class BotonMenu {
     private int xOffsetCenter = B_WIDTH / 2;
 
     //estado del juego al que navega este boton al ser pulsado
-    private Gamestate state;
+    private EstadoJuego state;
 
     //frames del boton: 0 reposo, 1 hover, 2 pulsado
     private BufferedImage[] imgs;
@@ -30,7 +30,7 @@ public class BotonMenu {
     private Rectangle bordes;
 
     //inicializa el boton con su posicion, fila del atlas y estado de destino
-    public BotonMenu(int xPos, int yPos, int rowIndex, Gamestate state) {
+    public BotonMenu(int xPos, int yPos, int rowIndex, EstadoJuego state) {
         this.xPos = xPos;
         this.yPos = yPos;
         this.rowIndex = rowIndex;
@@ -47,7 +47,7 @@ public class BotonMenu {
     //carga los tres frames del boton desde el spritesheet de botones del menu
     private void cargarImagenes() {
         imgs = new BufferedImage[3];
-        BufferedImage temp = LoadSave.GetSpriteAtlas(LoadSave.BOTONES_MENU);
+        BufferedImage temp = CargaSprites.GetSpriteAtlas(CargaSprites.BOTONES_MENU);
         for (int i = 0; i < imgs.length; i++) {
             imgs[i] = temp.getSubimage(i * B_WIDTH_DEFAULT, rowIndex * B_HEIGHT_DEFAULT,
                     B_WIDTH_DEFAULT, B_HEIGHT_DEFAULT);
@@ -66,8 +66,7 @@ public class BotonMenu {
         if (mousePressed) indice = 2;
     }
 
-    //devuelve true si el raton esta encima del boton
-    public boolean isMouseOver() { return mouseOver; }
+
 
     //activa o desactiva el efecto hover del boton
     public void setMouseOver(boolean mouseOver) { this.mouseOver = mouseOver; }
@@ -79,14 +78,14 @@ public class BotonMenu {
     public void setMousePressed(boolean mousePressed) { this.mousePressed = mousePressed; }
 
     //cambia el estado global del juego al estado asignado a este boton
-    public void applyGameState() { Gamestate.state = state; }
+    public void applyGameState() { EstadoJuego.state = state; }
 
     //resetea los flags de hover y pulsado al soltar el raton
     public void resetBools() {
         mouseOver = false;
         mousePressed = false;
     }
-    public Gamestate getGameState() {
+    public EstadoJuego getGameState() {
         return state;
     }
 

@@ -10,10 +10,10 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
-import utils.LoadSave;
+import utils.CargaSprites;
 
 //pantalla que muestra el top 3 de mejores partidas guardadas en disco
-public class Stats extends State implements Statemethods {
+public class Estadisticas extends Estado implements MetodosEstadoJuego {
 
     private BufferedImage fondoPantalla;
 
@@ -26,9 +26,9 @@ public class Stats extends State implements Statemethods {
     //cuantas filas se ven a la vez
     private static final int FILAS_VISIBLES = 4;
 
-    public Stats(Juego juego) {
+    public Estadisticas(Juego juego) {
         super(juego);
-        fondoPantalla = LoadSave.GetSpriteAtlas(LoadSave.FONDO_PANTALLA);
+        fondoPantalla = CargaSprites.GetSpriteAtlas(CargaSprites.FONDO_PANTALLA);
     }
 
     @Override
@@ -124,7 +124,7 @@ public class Stats extends State implements Statemethods {
         switch (e.getKeyCode()) {
             case KeyEvent.VK_ESCAPE:
                 //vuelve al menu principal
-                Gamestate.state = Gamestate.MENU;
+                EstadoJuego.state = EstadoJuego.MENU;
                 break;
             case KeyEvent.VK_UP:
                 if (seleccionado > 0) {
@@ -151,7 +151,7 @@ public class Stats extends State implements Statemethods {
                 //borra todos los records de una vez
                 GestorRecords.borrarTodosLosRecords();
                 seleccionado = 0;
-                scrollOffset = 0; // ← resetea el scroll al borrar todo
+                scrollOffset = 0;
                 break;
         }
     }

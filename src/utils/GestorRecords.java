@@ -56,14 +56,5 @@ public class GestorRecords {
         guardarRecords(records);
     }
 
-    //devuelve true si la partida entra en el top 3
-    public static boolean esNuevoRecord(RegistroPartida nuevo) {
-        ArrayList<RegistroPartida> records = cargarRecords();
-        if (records.size() < MAX_RECORDS) {
-            return true;
-        }
-        //compara con el peor tiempo del top 3
-        long peorTiempo = records.get(records.size() - 1).getTiempoSegundos();
-        return nuevo.getTiempoSegundos() < peorTiempo;
-    }
+
 }

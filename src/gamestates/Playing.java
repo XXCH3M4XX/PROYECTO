@@ -4,11 +4,11 @@ import entidades.AjusteEnemigo;
 import entidades.Jugador;
 import main.Juego;
 import niveles.AjusteNivel;
-import objetos.AjusteDeObjetos;
+import objetos.AjusteObjetos;
 import ui.NivelCompletadoOverlay;
 import ui.OverlayGameOver;
 import ui.PausaOverlay;
-import utils.LoadSave;
+import utils.CargaSprites;
 import utils.RegistroPartida;
 
 import java.awt.*;
@@ -22,11 +22,11 @@ import static main.Juego.ESCALA_JUGADOR;
 import static main.Juego.TILES_SIZE;
 import static utils.Constantes.entorno.*;
 
-public class Playing extends State implements Statemethods {
+public class Playing extends Estado implements MetodosEstadoJuego {
     private Jugador jugador;
     private AjusteNivel ajusteNivel;
     private AjusteEnemigo ajusteEnemigo;
-    private AjusteDeObjetos ajusteDeObjetos;
+    private AjusteObjetos ajusteObjetos;
 
     //evita que el salto se repita si se mantiene pulsada la tecla
     private boolean espacioAnterior = false;
@@ -40,9 +40,7 @@ public class Playing extends State implements Statemethods {
     //desplazamiento horizontal actual del nivel en pixeles
     private int OffsetXNivel;
 
-    //limites en pixeles que determinan cuando la camara empieza a desplazarse
-    private int bordeIzquierdo = (int)(0.2 * Juego.GAME_WIDTH);
-    private int bordeDerecho = (int)(0.8 * Juego.GAME_WIDTH);
+
 
     //ancho total del nivel en tiles y offset maximo que puede alcanzar la camara
     private int tilesMaximosOffsetX;
@@ -52,9 +50,7 @@ public class Playing extends State implements Statemethods {
     private BufferedImage imagenMontañas;
     private BufferedImage nube;
 
-    private BufferedImage[] fondosNivel;
-    private BufferedImage[] montañasNivel;
-    private BufferedImage[] nubesNivel;
+
 
     //posiciones Y aleatorias de cada nube para distribuirlas verticalmente
     private int[] nubesPosicion;
@@ -71,7 +67,8 @@ public class Playing extends State implements Statemethods {
     private int muertes = 0;
     private int dañoRecibido = 0;
     private int porcionesRecogidas = 0;
-    private long ticksPartida = 0; // ← cuenta los UPS transcurridos
+    //cuenta los UPS transcurridos
+    private long ticksPartida = 0;
 
     //inicializa todos los sistemas y carga las imagenes del entorno
     public Playing(Juego juego) {
@@ -79,10 +76,10 @@ public class Playing extends State implements Statemethods {
         initClasses();
 
         //carga las imagenes del entorno
-        imagenFondo = LoadSave.GetSpriteAtlas(LoadSave.FONDO_NIVEL1);
-        imagenMontañas = LoadSave.GetSpriteAtlas(LoadSave.MONTAÑASYBOSQUES_NIVEL1);
-        nube = LoadSave.GetSpriteAtlas(LoadSave.NUBES_NIVEL1);
-        castillo = LoadSave.GetSpriteAtlas(LoadSave.CASTILLO);
+        imagenFondo = CargaSprites.GetSpriteAtlas(CargaSprites.FONDO_NIVEL1);
+        imagenMontañas = CargaSprites.GetSpriteAtlas(CargaSprites.MONTAÑASYBOSQUES_NIVEL1);
+        nube = CargaSprites.GetSpriteAtlas(CargaSprites.NUBES_NIVEL1);
+        castillo = CargaSprites.GetSpriteAtlas(CargaSprites.CASTILLO);
         anchoCastillo = (int)(castillo.getWidth() * Juego.ESCALA);
         altoCastillo = (int)(castillo.getHeight() * Juego.ESCALA);
 
@@ -99,23 +96,23 @@ public class Playing extends State implements Statemethods {
     private void cargarFondosNivel(int indice) {
         switch (indice) {
             case 1:
-                imagenFondo = LoadSave.GetSpriteAtlas(LoadSave.FONDO_NIVEL2);
+                imagenFondo = CargaSprites.GetSpriteAtlas(CargaSprites.FONDO_NIVEL2);
                 imagenMontañas = null;
-                nube = LoadSave.GetSpriteAtlas(LoadSave.ARAÑA_NIVEL2);
-                castillo = null; // ← sin castillo en nivel 2
+                nube = CargaSprites.GetSpriteAtlas(CargaSprites.ARAÑA_NIVEL2);
+                castillo = null;
                 break;
             case 2:
-                //nivel 3: solo fondo estatico, sin montañas ni nubes
-                imagenFondo = LoadSave.GetSpriteAtlas(LoadSave.FONDO_NIVEL3);
+                //nivel 3 solo fondo estatico
+                imagenFondo = CargaSprites.GetSpriteAtlas(CargaSprites.FONDO_NIVEL3);
                 imagenMontañas = null;
                 nube = null;
                 castillo = null;
                 break;
             default:
-                //nivel 1: fondo estrellado con montañas y nubes
-                imagenFondo = LoadSave.GetSpriteAtlas(LoadSave.FONDO_NIVEL1);
-                imagenMontañas = LoadSave.GetSpriteAtlas(LoadSave.MONTAÑASYBOSQUES_NIVEL1);
-                nube = LoadSave.GetSpriteAtlas(LoadSave.NUBES_NIVEL1);
+                //nivel 1 fondito  estrelladp con montañas y nubes
+                imagenFondo = CargaSprites.GetSpriteAtlas(CargaSprites.FONDO_NIVEL1);
+                imagenMontañas = CargaSprites.GetSpriteAtlas(CargaSprites.MONTAÑASYBOSQUES_NIVEL1);
+                nube = CargaSprites.GetSpriteAtlas(CargaSprites.NUBES_NIVEL1);
                 break;
         }
     }
@@ -127,25 +124,25 @@ public class Playing extends State implements Statemethods {
         nivelCompletado = false;
         jugador.resetearEntreNiveles();
         ajusteEnemigo.resetearTodosEnemigos();
-        ajusteDeObjetos.resetearTodosLosObjetos();
+        ajusteObjetos.resetearTodosLosObjetos();
         OffsetXNivel = 0;
 
         ajusteNivel.cargarSiguienteNivel();
-        cargarFondosNivel(ajusteNivel.getIndiceNivel()); // ← añade esto
+        cargarFondosNivel(ajusteNivel.getIndiceNivel());
 
         jugador.setSpawn(ajusteNivel.getNivelActual().getSpawnJugador());
         jugador.cargarDatosNivel(ajusteNivel.getNivelActual().getDatosNivel());
         tilesMaximosOffsetX = ajusteNivel.getNivelActual().getOffsetNivel();
         ajusteEnemigo.cargarEnemigos(ajusteNivel.getNivelActual());
         ajusteEnemigo.resetearTodosEnemigos();
-        ajusteDeObjetos.cargarObjetos(ajusteNivel.getNivelActual());
+        ajusteObjetos.cargarObjetos(ajusteNivel.getNivelActual());
     }
 
     //carga los enemigos y objetos del nivel actual en sus gestores correspondientes
     private void cargarNivel() {
         ajusteEnemigo.cargarEnemigos(ajusteNivel.getNivelActual());
         ajusteEnemigo.resetearTodosEnemigos();
-        ajusteDeObjetos.cargarObjetos(ajusteNivel.getNivelActual());
+        ajusteObjetos.cargarObjetos(ajusteNivel.getNivelActual());
     }
 
     //obtiene el offset maximo del nivel actual y lo guarda para limitar la camara
@@ -157,7 +154,7 @@ public class Playing extends State implements Statemethods {
     private void initClasses() {
         ajusteNivel = new AjusteNivel(juego);
         ajusteEnemigo = new AjusteEnemigo(this);
-        ajusteDeObjetos = new AjusteDeObjetos(this);
+        ajusteObjetos = new AjusteObjetos(this);
 
         int[][] datosNivel = ajusteNivel.getNivelActual().getDatosNivel();
 
@@ -223,7 +220,7 @@ public class Playing extends State implements Statemethods {
             jugador.update();
         } else {
             ajusteNivel.update();
-            ajusteDeObjetos.update(ajusteNivel.getNivelActual().getDatosNivel(), jugador);
+            ajusteObjetos.update(ajusteNivel.getNivelActual().getDatosNivel(), jugador);
             jugador.update();
             ajusteEnemigo.update(ajusteNivel.getNivelActual().getDatosNivel(), jugador);
 
@@ -258,7 +255,7 @@ public class Playing extends State implements Statemethods {
         ajusteNivel.draw(g, OffsetXNivel);
         jugador.render(g, OffsetXNivel);
         ajusteEnemigo.draw(g, OffsetXNivel);
-        ajusteDeObjetos.draw(g, OffsetXNivel);
+        ajusteObjetos.draw(g, OffsetXNivel);
 
         //overlay semitransparente de pausa encima de todo lo demas
         if (pausado) {
@@ -278,7 +275,7 @@ public class Playing extends State implements Statemethods {
         int anchoNivelPixeles = ajusteNivel.getNivelActual().getDatosNivel()[0].length * Juego.TILES_SIZE;
         int repeticiones = (anchoNivelPixeles / anchuraMontañas) + 2;
 
-        //capa 1: montañas, parallax lento (solo si hay montañas en este nivel)
+        //primera capa
         if (imagenMontañas != null) {
             for (int i = 0; i < repeticiones; i++) {
                 g.drawImage(imagenMontañas,
@@ -288,14 +285,14 @@ public class Playing extends State implements Statemethods {
             }
         }
 
-        //capa 2: castillo al final del nivel, solo en nivel 1
+        //se3gunda capa
         if (castillo != null) {
             int castilloX = (int)((anchoNivelPixeles - anchoCastillo * 3) * 0.5) - (int)(OffsetXNivel * 0.5);
             int castilloY = Juego.GAME_HEIGHT - altoCastillo * 3;
             g.drawImage(castillo, castilloX, castilloY, anchoCastillo * 3, altoCastillo * 3, null);
         }
 
-        //capa 3: nubes o arañas segun el nivel, parallax rapido
+        //tercera capa
 
         if (nube != null) {
             int numNubes = (anchoNivelPixeles / (anchuraNube * 4)) + 2;
@@ -317,17 +314,17 @@ public class Playing extends State implements Statemethods {
         jugadorMuriendo = false;
         pausado = false;
         nivelCompletado = false;
-        jugador.resetearTodo(); // ← primero de todo, restaura la salud a saludMaxima
+        jugador.resetearTodo();
         ajusteNivel.resetNivel();
         cargarFondosNivel(0);
         jugador.cargarDatosNivel(ajusteNivel.getNivelActual().getDatosNivel());
         jugador.setSpawn(ajusteNivel.getNivelActual().getSpawnJugador());
         ajusteEnemigo.cargarEnemigos(ajusteNivel.getNivelActual());
         tilesMaximosOffsetX = ajusteNivel.getNivelActual().getOffsetNivel();
-        ajusteDeObjetos.cargarObjetos(ajusteNivel.getNivelActual());
+        ajusteObjetos.cargarObjetos(ajusteNivel.getNivelActual());
         ajusteEnemigo.resetearTodosEnemigos();
         OffsetXNivel = 0;
-        ajusteDeObjetos.resetearTodosLosObjetos();
+        ajusteObjetos.resetearTodosLosObjetos();
     }
     public void resetearPartidaCompleta() {
         muertes = 0;
@@ -338,17 +335,17 @@ public class Playing extends State implements Statemethods {
         jugador.resetearTodo();
 
     }
-    // se llama desde Jugador cuando recibe daño
+    //se llama desde Jugador cuando recibe daño
     public void registrarDaño(int cantidad) {
         dañoRecibido += cantidad;
     }
 
-    // se llama desde Jugador cuando muere
+    //se llama desde Jugador cuando muere
     public void registrarMuerte() {
         muertes++;
     }
 
-    // se llama desde AjusteDeObjetos cuando se recoge una pocion
+    //se llama desde AjusteDeObjetos cuando se recoge una pocion
     public void registrarPocion() {
         porcionesRecogidas++;
     }
@@ -357,12 +354,12 @@ public class Playing extends State implements Statemethods {
     public int getDañoRecibido() { return dañoRecibido; }
     public int getPorcionesRecogidas() { return porcionesRecogidas; }
 
-    // convierte los ticks a segundos usando los UPS del juego
+    //convierte los ticks a segundos usando los UPS del juego
     public long getTiempoSegundos() {
-        return ticksPartida / 200; // ← 200 UPS
+        return ticksPartida / 200;
     }
 
-    // devuelve un RegistroPartida con todas las estadisticas actuales
+    //devuelve un RegistroPartida con todas las estadisticas actuales
     public RegistroPartida getEstadisticasActuales(String nombre) {
         return new RegistroPartida(
                 nombre,
@@ -385,25 +382,20 @@ public class Playing extends State implements Statemethods {
 
     //delega en el gestor de objetos la comprobacion de si la hitbox toca una pocion
     public void checkPocionTocada(Rectangle2D.Float hitbox) {
-        ajusteDeObjetos.checkObjetoTocado(hitbox);
+        ajusteObjetos.checkObjetoTocado(hitbox);
     }
 
     //delega en el gestor de objetos la comprobacion de si el jugador toca pinchos
     public void checkPinchosTocados(Jugador j) {
         if (!jugadorMuriendo) {
-            ajusteDeObjetos.checkJugadorTocaPinchos(j);
+            ajusteObjetos.checkJugadorTocaPinchos(j);
         }
     }
 
     //el click izquierdo activa el ataque del jugador si la partida esta en curso
     @Override
     public void mouseClicked(MouseEvent e) {
-        if (!gameOver) {
-            //solo el super ataque aqui, el ataque normal va en mousePressed
-            if (e.getButton() == MouseEvent.BUTTON3) {
-                jugador.superAtaque();
-            }
-        }
+
     }
 
     //reenvía el evento de pulsacion al overlay activo segun el estado de la partida
@@ -413,9 +405,11 @@ public class Playing extends State implements Statemethods {
             overlay.mousePressed(e);
             return;
         }
-        //activa el ataque sin bloqueo para que siempre responda al click
         if (e.getButton() == MouseEvent.BUTTON1 && !jugador.isAtacando()) {
             jugador.setAtaque(true);
+        }
+        if (e.getButton() == MouseEvent.BUTTON3 && !jugador.isAtacando()) {
+            jugador.superAtaque();
         }
         if (pausado) {
             pausaOverlay.mousePressed(e);
@@ -520,13 +514,13 @@ public class Playing extends State implements Statemethods {
     }
 
     //devuelve el gestor de objetos para que otros sistemas puedan acceder a el
-    public AjusteDeObjetos getAjusteDeObjetos() {
-        return ajusteDeObjetos;
+    public AjusteObjetos getAjusteDeObjetos() {
+        return ajusteObjetos;
     }
 
     //delega en el gestor de objetos la comprobacion de si el boxAtaque golpea un objeto
     public void checkObjetoGolpeado(Rectangle2D.Float boxAtaque) {
-        ajusteDeObjetos.chekGolpeoAlObjeto(boxAtaque);
+        ajusteObjetos.chekGolpeoAlObjeto(boxAtaque);
     }
 
     //activa el flag de jugador muriendo para que el update solo procese su animacion de muerte

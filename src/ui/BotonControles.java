@@ -1,7 +1,7 @@
 package ui;
 
 import main.Juego;
-import utils.LoadSave;
+import utils.CargaSprites;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -22,7 +22,7 @@ public class BotonControles extends BotonesPausa {
     }
 
     private void cargarImagenes() {
-        BufferedImage temp = LoadSave.GetSpriteAtlas(LoadSave.BOTON_CONTROLES);
+        BufferedImage temp = CargaSprites.GetSpriteAtlas(CargaSprites.BOTON_CONTROLES);
         imgs = new BufferedImage[3];
         for (int i = 0; i < imgs.length; i++) {
             imgs[i] = temp.getSubimage(i * ANCHO_DEFAULT, 0, ANCHO_DEFAULT, ALTO_DEFAULT);

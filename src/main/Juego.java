@@ -26,7 +26,7 @@ public class Juego implements Runnable {
     private Playing playing;
     private Menu menu;
     private AudioPlayer audioPlayer;
-    private Stats stats;
+    private Estadisticas estadisticas;
 
     private Jugador jugador;
     private AjusteNivel ajusteNivel;
@@ -50,7 +50,7 @@ public class Juego implements Runnable {
     //resolucion total de la ventana en pixeles
     public final static int GAME_WIDTH = TILES_SIZE * TILES_IN_WIDTH;
     public final static int GAME_HEIGHT = TILES_SIZE * TILES_IN_HEIGHT;
-    private IntroScreen introScreen;
+    private CreditosIniciales creditosIniciales;
     private OpcionesJuego opcionesJuego;
     private PantallaIntroducirNombre pantallaIntroducirNombre;
     private Controles controles;
@@ -73,11 +73,11 @@ public class Juego implements Runnable {
     private void initClasses() {
         audioPlayer = new AudioPlayer();
         opcionesAudio = new OpcionesAudio(this);
-        introScreen = new IntroScreen(this);
+        creditosIniciales = new CreditosIniciales(this);
         menu = new Menu(this);
         playing = new Playing(this);
         opcionesJuego = new OpcionesJuego(this);
-        stats = new Stats(this);
+        estadisticas = new Estadisticas(this);
         pantallaIntroducirNombre = new PantallaIntroducirNombre(this);
         controles = new Controles(this);
 
@@ -90,11 +90,11 @@ public class Juego implements Runnable {
         hiloJuego.start();
     }
 
-    //con este metodo, podemos actualizar lo que nosotros queramos(jugador, escenario, etc...)
+    //con este metodo, podemos actualizar lo que nosotros queramos
     public void update() {
-        switch (Gamestate.state) {
+        switch (EstadoJuego.state) {
             case INTRO:
-                introScreen.update();
+                creditosIniciales.update();
                 break;
             case MENU:
                 menu.update();
@@ -106,7 +106,7 @@ public class Juego implements Runnable {
                 opcionesJuego.update();
                 break;
             case STATS:
-                stats.update();
+                estadisticas.update();
                 break;
             case NOMBRE:
                 pantallaIntroducirNombre.update();
@@ -123,9 +123,9 @@ public class Juego implements Runnable {
 
     //dibuja el nivel primero y el jugador encima para que quede en primer plano
     public void render(Graphics g) {
-        switch (Gamestate.state) {
+        switch (EstadoJuego.state) {
             case INTRO:
-                introScreen.draw(g);
+                creditosIniciales.draw(g);
                 break;
             case MENU:
                 menu.draw(g);
@@ -140,7 +140,7 @@ public class Juego implements Runnable {
                 pantallaIntroducirNombre.draw(g);
                 break;
             case STATS:
-                stats.draw(g); // ← añade esto
+                estadisticas.draw(g);
                 break;
             case CONTROLES:
                 controles.draw(g);
@@ -214,7 +214,7 @@ public class Juego implements Runnable {
 //
    //cuando la ventana pierde el foco detiene el movimiento para evitar que se quede andando solo
    public void windowFocusLost(){
-       if(Gamestate.state == Gamestate.PLAYING){
+       if(EstadoJuego.state == EstadoJuego.PLAYING){
            playing.getJugador().resetDirBooleans();
        }
    }
@@ -224,8 +224,8 @@ public class Juego implements Runnable {
    public AjusteNivel getAjusteNivel(){
         return ajusteNivel;
    }
-    public Stats getStats() {
-        return stats;
+    public Estadisticas getStats() {
+        return estadisticas;
     }
     public Controles getControles() {
         return controles;
@@ -243,8 +243,8 @@ public class Juego implements Runnable {
         return playing;
     }
 
-    public IntroScreen getIntroScreen() {
-        return introScreen;
+    public CreditosIniciales getIntroScreen() {
+        return creditosIniciales;
     }
 
     public OpcionesAudio getOpcionesAudio(){

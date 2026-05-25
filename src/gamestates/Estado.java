@@ -7,12 +7,12 @@ import ui.BotonMenu;
 import java.awt.event.MouseEvent;
 
 //clase base de la que heredan todos los estados del juego (menu, jugando, pausa, etc)
-public class State {
+public class Estado {
 
     //referencia al juego principal para acceder a sus sistemas
     protected Juego juego;
 
-    public State(Juego juego) {
+    public Estado(Juego juego) {
         this.juego = juego;
     }
 
@@ -25,7 +25,7 @@ public class State {
         return juego;
     }
 
-    public void setEstadoJuego(Gamestate estado) {
+    public void setEstadoJuego(EstadoJuego estado) {
         switch(estado) {
             case INTRO:
                 juego.getAudioPlayer().playCancion(AudioPlayer.creditosIniciales);
@@ -38,6 +38,6 @@ public class State {
                 break;
 
         }
-        Gamestate.state = estado;
+        EstadoJuego.state = estado;
     }
 }

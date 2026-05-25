@@ -1,9 +1,9 @@
 package utils;
 
 import entidades.PersonajeEnemigo1;
-import entidades.PersonajeDio;
+import entidades.BossFinal;
 import main.Juego;
-import entidades.EsqueletoHueso;
+import entidades.EnemigoProyectil;
 import objetos.ContenedorJuego;
 import objetos.Pinchos;
 import objetos.Pocion;
@@ -211,13 +211,13 @@ public class Miscelaneos {
     }
 
     //busca en la imagen los pixeles de Dio (verde == 7) y crea una instancia por cada uno
-    public static ArrayList<PersonajeDio> getPersonajeDio(BufferedImage imagen) {
-        ArrayList<PersonajeDio> lista = new ArrayList<>();
+    public static ArrayList<BossFinal> getPersonajeDio(BufferedImage imagen) {
+        ArrayList<BossFinal> lista = new ArrayList<>();
         for (int i = 0; i < imagen.getHeight(); i++) {
             for (int j = 0; j < imagen.getWidth(); j++) {
                 Color color = new Color(imagen.getRGB(j, i));
                 if (color.getBlue() == Constantes.constantesDelEnemigo.DIO) {
-                    lista.add(new PersonajeDio(j * TILES_SIZE, i * TILES_SIZE));
+                    lista.add(new BossFinal(j * TILES_SIZE, i * TILES_SIZE));
                 }
             }
         }
@@ -270,15 +270,15 @@ public class Miscelaneos {
     }
 
     //busca en la imagen los pixeles de esqueleto y crea una instancia por cada uno
-    public static ArrayList<EsqueletoHueso> getEsqueletoHueso(BufferedImage img) {
-        ArrayList<EsqueletoHueso> lista = new ArrayList<>();
+    public static ArrayList<EnemigoProyectil> getEsqueletoHueso(BufferedImage img) {
+        ArrayList<EnemigoProyectil> lista = new ArrayList<>();
         for (int i = 0; i < img.getHeight(); i++) {
             for (int j = 0; j < img.getWidth(); j++) {
                 Color color = new Color(img.getRGB(j, i));
                 int valor = color.getBlue();
                 //acepta tanto el tipo ESQUELETO como EH_DERECHA para cubrir ambas orientaciones
                 if (valor == ESQUELETO || valor == EH_DERECHA) {
-                    lista.add(new EsqueletoHueso(j * Juego.TILES_SIZE, i * Juego.TILES_SIZE, ESQUELETO));
+                    lista.add(new EnemigoProyectil(j * Juego.TILES_SIZE, i * Juego.TILES_SIZE, ESQUELETO));
                 }
             }
         }

@@ -1,7 +1,7 @@
 package ui;
 
 import main.Juego;
-import utils.LoadSave;
+import utils.CargaSprites;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -28,7 +28,7 @@ public class BotonOpciones {
     }
 
     private void cargarImagenes() {
-        BufferedImage temp = LoadSave.GetSpriteAtlas(LoadSave.BOTON_OPCIONES);
+        BufferedImage temp = CargaSprites.GetSpriteAtlas(CargaSprites.BOTON_OPCIONES);
         imgs = new BufferedImage[3];
         for (int i = 0; i < imgs.length; i++) {
             imgs[i] = temp.getSubimage(i * ANCHO_DEFAULT, 0, ANCHO_DEFAULT, ALTO_DEFAULT);
@@ -45,7 +45,7 @@ public class BotonOpciones {
         g.drawImage(imgs[indice], x, y, ancho, alto, null);
     }
 
-    public boolean isMouseOver() { return mouseOver; }
+
     public void setMouseOver(boolean mouseOver) { this.mouseOver = mouseOver; }
     public boolean isMousePressed() { return mousePressed; }
     public void setMousePressed(boolean mousePressed) { this.mousePressed = mousePressed; }

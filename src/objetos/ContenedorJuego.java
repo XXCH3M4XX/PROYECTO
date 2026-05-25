@@ -7,6 +7,9 @@ import static utils.Constantes.constantesObjetos.*;
 //representa los contenedores destructibles del nivel, como cajas y barriles
 public class ContenedorJuego extends ObjetosJuego {
 
+    //importante para solucionar el bug de las pociones y el superataque
+    private boolean yaGolpeado = false;
+
     public ContenedorJuego(int x, int y, int tipoObjeto) {
         super(x, y, tipoObjeto);
         crearHitbox();
@@ -40,5 +43,12 @@ public class ContenedorJuego extends ObjetosJuego {
     public void reset() {
         super.reset();
         crearHitbox();
+    }
+
+    public void setYaGolpeado(boolean yaGolpeado) {
+        this.yaGolpeado = yaGolpeado;
+    }
+    public boolean isYaGolpeado() {
+        return yaGolpeado;
     }
 }

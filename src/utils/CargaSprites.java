@@ -2,14 +2,12 @@ package utils;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 
 //clase de utilidad para la carga de recursos y datos externos
-public class LoadSave {
+public class CargaSprites {
 
     //nombres de los archivos de imagen para los sprites y niveles
 
@@ -64,7 +62,7 @@ public class LoadSave {
     //metodo para cargar una imagen desde la carpeta de recursos
     public static BufferedImage GetSpriteAtlas(String fileName){
         BufferedImage imagen = null;
-        InputStream entrada = LoadSave.class.getResourceAsStream("/" + fileName);
+        InputStream entrada = CargaSprites.class.getResourceAsStream("/" + fileName);
         try {
             //comprobacion de seguridad por si el archivo no existe
             if (entrada == null){
@@ -91,7 +89,7 @@ public class LoadSave {
 
         ArrayList<BufferedImage> imagenes = new ArrayList<>();
         for (String nombre : nombresNiveles) {
-            InputStream is = LoadSave.class.getResourceAsStream("/" + nombre);
+            InputStream is = CargaSprites.class.getResourceAsStream("/" + nombre);
             if (is != null) {
                 try {
                     imagenes.add(ImageIO.read(is));

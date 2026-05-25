@@ -43,9 +43,6 @@ public class PanelJuego extends JPanel {
         System.out.println("size: " + GAME_WIDTH + " height: " + GAME_HEIGHT);
     }
 
-    public void updateGame(){
-
-    }
 
 
     //con la clase Graphics podemos pintar dentro de la pantalla del juego

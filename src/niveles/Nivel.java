@@ -1,9 +1,9 @@
 package niveles;
 
 import entidades.PersonajeEnemigo1;
-import entidades.PersonajeDio;
+import entidades.BossFinal;
 import main.Juego;
-import entidades.EsqueletoHueso;
+import entidades.EnemigoProyectil;
 import objetos.ContenedorJuego;
 import objetos.Pinchos;
 import objetos.Pocion;
@@ -25,11 +25,11 @@ public class Nivel {
 
     //listas de entidades y objetos presentes en el nivel
     private ArrayList<PersonajeEnemigo1> zombie;
-    private ArrayList<PersonajeDio> dio;
+    private ArrayList<BossFinal> dio;
     private ArrayList<Pocion> pocion;
     private ArrayList<Pinchos> pinchos;
     private ArrayList<ContenedorJuego> contenedor;
-    private ArrayList<EsqueletoHueso> esqueletoHueso;
+    private ArrayList<EnemigoProyectil> enemigoProyectil;
 
     //ancho del nivel en tiles y offsets para limitar el desplazamiento de la camara
     private int tilesAnchoNivel;
@@ -55,7 +55,7 @@ public class Nivel {
 
     //extrae los esqueletos lanzadores de huesos de la imagen del nivel
     private void crearCañones() {
-        esqueletoHueso = Miscelaneos.getEsqueletoHueso(imagen);
+        enemigoProyectil = Miscelaneos.getEsqueletoHueso(imagen);
     }
 
     //extrae los pinchos de la imagen del nivel
@@ -111,7 +111,7 @@ public class Nivel {
     }
 
     //devuelve la lista de enemigos Dio del nivel
-    public ArrayList<PersonajeDio> getDio() {
+    public ArrayList<BossFinal> getDio() {
         return dio;
     }
 
@@ -154,7 +154,7 @@ public class Nivel {
     }
 
     //devuelve la lista de esqueletos lanzadores de huesos del nivel
-    public ArrayList<EsqueletoHueso> getCañon() {
-        return esqueletoHueso;
+    public ArrayList<EnemigoProyectil> getCañon() {
+        return enemigoProyectil;
     }
 }

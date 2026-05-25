@@ -4,9 +4,8 @@ import audio.AudioPlayer;
 import gamestates.Playing;
 import main.Juego;
 import niveles.Nivel;
-import utils.LoadSave;
+import utils.CargaSprites;
 import static utils.Constantes.constantesDelEnemigo.*;
-import static utils.Constantes.ConstantesDio.*;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
@@ -25,7 +24,7 @@ public class AjusteEnemigo {
 
     //lista de enemigos activos en el nivel actual
     private ArrayList<PersonajeEnemigo1> enemigos = new ArrayList<>();
-    private ArrayList<PersonajeDio> enemigos_dio = new ArrayList<>();
+    private ArrayList<BossFinal> enemigos_dio = new ArrayList<>();
 
     //imagen de la barra de vida de dio
     private BufferedImage imagenBarraVidaDio;
@@ -51,7 +50,7 @@ public class AjusteEnemigo {
         this.playing = playing;
         cargarImagenesEnemigo();
         cargarImagenesDio();
-        imagenBarraVidaDio = LoadSave.GetSpriteAtlas(LoadSave.BARRA_VIDA_DIO);
+        imagenBarraVidaDio = CargaSprites.GetSpriteAtlas(CargaSprites.BARRA_VIDA_DIO);
     }
 
     //carga los enemigos del nivel recibido, se llama al iniciar o cambiar de nivel
@@ -62,20 +61,23 @@ public class AjusteEnemigo {
 
     //actualiza todos los enemigos activos y detecta si el nivel ha sido completado
     public void update(int[][] datosNivel, Jugador jugador) {
+        ArrayList<Enemigo> todosEnemigos = new ArrayList<>();
+        todosEnemigos.addAll(enemigos);
+        todosEnemigos.addAll(enemigos_dio);
+
         boolean enemigosVivos = false;
         for (PersonajeEnemigo1 p : enemigos) {
             if (p.isActivo()) {
-                p.update(datosNivel, jugador);
+                p.update(datosNivel, jugador, todosEnemigos);
                 enemigosVivos = true;
             }
         }
-        for (PersonajeDio d : enemigos_dio) {
+        for (BossFinal d : enemigos_dio) {
             if (d.isActivo()) {
-                d.update(datosNivel, jugador);
+                d.update(datosNivel, jugador, todosEnemigos);
                 enemigosVivos = true;
             }
         }
-        //si no queda ningun enemigo vivo el nivel se da por completado
         if (!enemigosVivos) {
             playing.setNivelCompletado(true);
         }
@@ -85,6 +87,9 @@ public class AjusteEnemigo {
         drawEnemigos(e, OffsetXNivel);
         drawBarraVidaDio(e);
     }
+    public ArrayList<PersonajeEnemigo1> getEnemigos() {
+        return enemigos;
+    }
 
     //dibuja la barra de vida de dio solo si hay algun dio en el nivel
     private void drawBarraVidaDio(Graphics g) {
@@ -92,8 +97,8 @@ public class AjusteEnemigo {
         if (enemigos_dio.isEmpty()) return;
 
         //usa la vida del primer dio activo, si todos han muerto no dibuja nada
-        PersonajeDio dio = null;
-        for (PersonajeDio d : enemigos_dio) {
+        BossFinal dio = null;
+        for (BossFinal d : enemigos_dio) {
             if (d.isActivo()) {
                 dio = d;
                 break;
@@ -144,7 +149,7 @@ public class AjusteEnemigo {
             }
         }
 
-        for (PersonajeDio d : enemigos_dio) {
+        for (BossFinal d : enemigos_dio) {
             if (d.isActivo()) {
                 int estado = d.getEstadoEnemigo();
                 int indice = d.getAniIndice();
@@ -186,7 +191,7 @@ public class AjusteEnemigo {
                 }
             }
         }
-        for (PersonajeDio d : enemigos_dio) {
+        for (BossFinal d : enemigos_dio) {
             if (d.isActivo()) {
                 if (boxAtaque.intersects(d.getHitbox())) {
                     d.daño(10);
@@ -202,7 +207,7 @@ public class AjusteEnemigo {
 
     //cada fila tiene su propio numero de frames, se carga dinamicamente con getSpriteAmount
     private void cargarImagenesEnemigo() {
-        BufferedImage temp = LoadSave.GetSpriteAtlas(LoadSave.ENEMIGO1);
+        BufferedImage temp = CargaSprites.GetSpriteAtlas(CargaSprites.ENEMIGO1);
         System.out.println("Spritesheet: " + temp.getWidth() + "x" + temp.getHeight());
         ArrayEnemigo1 = new BufferedImage[6][];
         for (int i = 0; i < ArrayEnemigo1.length; i++) {
@@ -219,7 +224,7 @@ public class AjusteEnemigo {
 
     //carga el spritesheet de Dio usando GetCantidadSpriteDio para saber los frames de cada fila
     private void cargarImagenesDio() {
-        BufferedImage temp = LoadSave.GetSpriteAtlas(LoadSave.DIO);
+        BufferedImage temp = CargaSprites.GetSpriteAtlas(CargaSprites.DIO);
         System.out.println("Spritesheet Dio: " + temp.getWidth() + "x" + temp.getHeight());
         int maxEstado = 9;
         ArrayDio = new BufferedImage[maxEstado][];
@@ -246,7 +251,7 @@ public class AjusteEnemigo {
         for (PersonajeEnemigo1 p : enemigos) {
             p.resetearEnemigo();
         }
-        for (PersonajeDio d : enemigos_dio) {
+        for (BossFinal d : enemigos_dio) {
             d.resetearEnemigo();
         }
     }

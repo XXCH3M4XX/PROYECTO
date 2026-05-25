@@ -1,16 +1,15 @@
 package ui;
 
-import gamestates.Gamestate;
+import gamestates.EstadoJuego;
 import gamestates.Playing;
 import main.Juego;
-import utils.LoadSave;
+import utils.CargaSprites;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import static utils.Constantes.UI.BotonesPausa.*;
+
 import static utils.Constantes.UI.URMBotones.*;
-import static utils.Constantes.UI.BotonesVolumen.*;
 
 //overlay de pausa con botones de sonido, volumen y navegacion
 public class PausaOverlay {
@@ -55,7 +54,7 @@ public class PausaOverlay {
 
     //carga la imagen de fondo y calcula su posicion centrada en pantalla
     private void cargarFondo() {
-        fondo = LoadSave.GetSpriteAtlas(LoadSave.FONDO_PAUSA);
+        fondo = CargaSprites.GetSpriteAtlas(CargaSprites.FONDO_PAUSA);
         fnW = (int)(fondo.getWidth() * Juego.ESCALA);
         fnH = (int)(fondo.getHeight() * Juego.ESCALA);
         fnX = Juego.GAME_WIDTH / 2 - fnW / 2;
@@ -111,7 +110,7 @@ public class PausaOverlay {
             if (menuB.isMousePressed()) {
                 //vuelve al menu principal y despausa el juego
                 playing.resetearPartidaCompleta();
-                Gamestate.state = Gamestate.MENU;
+                EstadoJuego.state = EstadoJuego.MENU;
                 playing.depausarJuego();
             }
         } else if (isIn(e, replayB)) {
@@ -128,7 +127,7 @@ public class PausaOverlay {
         } else if (isIn(e, botonControles)) {
             if (botonControles.isMousePressed()) {
                 //muestra la pantalla de controles
-                Gamestate.state = Gamestate.CONTROLES;
+                EstadoJuego.state = EstadoJuego.CONTROLES;
                 playing.depausarJuego();
             }
         } else {

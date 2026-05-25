@@ -53,12 +53,7 @@ public class ObjetosJuego {
     protected void iniciarHitbox(int width, int height) {
         hitbox = new Rectangle2D.Float(x, y, (int)(width * Juego.ESCALA),(int) (height * Juego.ESCALA));
     }
-    //metodo opcional para poder ver y trabajar con la hitbox
-    public void pintarHitbox(Graphics g, int OffsetXNivel) {
-        //para depurar la caja de colision
-        g.setColor(Color.RED);
-        g.drawRect((int)hitbox.x - OffsetXNivel, (int)hitbox.y, (int)hitbox.width, (int)hitbox.height);
-    }
+
     //getters y setters
     public boolean isActiva() {
         return activa;

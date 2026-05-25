@@ -88,11 +88,7 @@ public class Proyectil {
         }
     }
 
-    //reposiciona manualmente la hitbox, usado para reutilizar proyectiles si fuera necesario
-    public void setPosicion(int x, int y) {
-        hitbox.x = x;
-        hitbox.y = y;
-    }
+
 
     //devuelve true si el proyectil esta reproduciendo la animacion de impacto
     public boolean impacto() { return impacto; }

@@ -1,10 +1,10 @@
 package ui;
 
 import audio.AudioPlayer;
-import gamestates.Gamestate;
+import gamestates.EstadoJuego;
 import gamestates.Playing;
 import main.Juego;
-import utils.LoadSave;
+import utils.CargaSprites;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -43,7 +43,7 @@ public class NivelCompletadoOverlay {
 
     //carga la imagen de fondo y calcula su posicion centrada en pantalla
     private void cargarImagen() {
-        imagen = LoadSave.GetSpriteAtlas(LoadSave.NIVELCOMPLETADO_MENU);
+        imagen = CargaSprites.GetSpriteAtlas(CargaSprites.NIVELCOMPLETADO_MENU);
         fondoAnchura = (int)(imagen.getWidth() * Juego.ESCALA);
         fondoAltura = (int)(imagen.getHeight() * Juego.ESCALA);
         fondoX = Juego.GAME_WIDTH / 2 - fondoAnchura / 2;
@@ -87,7 +87,7 @@ public class NivelCompletadoOverlay {
                 jugando.getJuego().getAudioPlayer().pararEfecto(AudioPlayer.nivelCompletado);
                 //resetea todo el juego y vuelve al menu principal
                 jugando.resetearPartidaCompleta();
-                Gamestate.state = Gamestate.MENU;
+                EstadoJuego.state = EstadoJuego.MENU;
             }
         } else if (comprobarBoton(siguiente, e)) {
             if (siguiente.isMousePressed()) {

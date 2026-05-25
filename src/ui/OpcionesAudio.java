@@ -1,6 +1,5 @@
 package ui;
 
-import gamestates.Gamestate;
 import main.Juego;
 
 import java.awt.*;

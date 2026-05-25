@@ -1,6 +1,6 @@
 package ui;
 
-import utils.LoadSave;
+import utils.CargaSprites;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -41,7 +41,7 @@ public class VolumeButton extends BotonesPausa {
 
     //carga los frames del boton y la imagen del slider desde el spritesheet de volumen
     private void loadImages() {
-        BufferedImage temp = LoadSave.GetSpriteAtlas(LoadSave.BOTON_NIVEL_VOLUMEN);
+        BufferedImage temp = CargaSprites.GetSpriteAtlas(CargaSprites.BOTON_NIVEL_VOLUMEN);
         imgs = new BufferedImage[3];
         for (int i = 0; i < imgs.length; i++) {
             imgs[i] = temp.getSubimage(i * VOLUME_DEFAULT_WIDTH, 0,
@@ -94,8 +94,7 @@ public class VolumeButton extends BotonesPausa {
         mousePressed = false;
     }
 
-    //devuelve true si el raton esta encima del boton
-    public boolean isMouseOver() { return mouseOver; }
+
 
     //activa o desactiva el efecto hover del boton
     public void setMouseOver(boolean mouseOver) { this.mouseOver = mouseOver; }

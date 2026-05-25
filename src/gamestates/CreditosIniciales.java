@@ -2,13 +2,13 @@ package gamestates;
 
 import audio.AudioPlayer;
 import main.Juego;
-import utils.LoadSave;
+import utils.CargaSprites;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
 //pantalla de introduccion con fade in, imagen visible y fade out antes del menu
-public class IntroScreen extends State implements Statemethods {
+public class CreditosIniciales extends Estado implements MetodosEstadoJuego {
 
     private BufferedImage imagen;
 
@@ -26,9 +26,9 @@ public class IntroScreen extends State implements Statemethods {
     private enum Fase { FADE_IN, VISIBLE, FADE_OUT, TERMINADO }
     private Fase faseActual = Fase.FADE_IN;
 
-    public IntroScreen(Juego juego) {
+    public CreditosIniciales(Juego juego) {
         super(juego);
-        imagen = LoadSave.GetSpriteAtlas(LoadSave.INTRO);
+        imagen = CargaSprites.GetSpriteAtlas(CargaSprites.INTRO);
         juego.getAudioPlayer().playCancion(AudioPlayer.creditosIniciales); // ← arranca los creditos
     }
 
@@ -64,8 +64,8 @@ public class IntroScreen extends State implements Statemethods {
 
             //cuando termina el fade out pasamos al menu
             case TERMINADO:
-                Gamestate.state = Gamestate.MENU;
-                juego.getAudioPlayer().playCancion(AudioPlayer.menu); // ← después del cambio de estado
+                EstadoJuego.state = EstadoJuego.MENU;
+                juego.getAudioPlayer().playCancion(AudioPlayer.menu);
                 break;
         }
     }
@@ -90,7 +90,7 @@ public class IntroScreen extends State implements Statemethods {
     public void keyPressed(java.awt.event.KeyEvent e) {
         if (e.getKeyCode() == java.awt.event.KeyEvent.VK_E) {
             juego.getAudioPlayer().playCancion(AudioPlayer.menu); // ← cambia a menu
-            Gamestate.state = Gamestate.MENU;
+            EstadoJuego.state = EstadoJuego.MENU;
         }
     }
 

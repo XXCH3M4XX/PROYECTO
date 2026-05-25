@@ -3,13 +3,14 @@ package entidades;
 import main.Juego;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
 import java.util.Random;
 
 import static utils.Constantes.constantesDelEnemigo.*;
 import static utils.Constantes.ConstantesDio.*;
 
 //enemigo Dio que patrulla, persigue y ataca al jugador cuerpo a cuerpo
-public class PersonajeDio extends Enemigo {
+public class BossFinal extends Enemigo {
 
     //hitbox del ataque y su desplazamiento horizontal respecto a la hitbox del enemigo
     private Rectangle2D.Float boxAtaque;
@@ -23,12 +24,12 @@ public class PersonajeDio extends Enemigo {
     private boolean enPausaPatrulla = false;
 
     //coloca al enemigo en su posicion inicial y arranca en animacion predeterminada
-    public PersonajeDio(float x, float y) {
+    public BossFinal(float x, float y) {
         super(x, y, DIO_WIDTH, DIO_HEIGHT, DIO);
         iniciarHitbox(x, y, (int)(17 * Juego.ESCALA), (int)(29 * Juego.ESCALA));
         iniciarHitboxAtaque();
         maxTicksIdle = 800 + new Random().nextInt(600);
-        nuevoEstado(PREDETERMINADO); // arranca quieto en fila 6
+        nuevoEstado(PREDETERMINADO);
     }
 
     //crea la hitbox de ataque con un ancho mayor que la hitbox del cuerpo para cubrir el golpe
@@ -38,8 +39,8 @@ public class PersonajeDio extends Enemigo {
     }
 
     //actualiza movimiento, animacion y posicion de la hitbox de ataque cada frame
-    public void update(int[][] datosNivel, Jugador jugador) {
-        actualizarMovimiento(datosNivel, jugador);
+    public void update(int[][] datosNivel, Jugador jugador, ArrayList<Enemigo> enemigos) {
+        actualizarMovimiento(datosNivel, jugador, enemigos);
         actualizarAnimacionTick();
         actualizarBoxAtaque();
     }
@@ -47,15 +48,15 @@ public class PersonajeDio extends Enemigo {
     //sincroniza la hitbox de ataque con la posicion actual de la hitbox del cuerpo
     private void actualizarBoxAtaque() {
         if (mirandoDerecha) {
-            boxAtaque.x = hitbox.x + boxAtaqueOffsetX;  // ← atacar hacia la derecha
+            boxAtaque.x = hitbox.x + boxAtaqueOffsetX;
         } else {
-            boxAtaque.x = hitbox.x - boxAtaqueOffsetX;  // ← atacar hacia la izquierda
+            boxAtaque.x = hitbox.x - boxAtaqueOffsetX;
         }
         boxAtaque.y = hitbox.y;
     }
 
     //maquina de estados que controla el comportamiento del enemigo segun su estado actual
-    private void actualizarMovimiento(int[][] datosNivel, Jugador jugador) {
+    private void actualizarMovimiento(int[][] datosNivel, Jugador jugador, ArrayList<Enemigo> enemigos) {
         if (primeraActualizacion) {
             checkPrimeraActualizacion(datosNivel);
         }
@@ -89,7 +90,7 @@ public class PersonajeDio extends Enemigo {
                             nuevoEstado(GANCHO);
                         }
                     }
-                    movimiento(datosNivel);
+                    movimiento(datosNivel, enemigos);
                     break;
 
                 case GANCHO:
@@ -123,12 +124,7 @@ public class PersonajeDio extends Enemigo {
         maxTicksIdle = 800 + new Random().nextInt(600);
     }
 
-    //dibuja el rectangulo rojo de la hitbox de ataque, util para depuracion
-    public void drawBoxAtaque(Graphics g, int nivelOffset) {
-        g.setColor(Color.red);
-        g.drawRect((int)(boxAtaque.x - nivelOffset), (int)boxAtaque.y,
-                (int)boxAtaque.width, (int)boxAtaque.height);
-    }
+
 
     @Override
     protected void actualizarAnimacionTick() {
@@ -147,7 +143,8 @@ public class PersonajeDio extends Enemigo {
 
                         break;
                     case MUERTEDIO:
-                        activo = false; // ← no resetea aniIndice, se congela en el ultimo frame
+                        //no resetea aniIndice, se congela en el ultimo frame
+                        activo = false;
                         break;
                 }
             }

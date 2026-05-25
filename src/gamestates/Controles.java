@@ -1,7 +1,7 @@
 package gamestates;
 
 import main.Juego;
-import utils.LoadSave;
+import utils.CargaSprites;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -9,14 +9,14 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 
 //pantalla que muestra los controles del juego
-public class Controles extends State implements Statemethods {
+public class Controles extends Estado implements MetodosEstadoJuego {
 
     //fondo de pantalla completa reutilizado del menu principal
     private BufferedImage fondoPantalla;
 
     public Controles(Juego juego) {
         super(juego);
-        fondoPantalla = LoadSave.GetSpriteAtlas(LoadSave.FONDO_PANTALLA);
+        fondoPantalla = CargaSprites.GetSpriteAtlas(CargaSprites.FONDO_PANTALLA);
     }
 
     @Override
@@ -68,7 +68,7 @@ public class Controles extends State implements Statemethods {
     public void keyPressed(KeyEvent e) {
         //vuelve al menu al pulsar escape
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-            Gamestate.state = Gamestate.MENU;
+            EstadoJuego.state = EstadoJuego.MENU;
         }
     }
 

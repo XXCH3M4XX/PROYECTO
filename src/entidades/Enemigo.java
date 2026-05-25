@@ -3,6 +3,7 @@ package entidades;
 import main.Juego;
 
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
 
 import static utils.Constantes.constantesDelEnemigo.*;
 import static utils.Miscelaneos.*;
@@ -30,9 +31,6 @@ public abstract class Enemigo extends Entidad {
     protected int direccionAndar = IZQUIERDA;
     protected float xVelocidad = 0.00f;
 
-    //tamaño del sprite en pixeles escalados, usado para calcular offsets de dibujo
-    protected static final int SPRITE_W = (int)(64 * Juego.ESCALA);
-    protected static final int SPRITE_H = (int)(40 * Juego.ESCALA);
 
     //fila de tile en la que esta el enemigo, se usa para detectar si ve al jugador
     protected int tileY;
@@ -84,8 +82,8 @@ public abstract class Enemigo extends Entidad {
         }
     }
 
-    //mueve al enemigo en su direccion actual y cambia de direccion si choca con una pared o un borde
-    protected void movimiento(int[][] datosNivel) {
+    //mueve al enemigo en su direccion actual y cambia de direccion si choca con una pared, borde o enemigo
+    protected void movimiento(int[][] datosNivel, ArrayList<Enemigo> enemigos) {
         if (direccionAndar == IZQUIERDA) {
             xVelocidad = -velocidadAndar;
             mirandoDerecha = false;
@@ -96,11 +94,25 @@ public abstract class Enemigo extends Entidad {
 
         if (puedeMoverse(hitbox.x + xVelocidad, hitbox.y, hitbox.width, hitbox.height, datosNivel)) {
             if (esSuelo(hitbox, xVelocidad, datosNivel)) {
-                hitbox.x += xVelocidad;
-                return;
+                //comprueba colision con otros enemigos antes de moverse
+                if (!colisionaConEnemigo(enemigos)) {
+                    hitbox.x += xVelocidad;
+                    return;
+                }
             }
         }
         cambiarDireccionAndar();
+    }
+
+    //devuelve true si la posicion destino solapa con la hitbox de otro enemigo activo
+    private boolean colisionaConEnemigo(ArrayList<Enemigo> enemigos) {
+        Rectangle2D.Float destino = new Rectangle2D.Float(
+                hitbox.x + xVelocidad, hitbox.y, hitbox.width, hitbox.height);
+        for (Enemigo e : enemigos) {
+            if (e == this || !e.activo) continue;
+            if (destino.intersects(e.hitbox)) return true;
+        }
+        return false;
     }
 
     //cambia el estado del enemigo y reinicia los contadores de animacion
@@ -162,7 +174,8 @@ public abstract class Enemigo extends Entidad {
                 //al terminar ataque o golpe vuelve a idle, al terminar muerte se desactiva
                 switch(estadoEnemigo){
                     case ATAQUE, GOLPE:
-                        nuevoEstado(CORRER); // ← vuelve a patrullar siempre
+                        //vuelve a patrullar siempre
+                        nuevoEstado(CORRER);
                         break;
                     case MUERTE:
                         activo = false;
@@ -191,12 +204,7 @@ public abstract class Enemigo extends Entidad {
         return estadoEnemigo;
     }
 
-    //cambia el estado y reinicia la animacion, alternativa a nuevoEstado con mismo comportamiento
-    protected void cambiarEstado(int nuevoEstado) {
-        this.estadoEnemigo = nuevoEstado;
-        this.aniIndice = 0;
-        this.aniTick = 0;
-    }
+
 
     //aplica daño al enemigo y decide si muere o entra en estado de golpe
     public void daño(int daño) {

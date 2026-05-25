@@ -30,11 +30,7 @@ public class Entidad {
         hitbox = new Rectangle2D.Float(x, y, width, height);
     }
 
-    //metodo comentado para actualizar la posicion de la hitbox segun la entidad
-    protected void updateHitbox() {
-        hitbox.x = (int)x;
-        hitbox.y = (int)y;
-    }
+
 
     //permite que otros objetos consulten el area de colision de esta entidad
     public Rectangle2D.Float getHitbox() {

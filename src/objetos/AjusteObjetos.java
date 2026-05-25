@@ -1,12 +1,12 @@
 package objetos;
 
 import audio.AudioPlayer;
-import entidades.EsqueletoHueso;
+import entidades.EnemigoProyectil;
 import entidades.Jugador;
 import gamestates.Playing;
 import main.Juego;
 import niveles.Nivel;
-import utils.LoadSave;
+import utils.CargaSprites;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
@@ -18,7 +18,7 @@ import static utils.Constantes.constantesObjetos.*;
 import static utils.Miscelaneos.*;
 
 //gestiona todos los objetos del nivel: pociones, contenedores, pinchos, esqueletos y proyectiles
-public class AjusteDeObjetos {
+public class AjusteObjetos {
     //referencia al estado de juego para acceder al jugador y otros sistemas
     private Playing playing;
 
@@ -41,11 +41,11 @@ public class AjusteDeObjetos {
     private ArrayList<Pocion> porcionesOriginales;
     private ArrayList<ContenedorJuego> contenedores;
     private ArrayList<Pinchos> pinchos;
-    private ArrayList<EsqueletoHueso> esqueletosHueso;
+    private ArrayList<EnemigoProyectil> esqueletosHueso;
     private ArrayList<Proyectil> proyectiles = new ArrayList<>();
 
     //recibe la referencia al estado de juego y carga todas las imagenes de objetos
-    public AjusteDeObjetos(Playing playing) {
+    public AjusteObjetos(Playing playing) {
         this.playing = playing;
         cargarImagenes();
     }
@@ -67,6 +67,7 @@ public class AjusteDeObjetos {
                     p.setActiva(false);
                     aplicarEfectoAlJugador(p);
                     playing.registrarPocion();
+                    System.out.println("Pocion recogida, total: " + playing.getPorcionesRecogidas());
                 }
             }
         }
@@ -79,14 +80,16 @@ public class AjusteDeObjetos {
         } else {
             playing.getJugador().cambiarPoder(VALOR_POCION_AZUL);
         }
+        playing.getJuego().getAudioPlayer().playEfecto(AudioPlayer.pociones);
     }
 
     //rompe el contenedor golpeado y genera una pocion en su posicion, o golpea al esqueleto
     public void chekGolpeoAlObjeto(Rectangle2D.Float hitboxAtaque) {
         for (ContenedorJuego cj : contenedores) {
-            if (cj.isActiva()) {
+            if (cj.isActiva() && !cj.isYaGolpeado()) { // ← comprueba el flag
                 if (cj.getHitbox().intersects(hitboxAtaque)) {
                     cj.setAnimacion(true);
+                    cj.setYaGolpeado(true); // ← marca como golpeado
                     int tipo = 0;
                     if (cj.getTipoObjeto() == BARRIL) {
                         tipo = 1;
@@ -99,7 +102,7 @@ public class AjusteDeObjetos {
                 }
             }
         }
-        for (EsqueletoHueso c : esqueletosHueso) {
+        for (EnemigoProyectil c : esqueletosHueso) {
             if (c.getHitbox().intersects(hitboxAtaque)) {
                 c.recibirGolpe();
                 return;
@@ -119,7 +122,7 @@ public class AjusteDeObjetos {
 
     //carga y recorta todos los spritesheets de objetos en sus matrices de frames
     private void cargarImagenes() {
-        BufferedImage spritePocion = LoadSave.GetSpriteAtlas(LoadSave.POCIONES);
+        BufferedImage spritePocion = CargaSprites.GetSpriteAtlas(CargaSprites.POCIONES);
         imagenesPociones = new BufferedImage[2][7];
         for (int j = 0; j < imagenesPociones.length; j++) {
             for (int i = 0; i < imagenesPociones[j].length; i++) {
@@ -127,7 +130,7 @@ public class AjusteDeObjetos {
             }
         }
 
-        BufferedImage spriteContenedor = LoadSave.GetSpriteAtlas(LoadSave.OBJETOS);
+        BufferedImage spriteContenedor = CargaSprites.GetSpriteAtlas(CargaSprites.OBJETOS);
         contenedorDeImagenes = new BufferedImage[2][10];
         for (int j = 0; j < contenedorDeImagenes.length; j++) {
             for (int i = 0; i < contenedorDeImagenes[j].length; i++) {
@@ -135,11 +138,11 @@ public class AjusteDeObjetos {
             }
         }
 
-        imagenPinchos = LoadSave.GetSpriteAtlas(LoadSave.TRAMPA);
+        imagenPinchos = CargaSprites.GetSpriteAtlas(CargaSprites.TRAMPA);
 
         //cada fila del spritesheet del esqueleto corresponde a un estado distinto
         imagenEsqueletoHueso = new BufferedImage[6][];
-        BufferedImage temp = LoadSave.GetSpriteAtlas(LoadSave.ESQUELETO_HUESO);
+        BufferedImage temp = CargaSprites.GetSpriteAtlas(CargaSprites.ESQUELETO_HUESO);
         for (int i = 0; i < imagenEsqueletoHueso.length; i++) {
             int frames = getFramesEsqueleto(i);
             imagenEsqueletoHueso[i] = new BufferedImage[frames];
@@ -149,7 +152,7 @@ public class AjusteDeObjetos {
         }
 
         //fila 0 es el hueso en vuelo y fila 1 es la animacion de impacto
-        BufferedImage temp2 = LoadSave.GetSpriteAtlas(LoadSave.HUESO_PROYECTIL);
+        BufferedImage temp2 = CargaSprites.GetSpriteAtlas(CargaSprites.HUESO_PROYECTIL);
         huesoProyectil = new BufferedImage[2][6];
         for (int fila = 0; fila < 2; fila++) {
             for (int col = 0; col < 6; col++) {
@@ -201,7 +204,7 @@ public class AjusteDeObjetos {
 
     //decide si cada esqueleto debe disparar segun la posicion y vision del jugador
     private void updateEsqueletosHueso(int[][] datosNivel, Jugador jugador) {
-        for (EsqueletoHueso c : esqueletosHueso) {
+        for (EnemigoProyectil c : esqueletosHueso) {
             if (!c.animacion) {
                 int tileYJugador = (int)(jugador.getHitbox().y / Juego.TILES_SIZE);
                 //solo dispara si el jugador esta en la misma fila de tiles que el esqueleto
@@ -222,9 +225,9 @@ public class AjusteDeObjetos {
             c.update();
             // reproduce el sonido cuando empieza a descomponerse o recomponerse
             if (estadoAntes != c.getEstado()) {
-                if (c.getEstado() == EsqueletoHueso.DESCOMPONE) {
+                if (c.getEstado() == EnemigoProyectil.DESCOMPONE) {
                     playing.getJuego().getAudioPlayer().playEfecto(AudioPlayer.descomponerEsqueleto);
-                } else if (c.getEstado() == EsqueletoHueso.REGENERA) {
+                } else if (c.getEstado() == EnemigoProyectil.REGENERA) {
                     playing.getJuego().getAudioPlayer().playEfecto(AudioPlayer.recomponerEsqueleto);
                 }
             }
@@ -241,24 +244,14 @@ public class AjusteDeObjetos {
         }
     }
 
-    //activa el disparo del esqueleto y crea el proyectil apuntando al jugador
-    private void disparoEsqueletoHueso(EsqueletoHueso c) {
-        c.setEstadoDisparo();
-        int direccion = (playing.getJugador().getHitbox().x < c.getHitbox().x) ? -1 : 1;
-        int x = (int)c.getHitbox().x;
-        if (direccion == 1) {
-            x += c.getHitbox().width;
-        }
-        proyectiles.add(new Proyectil(x, (int)c.getHitbox().y, direccion));
-    }
 
     //devuelve true siempre porque el esqueleto ataca en ambas direcciones sin restriccion
-    private boolean rangoVisionEsqueletoHueso(EsqueletoHueso c, Jugador jugador) {
+    private boolean rangoVisionEsqueletoHueso(EnemigoProyectil c, Jugador jugador) {
         return true;
     }
 
     //devuelve true si el jugador esta dentro del rango de ataque horizontal del esqueleto
-    private boolean jugadorEstaEnRango(EsqueletoHueso c, Jugador jugador) {
+    private boolean jugadorEstaEnRango(EnemigoProyectil c, Jugador jugador) {
         int valorAbsoluto = (int) Math.abs(jugador.getHitbox().x - c.getHitbox().x);
         return valorAbsoluto <= Juego.TILES_SIZE * 10;
     }
@@ -293,11 +286,11 @@ public class AjusteDeObjetos {
 
     //dibuja cada esqueleto espejando el sprite segun la ultima direccion de disparo
     private void dibujarEsqueletosHueso(Graphics g, int xNivelOffset) {
-        for (EsqueletoHueso c : esqueletosHueso) {
+        for (EnemigoProyectil c : esqueletosHueso) {
 
-            // ajusta estos dos valores para mover el sprite respecto a la hitbox
-            int spriteOffsetX = -40; // positivo = derecha, negativo = izquierda
-            int spriteOffsetY = -30; // positivo = abajo, negativo = arriba
+            //ajusta estos dos valores para mover el sprite respecto a la hitbox
+            int spriteOffsetX = -40;
+            int spriteOffsetY = -30;
 
             int x = (int)(c.getHitbox().x - xNivelOffset);
             int ancho = ANCHO_EH;
@@ -312,8 +305,8 @@ public class AjusteDeObjetos {
             int estadoDibujo = c.getEstado();
             int indiceDibujo = c.getAniIndice();
 
-            if (estadoDibujo == EsqueletoHueso.EN_SUELO) {
-                estadoDibujo = EsqueletoHueso.DESCOMPONE;
+            if (estadoDibujo == EnemigoProyectil.EN_SUELO) {
+                estadoDibujo = EnemigoProyectil.DESCOMPONE;
                 indiceDibujo = imagenEsqueletoHueso[estadoDibujo].length - 1;
             }
 
@@ -384,7 +377,7 @@ public class AjusteDeObjetos {
         for (ContenedorJuego cj : contenedores) {
             cj.reset();
         }
-        for (EsqueletoHueso c : esqueletosHueso) {
+        for (EnemigoProyectil c : esqueletosHueso) {
             c.reset();
         }
     }
