@@ -172,6 +172,7 @@ public class AjusteEnemigo {
                 int w = (int)(DIO_WIDTH_DEFAULT * Juego.ESCALA_JUGADOR);
                 int h = (int)(DIO_HEIGHT_DEFAULT * Juego.ESCALA_JUGADOR);
 
+
                 if (d.mirandoDerecha) {
                     e.drawImage(frame, drawX, drawY, w, h, null);
                 } else {
@@ -186,7 +187,7 @@ public class AjusteEnemigo {
         for (Enemigo e : enemigos) {
             if (e.isActivo()) {
                 if (boxAtaque.intersects(e.getHitbox())) {
-                    e.daño(10);
+                    e.daño(5);
                     if (e.getEstadoEnemigo() == MUERTE) {
                         playing.getJuego().getAudioPlayer().playEfecto(AudioPlayer.enemigoMuere);
                         playing.getJugador().cambiarPoder(50);
