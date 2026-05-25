@@ -45,7 +45,7 @@ public class LoadSave {
     public static final String FONDO_MENU = "interfaces/menuFondoInterfaz.png";
     public static final String FONDO_PANTALLA = "interfaces/fondoPantallaMenu.png";
     public static final String FONDO_PAUSA = "interfaces/MenuPausaInterfaz.png";
-    public static final String BARRA_SALUD = "interfaces/saludEnergiaInterfaz.png";
+    public static final String BARRA_SALUD = "interfaces/SaludEnergiaInterfaz.png";
     public static final String NIVELCOMPLETADO_MENU = "interfaces/nivelCompletadoInterfaz.png";
     public static final String INTRO = "interfaces/hpjmGames.png";
     public static final String PANTALLA_MUERTE =  "interfaces/pantallaMuerteInterfaz.png";
