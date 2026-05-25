@@ -53,17 +53,16 @@ public class Jugador extends Entidad {
     private float velocidadSalto = -2.25f * Juego.ESCALA;
 
 
-
     //true cuando el jugador no esta apoyado en el suelo
     private boolean aire = false;
 
     //tamaño de la hitbox en pixeles ya escalados, mas pequeña que el sprite
-    public static final int HITBOX_W = (int)(19 * Juego.ESCALA);
-    public static final int HITBOX_H = (int)(28 * Juego.ESCALA);
+    public static final int HITBOX_W = (int) (19 * Juego.ESCALA);
+    public static final int HITBOX_H = (int) (28 * Juego.ESCALA);
 
     //tamaño del sprite completo en pixeles escalados, solo para el renderizado
-    public static final int SPRITE_W = (int)(64 * Juego.ESCALA);
-    public static final int SPRITE_H = (int)(40 * Juego.ESCALA);
+    public static final int SPRITE_W = (int) (64 * Juego.ESCALA);
+    public static final int SPRITE_H = (int) (40 * Juego.ESCALA);
 
     //true si el jugador mira hacia la derecha, false si mira hacia la izquierda
     boolean mirandoDerecha = true;
@@ -79,18 +78,18 @@ public class Jugador extends Entidad {
     private int xBarraEstado = (int) (10 * Juego.ESCALA);
     private int yBarraEstado = (int) (10 * Juego.ESCALA);
     private int anchoBarraEstado = (int) (345 * Juego.ESCALA);
-    private int altoBarraEstado  = (int) (87  * Juego.ESCALA);
+    private int altoBarraEstado = (int) (87 * Juego.ESCALA);
 
     //dimensiones y posicion del segmento verde que representa la vida actual
-    private int anchoBarraVida   = (int) (180 * Juego.ESCALA);
-    private int altoBarraVida    = (int) (4   * Juego.ESCALA);
-    private int xInicioBarraVida = (int) (61  * Juego.ESCALA);
-    private int yInicioBarraVida = (int) (22  * Juego.ESCALA);
+    private int anchoBarraVida = (int) (180 * Juego.ESCALA);
+    private int altoBarraVida = (int) (4 * Juego.ESCALA);
+    private int xInicioBarraVida = (int) (61 * Juego.ESCALA);
+    private int yInicioBarraVida = (int) (22 * Juego.ESCALA);
 
     private int anchuraBarraSuperAtaque = (int) (90 * Juego.ESCALA);
     private int alturaBarraSuperAtaque = (int) (6 * Juego.ESCALA);
     private int superAtaqueBarraXInicio = (int) (83 * Juego.ESCALA);
-    private int superAtaqueBarraYInicio = (int) (51  * Juego.ESCALA);
+    private int superAtaqueBarraYInicio = (int) (51 * Juego.ESCALA);
     private int anchuraSuperAtaque = anchuraBarraSuperAtaque;
     private int superAtaqueValorMaximo = 200;
     private int superAtaqueValor = 0;
@@ -145,7 +144,7 @@ public class Jugador extends Entidad {
 
     //crea la hitbox de ataque con un tamaño fijo escalado, se reposiciona en cada update
     private void iniciarHitboxAtaque() {
-        boxAtaque = new Rectangle2D.Float(x, y, (int)(20 * Juego.ESCALA), (int)(20 * Juego.ESCALA));
+        boxAtaque = new Rectangle2D.Float(x, y, (int) (20 * Juego.ESCALA), (int) (20 * Juego.ESCALA));
     }
 
     //punto de entrada del bucle del juego, gestiona muerte, movimiento, ataque y animacion
@@ -187,7 +186,7 @@ public class Jugador extends Entidad {
         if (movimiento) {
             checkPocionTocada();
             checkPinchosTocados();
-            direccionY = (int)(hitbox.y / Juego.TILES_SIZE);
+            direccionY = (int) (hitbox.y / Juego.TILES_SIZE);
         }
 
         if (ataque || superAtaqueActivado) checkAtaque();
@@ -225,21 +224,21 @@ public class Jugador extends Entidad {
     //reposiciona la hitbox de ataque delante del jugador segun la direccion en que mira
     private void actualizarHitboxAtaque() {
         if (derecha) {
-            boxAtaque.x = hitbox.x + hitbox.width + (int)(Juego.ESCALA * 1);
+            boxAtaque.x = hitbox.x + hitbox.width + (int) (Juego.ESCALA * 1);
         } else if (izquierda) {
-            boxAtaque.x = hitbox.x - hitbox.width - (int)(Juego.ESCALA * 1);
+            boxAtaque.x = hitbox.x - hitbox.width - (int) (Juego.ESCALA * 1);
         }
         boxAtaque.y = hitbox.y + (Juego.ESCALA * 10);
     }
 
     //recalcula el ancho del segmento verde en proporcion a la vida actual sobre la maxima
     private void actualizarBarraDeVida() {
-        anchoSalud = (int)((saludActual / (float)saludMaxima) * anchoBarraVida);
+        anchoSalud = (int) ((saludActual / (float) saludMaxima) * anchoBarraVida);
     }
 
 
-    private void actualizarBarraDeSuperAtaque(){
-        anchuraSuperAtaque = (int)((superAtaqueValor / (float)superAtaqueValorMaximo) * anchuraBarraSuperAtaque);
+    private void actualizarBarraDeSuperAtaque() {
+        anchuraSuperAtaque = (int) ((superAtaqueValor / (float) superAtaqueValorMaximo) * anchuraBarraSuperAtaque);
     }
 
     //inyecta los datos del nivel para que el jugador pueda comprobar colisiones
@@ -255,8 +254,8 @@ public class Jugador extends Entidad {
             return;
         }
 
-        int drawX = (int)(hitbox.x - offsetX) - nivelOffset;
-        int drawY = (int)(hitbox.y - offsetY);
+        int drawX = (int) (hitbox.x - offsetX) - nivelOffset;
+        int drawY = (int) (hitbox.y - offsetY);
 
         if (mirandoDerecha) {
             g.drawImage(animaciones[accionJugador][indiceAnim],
@@ -267,7 +266,6 @@ public class Jugador extends Entidad {
         }
         dibujarUI(g);
     }
-
 
 
     //dibuja la imagen de la barra de estado y rellena el segmento de vida con color verde
@@ -317,7 +315,7 @@ public class Jugador extends Entidad {
             return;
         }
 
-        if(superAtaqueActivado){
+        if (superAtaqueActivado) {
             if (startAni != PUÑETAZO) {
                 accionJugador = PUÑETAZO;
                 resetAniTick();
@@ -366,7 +364,7 @@ public class Jugador extends Entidad {
 
         //si no esta en el aire comprobamos si hay suelo, si no lo hay lo ponemos en caida libre
         if (!aire) {
-            if (!superAtaqueActivado){
+            if (!superAtaqueActivado) {
                 if (!EnSuelo(hitbox, datosNivel)) {
                     aire = true;
                 }
@@ -384,11 +382,11 @@ public class Jugador extends Entidad {
             mirandoDerecha = true;
         }
 
-        if (superAtaqueActivado){
-            if (!izquierda && !derecha){
-                if (!mirandoDerecha){
+        if (superAtaqueActivado) {
+            if (!izquierda && !derecha) {
+                if (!mirandoDerecha) {
                     xVelocidad = -velocidadJugador;
-                }else {
+                } else {
                     xVelocidad = velocidadJugador;
                 }
             }
@@ -569,16 +567,24 @@ public class Jugador extends Entidad {
     }
 
     //activa o desactiva el flag de ataque desde el sistema de input
-    public void setAtaque(boolean ataque) { this.ataque = ataque; }
+    public void setAtaque(boolean ataque) {
+        this.ataque = ataque;
+    }
 
     //activa o desactiva el flag de salto desde el sistema de input
-    public void setSalto(boolean salto) { this.jump = salto; }
+    public void setSalto(boolean salto) {
+        this.jump = salto;
+    }
 
     //activa o desactiva el movimiento hacia la derecha desde el sistema de input
-    public void setDerecha(boolean derecha) { this.derecha = derecha; }
+    public void setDerecha(boolean derecha) {
+        this.derecha = derecha;
+    }
 
     //activa o desactiva el movimiento hacia la izquierda desde el sistema de input
-    public void setIzquierda(boolean izquierda) { this.izquierda = izquierda; }
+    public void setIzquierda(boolean izquierda) {
+        this.izquierda = izquierda;
+    }
 
     //placeholder para el sistema de poder, actualmente solo imprime un mensaje
     public void cambiarPoder(int valorPocionAzul) {
@@ -594,12 +600,10 @@ public class Jugador extends Entidad {
     }
 
 
-
     //reduce la vida a cero para forzar la muerte del jugador desde sistemas externos
     public void muerte() {
         saludActual = 0;
     }
-
 
 
     public void superAtaque() {
@@ -609,7 +613,7 @@ public class Jugador extends Entidad {
         if (superAtaqueValor >= superAtaqueValorMaximo) {
             superAtaqueActivado = true;
             superAtaqueValor = 0;
+            playing.getJuego().getAudioPlayer().playEfecto(AudioPlayer.superataque); // ← solo aquí
         }
-        playing.getJuego().getAudioPlayer().playEfecto(AudioPlayer.superataque);
     }
 }

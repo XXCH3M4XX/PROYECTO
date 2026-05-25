@@ -1,5 +1,7 @@
 package entidades;
 
+import audio.AudioPlayer;
+import gamestates.Playing;
 import main.Juego;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
@@ -23,9 +25,16 @@ public class BossFinal extends Enemigo {
     //true mientras el enemigo esta en la pausa de patrulla reproduciendo la animacion idle
     private boolean enPausaPatrulla = false;
 
+    //para los sonidos
+    private Playing playing;
+
+    //verifica si se ha reproducido el ataque
+    private boolean sonidoAtaqueReproducido = false;
+
     //coloca al enemigo en su posicion inicial y arranca en animacion predeterminada
-    public BossFinal(float x, float y) {
+    public BossFinal(float x, float y, Playing playing) {
         super(x, y, DIO_WIDTH, DIO_HEIGHT, DIO);
+        this.playing = playing; // ← nuevo
         iniciarHitbox(x, y, (int)(17 * Juego.ESCALA), (int)(29 * Juego.ESCALA));
         iniciarHitboxAtaque();
         maxTicksIdle = 800 + new Random().nextInt(600);
@@ -96,10 +105,13 @@ public class BossFinal extends Enemigo {
                 case GANCHO:
                     if (aniIndice == 0) {
                         ataqueRealizado = false;
+                        if (!sonidoAtaqueReproducido) {
+                            sonidoAtaqueReproducido = true;
+                            playing.getJuego().getAudioPlayer().playEfectoSinInterrumpir(AudioPlayer.ganchoDio);
+                        }
                     }
                     if (aniIndice == 3 && !ataqueRealizado) {
                         revisarGolpeEnemigo(boxAtaque, jugador);
-                        ataqueRealizado = true;  // ← AÑADIR: evita golpe múltiple por frame
                     }
                     break;
 
@@ -137,6 +149,7 @@ public class BossFinal extends Enemigo {
                 switch (estadoEnemigo) {
                     case GANCHO:
                     case DAÑO:
+                        sonidoAtaqueReproducido = false;
                         nuevoEstado(CORRIENDO);
                         break;
                     case PREDETERMINADO:
@@ -158,8 +171,16 @@ public class BossFinal extends Enemigo {
         vidaActual -= daño;
         if (vidaActual <= 0) {
             nuevoEstado(MUERTEDIO);
+            playing.getJuego().getAudioPlayer().playEfecto(AudioPlayer.muerteDio);
         } else {
-            nuevoEstado(DAÑO);
+            if (estadoEnemigo != DAÑO && estadoEnemigo != GANCHO) { // ← no interrumpe si está atacando
+                playing.getJuego().getAudioPlayer().playEfectoSinInterrumpir(AudioPlayer.dañoDio);
+                nuevoEstado(DAÑO);
+            }
         }
+    }
+
+    public void setPlaying(Playing playing) {
+        this.playing = playing;
     }
 }

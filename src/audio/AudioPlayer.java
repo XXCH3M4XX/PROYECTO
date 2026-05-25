@@ -48,6 +48,11 @@ public class AudioPlayer {
     //lo tenemos
     public static final int superataque = 15;
 
+    // constantes de dio
+    public static int ganchoDio = 16;
+    public static int dañoDio = 17;
+    public static int muerteDio = 18;
+
     //volumen global aplicado tanto a canciones como a efectos, entre 0.0 y 1.0
     private float volumen = 1f;
 
@@ -109,7 +114,8 @@ public class AudioPlayer {
     private void cargarEfectos() {
         String[] nombresEfectos = {"enemigoMuerte", "gameOverMusica", "salto", "victoria", "pincho",
                 "recomponerEsqueleto", "descomponerEsqueleto", "huesoProyectil", "lanzaEnemigo",
-                "muerte", "patada1", "patada2", "patada3", "golpeJonathan", "pociones" , "superataque"};
+                "muerte", "patada1", "patada2", "patada3", "golpeJonathan", "pociones" , "superataque",
+                "gancho", "daño1", "muerteDio"};
         efectos = new Clip[nombresEfectos.length];
         for (int i = 0; i < efectos.length; i++) {
             efectos[i] = getClip(nombresEfectos[i]);
@@ -208,6 +214,13 @@ public class AudioPlayer {
             float dB = (float)(Math.log10(Math.max(volumen, 0.0001)) * 20);
             dB = Math.max(controlGanancia.getMinimum(), Math.min(controlGanancia.getMaximum(), dB));
             controlGanancia.setValue(dB);
+        }
+    }
+
+    public void playEfectoSinInterrumpir(int efecto) {
+        if (!efectos[efecto].isActive()) {
+            efectos[efecto].setMicrosecondPosition(0);
+            efectos[efecto].start();
         }
     }
 }

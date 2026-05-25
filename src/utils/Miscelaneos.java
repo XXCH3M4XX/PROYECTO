@@ -217,7 +217,7 @@ public class Miscelaneos {
             for (int j = 0; j < imagen.getWidth(); j++) {
                 Color color = new Color(imagen.getRGB(j, i));
                 if (color.getBlue() == Constantes.constantesDelEnemigo.DIO) {
-                    lista.add(new BossFinal(j * TILES_SIZE, i * TILES_SIZE));
+                    lista.add(new BossFinal(j * TILES_SIZE, i * TILES_SIZE, null));
                 }
             }
         }

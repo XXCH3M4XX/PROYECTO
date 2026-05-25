@@ -57,6 +57,10 @@ public class AjusteEnemigo {
     public void cargarEnemigos(Nivel nivel) {
         enemigos = nivel.getEnemigos();
         enemigos_dio = nivel.getDio();
+
+            for (BossFinal d : enemigos_dio) {
+            d.setPlaying(playing);
+        }
     }
 
     //actualiza todos los enemigos activos y detecta si el nivel ha sido completado
