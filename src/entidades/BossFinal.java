@@ -59,7 +59,7 @@ public class BossFinal extends Enemigo {
         if (mirandoDerecha) {
             boxAtaque.x = hitbox.x + boxAtaqueOffsetX;
         } else {
-            boxAtaque.x = hitbox.x - boxAtaqueOffsetX;
+            boxAtaque.x = hitbox.x - boxAtaque.width + boxAtaqueOffsetX;
         }
         boxAtaque.y = hitbox.y;
     }
