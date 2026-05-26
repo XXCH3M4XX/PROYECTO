@@ -148,6 +148,7 @@ public class PersonajeEnemigo1 extends Enemigo {
 
     //restaura todos los valores del enemigo a su estado inicial para reiniciar el nivel
     public void resetearEnemigo() {
+
         hitbox.x = x;
         hitbox.y = y;
         primeraActualizacion = true;
@@ -160,6 +161,10 @@ public class PersonajeEnemigo1 extends Enemigo {
         maxTicksIdle = 800 + new Random().nextInt(600);
         animacionIdleCompletada = false;
         ciclosIdleCompletados = 0;
+        invencible = false;
+        ticksInvencible = 0;
+        poderOtorgado = false;
+
     }
 
 

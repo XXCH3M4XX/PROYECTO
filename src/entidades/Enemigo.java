@@ -50,6 +50,12 @@ public abstract class Enemigo extends Entidad {
 
     //evita que el golpe se aplique mas de una vez por animacion de ataque
     protected boolean ataqueRealizado;
+    protected boolean poderOtorgado = false;
+
+
+    protected boolean invencible = false;
+    protected int ticksInvencible = 0;
+    protected static final int DURACION_INVENCIBLE = 30;
 
     //constructor que va usar el enemigo, extendido de la clase entidad
     public Enemigo(float x, float y, int width, int height, int tipoEnemigo) {
@@ -165,6 +171,14 @@ public abstract class Enemigo extends Entidad {
     //avanza el contador de animacion y gestiona las transiciones de estado al terminar cada ciclo
     protected void actualizarAnimacionTick() {
         aniTick++;
+
+        if (invencible) {
+            ticksInvencible++;
+            if (ticksInvencible >= DURACION_INVENCIBLE) {
+                invencible = false;
+                ticksInvencible = 0;
+            }
+        }
         if (aniTick >= aniVel) {
             aniTick = 0;
             aniIndice++;
@@ -208,18 +222,21 @@ public abstract class Enemigo extends Entidad {
 
     //aplica daño al enemigo y decide si muere o entra en estado de golpe
     public void daño(int daño) {
-        //si ya esta muriendo ignoramos cualquier golpe mas que le puedas dar
-        if(estadoEnemigo == MUERTE) return;
+        if (estadoEnemigo == MUERTE) return;
+        if (invencible) return;
 
         vidaActual -= daño;
+        invencible = true;
+        ticksInvencible = 0;
+
         if (vidaActual <= 0) {
             nuevoEstado(MUERTE);
         } else {
-            if (estadoEnemigo != MUERTE) {
-                nuevoEstado(GOLPE);
-            }
+            nuevoEstado(GOLPE);
         }
     }
+    public boolean isPoderOtorgado() { return poderOtorgado; }
+    public void setPoderOtorgado(boolean poderOtorgado) { this.poderOtorgado = poderOtorgado; }
 
     //comprueba si el boxAtaque del enemigo golpea al jugador y le aplica el daño correspondiente
     public void revisarGolpeEnemigo(Rectangle2D.Float boxAtaque, Jugador jugador) {

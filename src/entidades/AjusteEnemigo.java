@@ -188,7 +188,8 @@ public class AjusteEnemigo {
             if (e.isActivo()) {
                 if (boxAtaque.intersects(e.getHitbox())) {
                     e.daño(5);
-                    if (e.getEstadoEnemigo() == MUERTE) {
+                    if (e.getEstadoEnemigo() == MUERTE && !e.isPoderOtorgado()) {
+                        e.setPoderOtorgado(true);
                         playing.getJuego().getAudioPlayer().playEfecto(AudioPlayer.enemigoMuere);
                         playing.getJugador().cambiarPoder(50);
                     }
