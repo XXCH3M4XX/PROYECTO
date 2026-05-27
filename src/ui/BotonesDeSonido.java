@@ -47,7 +47,6 @@ public class BotonesDeSonido extends BotonesPausa {
 
     //decide que frame dibujar segun si esta silenciado y el estado del raton
     public void update() {
-        /* fila 0 silenciado, */
         if (muted) {
             rowIndex = 1;
         } else {

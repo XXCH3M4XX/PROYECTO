@@ -210,7 +210,7 @@ public class Jugador extends Entidad {
             //durante el super ataque hace daño continuamente sin necesidad de frame especifico
             playing.revisarGolpeEnemigo(boxAtaque);
             playing.checkObjetoGolpeado(boxAtaque);
-            return; // ← sin sonido durante el dash
+            return;
         }
         if (ataqueRevisado || indiceAnim != 1) {
             return;
@@ -300,7 +300,7 @@ public class Jugador extends Entidad {
             }
         }
 
-        // el daño sobreescribe el movimiento y el aire pero no el ataque
+        //el daño sobreescribe el movimiento y el aire pero no el ataque
         if (recibioGolpe) {
             accionJugador = DAÑO;
             ticksGolpe++;
@@ -495,7 +495,7 @@ public class Jugador extends Entidad {
             indiceAnim++;
 
             if (indiceAnim >= Constantes.ConstantesJugador.GetCantidadSprite(accionJugador)) {
-                // Si es muerte, se congela en el último frame
+                //si es muerte, se congela en el último frame
                 if (accionJugador == MUERTE) {
                     indiceAnim = Constantes.ConstantesJugador.GetCantidadSprite(MUERTE) - 1;
                     return;

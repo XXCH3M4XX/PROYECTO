@@ -14,12 +14,12 @@ public class EnemigoProyectil extends ObjetosJuego {
     private int direccionY;
 
     //estados del esqueleto, cada uno corresponde a una fila del spritesheet
-    public static final int IDLE = 0;        // sin animacion por ahora
-    public static final int DESCOMPONE = 1;  // ← fila 1
-    public static final int REGENERA = 2;    // ← fila 2
-    public static final int DISPARO = 3;     // ← fila 3
-    public static final int EN_SUELO = 4;    // ← estado de espera, sin fila propia
-    public static final int GOLPE = 5;       // ← fila 5
+    public static final int IDLE = 0;
+    public static final int DESCOMPONE = 1;
+    public static final int REGENERA = 2;
+    public static final int DISPARO = 3;
+    public static final int EN_SUELO = 4;
+    public static final int GOLPE = 5;
 
     //true cuando el proyectil ya fue creado en este ciclo de disparo
     private boolean proyectilLanzado = false;

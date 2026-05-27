@@ -219,7 +219,7 @@ public class AjusteObjetos {
                     }
                 }
             }
-            // guarda el estado antes del update para detectar transiciones
+            //guarda el estado antes del update para detectar transiciones
             int estadoAntes = c.getEstado();
 
             c.update();

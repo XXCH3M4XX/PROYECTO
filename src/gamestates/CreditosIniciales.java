@@ -89,7 +89,7 @@ public class CreditosIniciales extends Estado implements MetodosEstadoJuego {
     @Override
     public void keyPressed(java.awt.event.KeyEvent e) {
         if (e.getKeyCode() == java.awt.event.KeyEvent.VK_E) {
-            juego.getAudioPlayer().playCancion(AudioPlayer.menu); // ← cambia a menu
+            juego.getAudioPlayer().playCancion(AudioPlayer.menu);
             EstadoJuego.state = EstadoJuego.MENU;
         }
     }

@@ -83,7 +83,7 @@ public class CargaSprites {
         return imagen;
     }
     public static BufferedImage[] getNiveles() {
-        // carga los niveles por nombre directamente sin listar carpetas
+        //carga los niveles por nombre directamente sin listar carpetas
         // añade mas entradas si tienes mas niveles
         String[] nombresNiveles = {"Levels/1.png", "Levels/2.png", "Levels/3.png"};
 

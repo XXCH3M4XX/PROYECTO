@@ -58,10 +58,10 @@ public class Constantes {
 
         public static int getFramesEsqueleto(int estado) {
             switch (estado) {
-                case 1: return 5; // DESCOMPONE, columnas 0-4
-                case 2: return 5; // REGENERA, columnas 0-4
-                case 3: return 7; // DISPARO, columnas 0-6
-                case 5: return 3; // GOLPE, columnas 0-2
+                case 1: return 5;
+                case 2: return 5;
+                case 3: return 7;
+                case 5: return 3;
                 default: return 1;
             }
         }

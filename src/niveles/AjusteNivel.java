@@ -100,7 +100,7 @@ public class AjusteNivel {
             EstadoJuego.state = EstadoJuego.NOMBRE;
             return;
         }
-        importarSpritesNivel(indiceNivel); // ← recarga el atlas del nuevo nivel
+        importarSpritesNivel(indiceNivel);
         Nivel nuevoNivel = niveles.get(indiceNivel);
         juego.getPlaying().getAjusteEnemigo().cargarEnemigos(nuevoNivel);
         juego.getPlaying().getJugador().cargarDatosNivel(nuevoNivel.getDatosNivel());
